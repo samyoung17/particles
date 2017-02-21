@@ -101,7 +101,7 @@ def motionAnimation(data):
     axes.add_patch(circle)
     scat = axes.scatter(data.x[0,:,0], data.x[0,:,1])
     ani = animation.FuncAnimation(fig, draw, interval=TIMESTEP * 1000,
-                                  frames = xrange(ITERATIONS), fargs=(scat, data), repeat=False)
+									frames = xrange(ITERATIONS), fargs=(scat, data), repeat=False)
     plt.show()
 
 def kineticEnergy(v):
@@ -153,9 +153,9 @@ def main():
 	data = Data(ITERATIONS, N)
 	recordData(particles, data, 0)
 	for i in range(1, ITERATIONS):
-         logIteration(i, ITERATIONS)
-         moveParticles(particles, TIMESTEP, VISCOUSITY, MASS)
-         recordData(particles, data, i)
+		logIteration(i, ITERATIONS)
+		moveParticles(particles, TIMESTEP, VISCOUSITY, MASS)
+		recordData(particles, data, i)
 	motionAnimation(data)
 #	energyPlot(data)
 
