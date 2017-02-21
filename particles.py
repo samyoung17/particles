@@ -1,21 +1,20 @@
-from random import random
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+import sys
 
 
-N = 30
-LENGTH = 100
-WIDTH = 100
-START_LENGTH = 1
-START_WIDTH = 1
+N = 100
+R_MAX = 10
+R_0 = 1
+
 TIMESTEP = 0.01
 K_E  = 8.99E9
 Q = 3E-8
 VISCOUSITY = 1E-2
 PARTICLE_RADIUS = 1E-3
-MASS = 1E-4
-ITERATIONS = 200
+MASS = 1E-3
+ITERATIONS = 300
 
 class Data(object):
 	def __init__(self, iterations, numpoints):
@@ -34,12 +33,19 @@ class Particle(object):
 		self.F = np.zeros((1,2))
 		self.Fd = np.zeros((1,2))
 
-def initParticles(n, length, width, startLength, startWidth):
+def randomPointOnDisc(rMax):
+    costheta = np.random.uniform(-1,1)    
+    u = np.random.uniform(0,1)
+    theta = np.arccos(costheta)
+    r = rMax * np.power(u, 1/2.0)
+    x = r * np.sin(theta)
+    y = r * np.cos(theta)
+    return np.array((x,y))
+
+def initParticles(n, r0):
 	particles = []
 	for i in range(n):
-		xx = (random() * startWidth) + (width / 2)
-		xy = (random() * startLength) + (length / 2)
-		x = np.array((xx, xy))
+		x = np.array(randomPointOnDisc(r0))
 		v = np.array((0,0))
 		particle = Particle(x, v)
 		particles.append(particle)
@@ -51,12 +57,17 @@ def forceBetweenTwoPointCharges(q1, q2, r):
 def forceDueToDrag(v):
 	return - 6 * np.pi * VISCOUSITY * PARTICLE_RADIUS * v
 
+def boundingForce(x, q):
+    r = np.linalg.norm(x)
+    xUnit = x / r
+    return  - K_E * N * q * q * xUnit / pow(R_MAX - r, 2)
+
 def moveParticles(particles, t, nu, m):
 	for i, particle in enumerate(particles):
 		other_particles = particles[:i] + particles[i+1:]
 		displacements = map(lambda p: p.x - particle.x, other_particles)
 		forces = map(lambda r: forceBetweenTwoPointCharges(Q, Q, r), displacements)
-		F = sum(forces)
+		F = sum(forces) + boundingForce(particle.x, Q)
 		v0 = particle.v
 		x0 = particle.x
 		Fd = forceDueToDrag(v0)
@@ -67,7 +78,6 @@ def moveParticles(particles, t, nu, m):
 		particle.v = v
 		particle.F = F
 		particle.Fd = Fd
-
 
 def recordData(particles, data, i):
 	data.x[i] = map(lambda p: p.x, particles)
@@ -82,14 +92,17 @@ def draw(i, scat, data):
 	return scat,
 
 def motionAnimation(data):
-	fig = plt.figure()
-	axes = plt.gca()
-	axes.set_xlim([0,WIDTH])
-	axes.set_ylim([0,LENGTH])
-	scat = plt.scatter(data.x[0,:,0], data.x[0,:,1])
-	ani = animation.FuncAnimation(fig, draw, interval=TIMESTEP * 1000, 
-		frames = xrange(ITERATIONS), fargs=(scat, data), repeat=False)
-	plt.show()
+    fig = plt.figure()
+    axes = plt.gca()
+    padding = 1.5    
+    axes.set_xlim([-R_MAX * padding, R_MAX * padding])
+    axes.set_ylim([-R_MAX * padding, R_MAX * padding])
+    circle = plt.Circle((0,0), radius=R_MAX, color='g', fill=False)
+    axes.add_patch(circle)
+    scat = axes.scatter(data.x[0,:,0], data.x[0,:,1])
+    ani = animation.FuncAnimation(fig, draw, interval=TIMESTEP * 1000,
+                                  frames = xrange(ITERATIONS), fargs=(scat, data), repeat=False)
+    plt.show()
 
 def kineticEnergy(v):
 	vnorm = np.linalg.norm(v, axis=2)
@@ -130,14 +143,20 @@ def energyPlot(data):
 	plt.plot(data.t, totalEp, 'r')
 	plt.show()
 
+def logIteration(i, n):
+    perc = i * 100 /n
+    sys.stdout.write("\rSimulating... %d%%" % perc)
+    sys.stdout.flush()
+
 def main():
-	particles = initParticles(N, LENGTH, WIDTH, START_LENGTH, START_WIDTH)
+	particles = initParticles(N, R_0)
 	data = Data(ITERATIONS, N)
 	recordData(particles, data, 0)
 	for i in range(1, ITERATIONS):
-		moveParticles(particles, TIMESTEP, VISCOUSITY, MASS)
-		recordData(particles, data, i)
-	# motionAnimation(data)
-	energyPlot(data)
+         logIteration(i, ITERATIONS)
+         moveParticles(particles, TIMESTEP, VISCOUSITY, MASS)
+         recordData(particles, data, i)
+	motionAnimation(data)
+#	energyPlot(data)
 
 main()

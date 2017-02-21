@@ -110,7 +110,8 @@ def motionAnimation(data):
     axes.set_ylim([-R_MAX * pad, R_MAX * pad])
     axes.set_zlim([-R_MAX * pad, R_MAX * pad])
     scat = axes.scatter(data.x[0,:,0], data.x[0,:,1], data.x[0,:,2])
-    ani = animation.FuncAnimation(fig, draw, interval=TIMESTEP * 1000, frames = xrange(ITERATIONS), fargs=(scat, data), repeat=False)
+    ani = animation.FuncAnimation(fig, draw, interval=TIMESTEP * 1000,
+                                  frames = xrange(ITERATIONS), fargs=(scat, data), repeat=False)
     plt.show()
 
 def main():
