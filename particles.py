@@ -108,7 +108,9 @@ def logIteration(i, iterations):
     sys.stdout.flush()
 
 def loadData(fname):
-	data = pickle.load(open(fname, 'r'))
+	f = open('data/' + fname, 'r')
+	data = pickle.load(f)
+	f.close()
 	return data
 
 def simulation(iterations, n):
@@ -126,8 +128,8 @@ if __name__ == '__main__':
 		raise ValueError('Arguments should be: n, iter, outfile')
 	script, n, iterations, fname = sys.argv
 	data = simulation(int(iterations), int(n))
-	f = open(fname, 'w')
-	print('\nWriting data to \'' + fname + '\'...')
+	f = open('data/' + fname, 'w')
+	print('\nWriting data to \'data/' + fname + '\'...')
 	pickle.dump(data, f)
 	f.close()
 	print('Done!')
