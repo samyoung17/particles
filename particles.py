@@ -2,15 +2,19 @@ import numpy as np
 import sys
 import pickle
 
-R_MAX = 10
-R_0 = 1
+# Constants for all models
+R_MAX = 100
+R_0 = 10
+TIMESTEP = 0.002
+MASS = 1
 
-TIMESTEP = 0.001
+# Constants for non-gaussian unit model
 K_E  = 8.99E9
 Q = 3E-8
 VISCOUSITY = 1E-2
 PARTICLE_RADIUS = 1E-3
-MASS = 1E-3
+
+NU = 0.2
 
 class Data(object):
 	def __init__(self, iterations, numpoints):
@@ -50,23 +54,34 @@ def initParticles(n, r0):
 def forceBetweenTwoPointCharges(q1, q2, r):
 	return - K_E * q1 * q2 * r / pow(np.linalg.norm(r),3)
 
+def forceBetweenTwoPointChargesUnitConstants(r):
+	return - r / pow(np.linalg.norm(r),3)
+
 def forceDueToDrag(v):
 	return - 6 * np.pi * VISCOUSITY * PARTICLE_RADIUS * v
+
+def forceDueToDragUnitConstants(v, m):
+	return - NU * v * m
 
 def boundingForce(x, q, n):
     r = np.linalg.norm(x)
     xUnit = x / r
     return  - K_E * n * q * q * xUnit / pow(R_MAX - r, 2)
 
+def boundingForceUnitConstants(x, q, n):
+	r = np.linalg.norm(x)
+	xUnit = x / r
+	return  - n * xUnit / pow(R_MAX - r, 2)
+
 def moveParticles(particles, t, nu, m):
 	for i, particle in enumerate(particles):
 		other_particles = particles[:i] + particles[i+1:]
 		displacements = map(lambda p: p.x - particle.x, other_particles)
-		forces = map(lambda r: forceBetweenTwoPointCharges(Q, Q, r), displacements)
-		F = sum(forces) + boundingForce(particle.x, Q, len(particles))
+		forces = map(lambda r: forceBetweenTwoPointChargesUnitConstants(r), displacements)
+		F = sum(forces) + boundingForceUnitConstants(particle.x, Q, len(particles))
 		v0 = particle.v
 		x0 = particle.x
-		Fd = forceDueToDrag(v0)
+		Fd = forceDueToDragUnitConstants(v0, m)
 		a = (F + Fd) / m
 		v = a * t + v0
 		x = x0 + (v + v0) / 2
