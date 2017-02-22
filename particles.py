@@ -30,13 +30,13 @@ class Particle(object):
 		self.Fd = np.zeros((1,2))
 
 def randomPointOnDisc(rMax):
-    costheta = np.random.uniform(-1,1)    
-    u = np.random.uniform(0,1)
-    theta = np.arccos(costheta)
-    r = rMax * np.power(u, 1/2.0)
-    x = r * np.sin(theta)
-    y = r * np.cos(theta)
-    return np.array((x,y))
+	costheta = np.random.uniform(-1,1)    
+	u = np.random.uniform(0,1)
+	theta = np.arccos(costheta) * np.random.choice((-1,1))
+	r = rMax * np.power(u, 1/2.0)
+	x = r * np.sin(theta)
+	y = r * np.cos(theta)
+	return np.array((x,y))
 
 def initParticles(n, r0):
 	particles = []
@@ -103,8 +103,8 @@ def potentialEnergy(x):
 	return Ep
 
 def logIteration(i, iterations):
-    perc = (i+1) * 100 / iterations
-    sys.stdout.write("\rSimulating... %d%%" % perc)
+    perc = (i+1) * 100.0 / iterations
+    sys.stdout.write("\rSimulating... %.2f%%" % perc)
     sys.stdout.flush()
 
 def loadData(fname):
@@ -117,10 +117,10 @@ def simulation(iterations, n):
 	particles = initParticles(n, R_0)
 	data = Data(iterations, n)
 	recordData(particles, data, 0)
-	for i in range(1, iterations):
-		logIteration(i, iterations)
+	for i in range(1, iterations):		
 		moveParticles(particles, TIMESTEP, VISCOUSITY, MASS)
 		recordData(particles, data, i)
+		logIteration(i, iterations)
 	return(data)
 
 if __name__ == '__main__':
