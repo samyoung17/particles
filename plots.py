@@ -28,22 +28,27 @@ def draw(i, scat, data):
 	scat.set_offsets(points)
 	return scat,
 
-def motionAnimation(data):
-    fig = plt.figure()
-    axes = plt.gca()
-    padding = 1.5    
-    axes.set_xlim([-R_MAX * padding, R_MAX * padding])
-    axes.set_ylim([-R_MAX * padding, R_MAX * padding])
-    circle = plt.Circle((0,0), radius=R_MAX, color='g', fill=False)
-    axes.add_patch(circle)
-    scat = axes.scatter(data.x[0,:,0], data.x[0,:,1])
-    ani = animation.FuncAnimation(fig, draw, interval=TIMESTEP * 1000,
-									frames = xrange(data.iterations), fargs=(scat, data), repeat=False)
-    plt.show()
+def motionAnimation(data, speedMultiplier):
+	fig = plt.figure()
+	axes = plt.gca()
+	padding = 1.5    
+	axes.set_xlim([-R_MAX * padding, R_MAX * padding])
+	axes.set_ylim([-R_MAX * padding, R_MAX * padding])
+	circle = plt.Circle((0,0), radius=R_MAX, color='g', fill=False)
+	axes.add_patch(circle)
+	scat = axes.scatter(data.x[0,:,0], data.x[0,:,1])
+	interval = TIMESTEP * 1000 / speedMultiplier
+	ani = animation.FuncAnimation(fig, draw, interval=interval, frames = xrange(data.iterations), fargs=(scat, data), repeat=False)
+	plt.show()
 
 if __name__ == '__main__':
-	if len(sys.argv) != 2:
-		raise ValueError('Arguments should be: infile')
-	fname = sys.argv[1]
+	speedMultiplier = 1
+	if len(sys.argv) == 3:
+		fname = sys.argv[1]
+		speedMultiplier = int(sys.argv[2])
+	elif len(sys.argv) == 2:
+		fname = sys.argv[1]
+	else:
+		raise ValueError('Arguments should be: infile, [speedmultiplier]')
 	data = loadData(fname)
-	motionAnimation(data)
+	motionAnimation(data, speedMultiplier)
