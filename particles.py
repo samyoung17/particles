@@ -3,9 +3,9 @@ import sys
 import pickle
 
 # Constants for all models
-R_MAX = 100
-R_0 = 10
-TIMESTEP = 0.01
+R_MAX = 10
+R_0 = 1
+TIMESTEP = 0.1
 MASS = 1
 
 # Constants for non-gaussian unit model
@@ -54,9 +54,9 @@ def initParticles(n, r0):
 def forceBetweenTwoPointCharges(q1, q2, r):
 	return - K_E * q1 * q2 * r / pow(np.linalg.norm(r),3)
 
-def forceBetweenTwoPointChargesUnitConstants(r, n):
+def forceBetweenTwoPointChargesUnitConstants(r, qSquared):
 	# This function is called iter * N^2 times, so optimise for speed
-	return - r / (n * pow(r[0] ** 2 + r[1] ** 2, 1.5))
+	return - r * qSquared / pow(r[0] ** 2 + r[1] ** 2, 1.5)
 
 def forceDueToDrag(v):
 	return - 6 * np.pi * VISCOUSITY * PARTICLE_RADIUS * v
@@ -72,14 +72,15 @@ def boundingForce(x, q, n):
 def boundingForceUnitConstants(x, q, n):
 	r = np.linalg.norm(x)
 	xUnit = x / r
-	return  - xUnit / pow(R_MAX - r, 2)
+	return  - xUnit * q / pow(R_MAX - r, 2)
 
 def moveParticles(particles, t, nu, m):
+	q = 1.0 / len(particles)
 	for i, particle in enumerate(particles):
 		other_particles = particles[:i] + particles[i+1:]
 		displacements = map(lambda p: p.x - particle.x, other_particles)
-		forces = map(lambda r: forceBetweenTwoPointChargesUnitConstants(r, len(particles)), displacements)
-		F = sum(forces) + boundingForceUnitConstants(particle.x, Q, len(particles))
+		forces = map(lambda r: forceBetweenTwoPointChargesUnitConstants(r, q**2), displacements)
+		F = sum(forces) + boundingForceUnitConstants(particle.x, q, len(particles))
 		v0 = particle.v
 		x0 = particle.x
 		Fd = forceDueToDragUnitConstants(v0, m)
