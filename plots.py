@@ -29,6 +29,7 @@ def draw(i, scat, data):
 	return scat,
 
 def motionAnimation(data, speedMultiplier):
+	R_MAX = 100
 	fig = plt.figure()
 	axes = plt.gca()
 	padding = 1.5    
