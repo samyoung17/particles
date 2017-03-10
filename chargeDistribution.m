@@ -12,7 +12,7 @@ for i = 1:steps
 end
 
 F
-plot(r_vec, B);
+plot(r, b);
 
 function y = f(r,s)
 y = (2*s/r) * (ellipticE(-4*r*s/(r-s)^2)/(r+s) + ellipticK(-4*r*s/(r-s)^2)/(r-s));
