@@ -1,4 +1,4 @@
-steps = 20;
+steps = 50;
 delta = (1/steps);
 % Set r as the midpoints of the annuli
 r = (0:delta:(1-delta)) + delta/2;
@@ -20,7 +20,6 @@ end
 Finv = inv(F);
 
 a = arrayfun(@(r_j) areaOfAnAnnulus(r_j,delta), r);
-rho=0;
 for k = 1:steps
     d = vertcat(-b(1:k)',zeros(steps - k,1));
     rho = Finv * d;
@@ -34,7 +33,7 @@ function y = f(r,s)
     if r == s
         y = pi / r^2;
     else
-        y = s/r * (-ellipticK(r*s) + -((r-s)/(r+s)) * ellipticE(r*s));
+        y = (2 * s/r * sign(r-s) * (ellipticE(-4*r*s/(r-s)^2)/(r+s) + ellipticK(-4*r*s/(r-s)^2)/(r-s)));
     end
 end
 
