@@ -1,4 +1,4 @@
-steps = 50;
+steps = 20;
 delta = (1/steps);
 % Set r as the midpoints of the annuli
 r = (0:delta:(1-delta)) + delta/2;
@@ -12,7 +12,7 @@ b = arrayfun(@(r_j) f(r_j,1), r);
 F = zeros(steps, steps);
 for i = 1:steps
     for j = 1:steps
-        F(i,j) = f(r(j),s(i));
+        F(i,j) = f(r(i),s(j));
     end
 end
 
