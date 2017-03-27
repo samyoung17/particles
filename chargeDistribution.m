@@ -1,4 +1,6 @@
-steps = 20;
+boundCharge = 0.1;
+
+steps = 50;
 delta = (1/steps);
 % Set r as the midpoints of the annuli
 r = (0:delta:(1-delta)) + delta/2;
@@ -21,10 +23,10 @@ Finv = inv(F);
 
 a = arrayfun(@(r_j) areaOfAnAnnulus(r_j,delta), r);
 for k = 1:steps
-    d = vertcat(-b(1:k)',zeros(steps - k,1));
-    rho = Finv * d;
-    q = a * rho;
-    if q > 1
+    d = -b(1:k)';
+    rho = Finv(1:k,1:k) * d;
+    q = a(1:k) * rho;
+    if q > boundCharge
         break
     end
 end
