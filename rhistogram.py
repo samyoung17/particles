@@ -1,5 +1,4 @@
 import matplotlib.pyplot as plt
-import numpy as np
 from particles import *
 
 data = loadData("n=400 iter=10000 unit forces and constants.pickle")

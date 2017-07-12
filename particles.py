@@ -65,9 +65,9 @@ def forceDueToDragUnitConstants(v, m):
 	return - NU * v * m
 
 def boundingForce(x, q, n):
-    r = np.linalg.norm(x)
-    xUnit = x / r
-    return  - K_E * n * q * q * xUnit / pow(R_MAX - r, 2)
+	r = np.linalg.norm(x)
+	xUnit = x / r
+	return  - K_E * n * q * q * xUnit / pow(R_MAX - r, 2)
 
 def boundingForceUnitConstants(x, q, n):
 	r = np.linalg.norm(x)
@@ -120,9 +120,9 @@ def potentialEnergy(x):
 	return Ep
 
 def logIteration(i, iterations):
-    perc = (i+1) * 100.0 / iterations
-    sys.stdout.write("\rSimulating... %.2f%%" % perc)
-    sys.stdout.flush()
+	perc = (i+1) * 100.0 / iterations
+	sys.stdout.write("\rSimulating... %.2f%%" % perc)
+	sys.stdout.flush()
 
 def loadData(fname):
 	f = open('data/' + fname, 'r')
