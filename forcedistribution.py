@@ -7,6 +7,8 @@ Q = 3E-8
 VISCOUSITY = 1E-2
 PARTICLE_RADIUS = 1E-3
 NU = 0.2
+M = 1
+R_MAX = 10
 
 def forceBetweenTwoPointCharges(q1, q2, r):
 	return - K_E * q1 * q2 * r / pow(np.linalg.norm(r),3)
@@ -24,14 +26,14 @@ def forceDueToDragUnitConstants(v, m):
 def boundingForce(x, q, n):
 	r = np.linalg.norm(x)
 	xUnit = x / r
-	return  - K_E * n * q * q * xUnit / pow(particlesim.R_MAX - r, 2)
+	return  - K_E * n * q * q * xUnit / pow(R_MAX - r, 2)
 
 def boundingForceUnitConstants(x, q, n):
 	r = np.linalg.norm(x)
 	xUnit = x / r
-	return  - xUnit * q / pow(particlesim.R_MAX - r, 2)
+	return  - xUnit * q / pow(R_MAX - r, 2)
 
-def moveParticles(particles, t, m):
+def moveParticles(particles, t):
 	q = 1.0 / len(particles)
 	for i, particle in enumerate(particles):
 		other_particles = particles[:i] + particles[i + 1:]
@@ -40,8 +42,8 @@ def moveParticles(particles, t, m):
 		F = sum(forces) + boundingForceUnitConstants(particle.x, q, len(particles))
 		v0 = particle.v
 		x0 = particle.x
-		Fd = forceDueToDragUnitConstants(v0, m)
-		a = (F + Fd) / m
+		Fd = forceDueToDragUnitConstants(v0, M)
+		a = (F + Fd) / M
 		v = a * t + v0
 		x = x0 + (v + v0) / 2
 		particle.x = x
@@ -55,4 +57,5 @@ if __name__ == '__main__':
 	script, n, iterations, fname = sys.argv
 	data = particlesim.simulate(int(iterations), int(n), moveParticles)
 	particlesim.writeData(data, fname)
-	particlesim.motionAnimation(data, 10)
+	speedMultiplier = 10
+	particlesim.motionAnimation(data, speedMultiplier, R_MAX, True)

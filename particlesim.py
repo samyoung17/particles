@@ -4,10 +4,8 @@ import pickle
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-R_MAX = 10
 R_0 = 1
 TIMESTEP = 0.1
-MASS = 1
 
 class Data(object):
 	def __init__(self, iterations, numpoints):
@@ -73,7 +71,7 @@ def simulate(iterations, n, moveFn):
 	data = Data(iterations, n)
 	recordData(particles, data, 0)
 	for i in range(1, iterations):
-		moveFn(particles, TIMESTEP, MASS)
+		moveFn(particles, TIMESTEP)
 		recordData(particles, data, i)
 		logIteration(i, iterations)
 	return data
@@ -83,14 +81,15 @@ def draw(i, scat, data):
 	scat.set_offsets(points)
 	return scat,
 
-def motionAnimation(data, speedMultiplier):
+def motionAnimation(data, speedMultiplier, rMax, ring=False):
 	fig = plt.figure()
 	axes = plt.gca()
 	padding = 1.5
-	axes.set_xlim([-R_MAX * padding, R_MAX * padding])
-	axes.set_ylim([-R_MAX * padding, R_MAX * padding])
-	circle = plt.Circle((0,0), radius=R_MAX, color='g', fill=False)
-	axes.add_patch(circle)
+	axes.set_xlim([-rMax * padding, rMax * padding])
+	axes.set_ylim([-rMax * padding, rMax * padding])
+	if ring:
+		circle = plt.Circle((0,0), radius=rMax, color='g', fill=False)
+		axes.add_patch(circle)
 	scat = axes.scatter(data.x[0,:,0], data.x[0,:,1])
 	interval = TIMESTEP * 1000 / speedMultiplier
 	ani = animation.FuncAnimation(fig, draw, interval=interval, frames = xrange(data.iterations), fargs=(scat, data), repeat=False)
