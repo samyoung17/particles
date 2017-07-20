@@ -14,11 +14,6 @@ def newDirection(angle, rng):
 	y = np.cos(theta)
 	return np.array((x,y))
 
-def draw(i, scat, data):
-	points = data.x[i]
-	scat.set_offsets(points)
-	return scat,
-
 def moveParticles(particles, t):
 	rate = 0.1
 	for i, particle in enumerate(particles):
