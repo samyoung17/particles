@@ -1,4 +1,4 @@
 import cProfile
 import particlesim
 
-cProfile.run('particles.simulation(1000, 100)')
+cProfile.run('particlesim.simulation(1000, 100)')
