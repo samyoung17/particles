@@ -20,16 +20,14 @@ def newDirection(angle, rng):
 
 def moveParticles(particles, t):
 	for i, particle in enumerate(particles):
-		v0 = particle.v
-		x0 = particle.x
+		x0, v0 = particle.x, particle.v
 		x = x0 + v0
 		if np.random.uniform(0,1) < RATE:
 			v = S * newDirection(np.arctan2(v0[0], v0[1]),[-np.pi/2, np.pi/2])
 		else:
 			v = v0
-		x,v = hardboundary.bounceIfHitsBoundary(x, v, t, R_MAX)
-		particle.x = x
-		particle.v = v
+		x, v = hardboundary.bounceIfHitsBoundary(x, v, t, R_MAX)
+		particle.x, particle.v = x, v
 
 def main():
 	data = particlesim.simulate(10000, 200, moveParticles)
