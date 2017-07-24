@@ -6,19 +6,30 @@ GAMMA = 0
 IS_BARRIER = True
 R_MAX = 1000
 
+def polarToCart(z):
+	r, theta = z
+	return np.array((r * np.sin(theta), r * np.cos(theta)))
+
+def cartToPolar(y):
+	theta = np.arctan2(y[0], y[1])
+	r = np.linalg.norm(y,2)
+	return np.array((r, theta))
+
 def outOfRange(x):
 	return np.linalg.norm(x, 2) > R_MAX
 
 def projectToBoundary(x):
-	phi = np.arctan2(x[0], x[1])
-	return np.array((R_MAX * np.sin(phi), R_MAX * np.cos(phi)))
+	r, phi = cartToPolar(x)
+	return polarToCart((R_MAX, phi))
+
+def angleBetweenTwoVectors(a, b):
+	return np.arccos(np.dot(a,b) / (np.linalg.norm(a,2) * np.linalg.norm(b,2)))
 
 def bounce(x0, v0, x, v, t):
-	theta = np.arccos(np.dot(x,v) / (np.linalg.norm(x,2) * np.linalg.norm(v,2)))
-	phi = np.arctan2(x[0], x[1])
-	s = np.linalg.norm(v,2)
+	theta = angleBetweenTwoVectors(x, v)
+	r, phi = cartToPolar(x)
 	psi = np.pi + phi - (2 * theta)
-	vPrime = np.array((s * np.sin(psi), s * np.cos(psi)))
+	vPrime = polarToCart((np.linalg.norm(v,2), psi))
 	xPrime = projectToBoundary(x0) + vPrime * t
 	return xPrime, vPrime
 
