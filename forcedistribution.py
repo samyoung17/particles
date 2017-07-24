@@ -40,16 +40,12 @@ def moveParticles(particles, t):
 		displacements = map(lambda p: p.x - particle.x, other_particles)
 		forces = map(lambda r: forceBetweenTwoPointChargesUnitConstants(r, q**2), displacements)
 		F = sum(forces) + boundingForceUnitConstants(particle.x, q, len(particles))
-		v0 = particle.v
-		x0 = particle.x
+		x0, v0 = particle.x, particle.v
 		Fd = forceDueToDragUnitConstants(v0, M)
 		a = (F + Fd) / M
 		v = a * t + v0
 		x = x0 + (v + v0) / 2
-		particle.x = x
-		particle.v = v
-		particle.F = F
-		particle.Fd = Fd
+		particle.x, particle.v, particle.F, particle.Fd = x, v, F, Fd
 
 if __name__ == '__main__':
 	if len(sys.argv) != 4:
