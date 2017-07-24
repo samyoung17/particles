@@ -8,7 +8,6 @@ VISCOUSITY = 1E-2
 PARTICLE_RADIUS = 1E-3
 NU = 0.2
 M = 1
-R_MAX = 10
 
 def forceBetweenTwoPointCharges(q1, q2, r):
 	return - K_E * q1 * q2 * r / pow(np.linalg.norm(r),3)
@@ -26,12 +25,12 @@ def forceDueToDragUnitConstants(v, m):
 def boundingForce(x, q, n):
 	r = np.linalg.norm(x)
 	xUnit = x / r
-	return  - K_E * n * q * q * xUnit / pow(R_MAX - r, 2)
+	return  - K_E * n * q * q * xUnit / pow(particlesim.R_MAX - r, 2)
 
 def boundingForceUnitConstants(x, q, n):
 	r = np.linalg.norm(x)
 	xUnit = x / r
-	return  - xUnit * q / pow(R_MAX - r, 2)
+	return  - xUnit * q / pow(particlesim.R_MAX - r, 2)
 
 def moveParticles(particles, t):
 	q = 1.0 / len(particles)
@@ -47,11 +46,14 @@ def moveParticles(particles, t):
 		x = x0 + (v + v0) / 2
 		particle.x, particle.v, particle.F, particle.Fd = x, v, F, Fd
 
-if __name__ == '__main__':
+def main():
 	if len(sys.argv) != 4:
 		raise ValueError('Arguments should be: n, iter, outfile')
 	script, n, iterations, fname = sys.argv
 	data = particlesim.simulate(int(iterations), int(n), moveParticles)
 	particlesim.writeData(data, fname)
 	speedMultiplier = 10
-	particlesim.motionAnimation(data, speedMultiplier, R_MAX, True)
+	particlesim.motionAnimation(data, speedMultiplier)
+
+if __name__ == '__main__':
+	main()

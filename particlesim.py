@@ -3,12 +3,14 @@ import sys
 import pickle
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+import linalgutil as la
 
 R_0 = 1
+R_MAX = 10
 TIMESTEP = 0.1
 
 class Data(object):
-	def __init__(self, iterations, numpoints):
+	def __init__(self, iterations, numpoints, numTargets):
 		self.numpoints = numpoints
 		self.iterations = iterations
 		self.x = np.zeros((iterations, numpoints, 2))
@@ -16,6 +18,7 @@ class Data(object):
 		self.F = np.zeros((iterations, numpoints, 2))
 		self.Fd = np.zeros((iterations, numpoints, 2))
 		self.t = np.zeros((iterations))
+		self.y = np.zeros((iterations, numTargets, 2))
 
 class Particle(object):
 	def __init__(self, x, v):
@@ -24,14 +27,16 @@ class Particle(object):
 		self.F = np.zeros((1,2))
 		self.Fd = np.zeros((1,2))
 
-def randomPointOnDisc(rMax):
+class Target(object):
+	def __init__(self, y):
+		self.y = y
+
+def randomPointOnDisc(r):
 	costheta = np.random.uniform(-1,1)    
 	u = np.random.uniform(0,1)
 	theta = np.arccos(costheta) * np.random.choice((-1,1))
-	r = rMax * np.power(u, 1/2.0)
-	x = r * np.sin(theta)
-	y = r * np.cos(theta)
-	return np.array((x,y))
+	s = r * np.power(u, 1/2.0)
+	return la.polarToCart((s, theta))
 
 def initParticles(n, r0):
 	particles = []
@@ -42,12 +47,23 @@ def initParticles(n, r0):
 		particles.append(particle)
 	return particles
 
-def recordData(particles, data, i):
+def initTargets(d, rMax):
+	targets = []
+	for x1 in np.arange(-rMax, rMax, d):
+		for x2 in np.arange(-rMax, rMax, d):
+			x = np.array((x1, x2))
+			r, theta = la.cartToPolar(x)
+			if (r < rMax):
+				targets.append(Target(x))
+	return targets
+
+def recordData(particles, targets, data, i):
 	data.x[i] = map(lambda p: p.x, particles)
 	data.v[i] = map(lambda p: p.v, particles)
 	data.F[i] = map(lambda p: p.F, particles)
 	data.Fd[i] = map(lambda p: p.Fd, particles)
 	data.t[i] = i * TIMESTEP
+	data.y[i] = map(lambda tgt: tgt.y, targets)
 
 def logIteration(i, iterations):
 	perc = (i+1) * 100.0 / iterations
@@ -68,11 +84,12 @@ def writeData(data, fname):
 
 def simulate(iterations, n, moveFn):
 	particles = initParticles(n, R_0)
-	data = Data(iterations, n)
-	recordData(particles, data, 0)
+	targets = initTargets(R_MAX / 5, R_MAX)
+	data = Data(iterations, n, len(targets))
+	recordData(particles, targets, data, 0)
 	for i in range(1, iterations):
 		moveFn(particles, TIMESTEP)
-		recordData(particles, data, i)
+		recordData(particles, targets, data, i)
 		logIteration(i, iterations)
 	return data
 
@@ -81,14 +98,15 @@ def draw(i, scat, data):
 	scat.set_offsets(points)
 	return scat,
 
-def motionAnimation(data, speedMultiplier, rMax, ring=False):
+def motionAnimation(data, speedMultiplier, ring=True):
 	fig = plt.figure()
 	axes = plt.gca()
 	padding = 1.5
-	axes.set_xlim([-rMax * padding, rMax * padding])
-	axes.set_ylim([-rMax * padding, rMax * padding])
+	axes.set_xlim([-R_MAX * padding, R_MAX * padding])
+	axes.set_ylim([-R_MAX * padding, R_MAX * padding])
+	axes.scatter(data.y[0,:,0], data.y[0,:,1], color='r')
 	if ring:
-		circle = plt.Circle((0,0), radius=rMax, color='g', fill=False)
+		circle = plt.Circle((0,0), radius=R_MAX, color='g', fill=False)
 		axes.add_patch(circle)
 	scat = axes.scatter(data.x[0,:,0], data.x[0,:,1])
 	interval = TIMESTEP * 1000 / speedMultiplier
