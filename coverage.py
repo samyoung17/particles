@@ -21,6 +21,10 @@ def supMinDistanceOverTime(data):
 		d[i] = supMinDistance(data.x[i], data.y[i])
 	return d
 
+def lowerBound(iterations, n, rMax):
+	bound = rMax / np.sqrt(n)
+	return bound * np.ones((iterations))
+
 def main():
 	print('Simulating Langevin Motion')
 	lvData = particlesim.simulate(ITERATIONS, N, langevin.moveParticles)
@@ -37,7 +41,8 @@ def main():
 	lvPlot, = plt.plot(lvDistances, label = 'LV')
 	fdPlot, = plt.plot(fdDistances, label = 'FD')
 	rtPlot, = plt.plot(rtDistances, label = 'RT')
-	plt.legend(handles=[lvPlot, fdPlot, rtPlot])
+	lbPlot, = plt.plot(lowerBound(ITERATIONS, N, particlesim.R_MAX), label='LB')
+	plt.legend(handles=[lvPlot, fdPlot, rtPlot, lbPlot])
 	plt.title('Maximum distance to from target to nearest particle')
 	plt.show()
 
