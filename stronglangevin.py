@@ -4,18 +4,18 @@ import hardboundary
 import matplotlib.pyplot as plt
 
 M = 1
-GAMMA = 1E-4
-S = 0.01
+GAMMA = 1
+SIGMA = 1
 
 def moveParticles(particles, t):
 	cov = [[np.sqrt(t), 0], [0, np.sqrt(t)]]
 	mean = (0, 0)
-	xi = S * np.random.multivariate_normal(mean, cov, len(particles))
+	xi = np.random.multivariate_normal(mean, cov, len(particles))
 	for i, particle in enumerate(particles):
-		x0, v0 = particle.x, particle.v
-		a = - v0 * GAMMA / M + (1/M) * xi[i]
-		v = v0 + a
-		x = x0 + (v + v0)/2 * t
+		x0 = particle.x
+		# Taking the limit of strong friction, |M*a| << |GAMMA*x|
+		v = (SIGMA / GAMMA) * xi[i]
+		x = x0 + v
 		x,v = hardboundary.bounceIfHitsBoundary(x, v, t, particlesim.R_MAX)
 		particle.x, particle.v = x, v
 

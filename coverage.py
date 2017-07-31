@@ -1,5 +1,5 @@
 import particlesim
-import langevin
+import stronglangevin
 import forcedistribution
 import runtumble
 import numpy as np
@@ -27,7 +27,7 @@ def lowerBound(iterations, n, rMax):
 
 def main():
 	print('Simulating Langevin Motion')
-	lvData = particlesim.simulate(ITERATIONS, N, langevin.moveParticles)
+	lvData = particlesim.simulate(ITERATIONS, N, stronglangevin.moveParticles)
 	print('Simulating Force Distribution')
 	fdData = particlesim.simulate(ITERATIONS, N, forcedistribution.moveParticles)
 	print('Simulating Run and Tumble')
