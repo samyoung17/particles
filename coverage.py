@@ -34,7 +34,7 @@ def main():
 	bmDistances = supMinDistanceOverTime(bmData)
 	print('Calculating Sup Min Distances Run And Tumble')
 	rtDistances = supMinDistanceOverTime(rtData)
-	lvPlot, = plt.plot(bmDistances, label = 'LV')
+	lvPlot, = plt.plot(bmDistances, label = 'BM')
 	rtPlot, = plt.plot(rtDistances, label = 'RT')
 	lbPlot, = plt.plot(lowerBound(ITERATIONS, N, particlesim.R_MAX), label='LB')
 	plt.legend(handles=[lvPlot, rtPlot, lbPlot])
