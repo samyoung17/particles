@@ -1,5 +1,5 @@
 import particlesim
-import stronglangevin
+import brownianmotion
 import forcedistribution
 import runtumble
 import numpy as np
@@ -26,23 +26,18 @@ def lowerBound(iterations, n, rMax):
 	return bound * np.ones((iterations))
 
 def main():
-	print('Simulating Langevin Motion')
-	lvData = particlesim.simulate(ITERATIONS, N, stronglangevin.moveParticles)
-	print('Simulating Force Distribution')
-	fdData = particlesim.simulate(ITERATIONS, N, forcedistribution.moveParticles)
+	print('Simulating Brownian Motion')
+	bmData = particlesim.simulate(ITERATIONS, N, brownianmotion.moveParticles)
 	print('Simulating Run and Tumble')
 	rtData = particlesim.simulate(ITERATIONS, N, runtumble.moveParticles)
-	print('Calculating Sup Min Distances Langevin')
-	lvDistances = supMinDistanceOverTime(lvData)
-	print('Calculating Sup Min Distances Force Distribution')
-	fdDistances = supMinDistanceOverTime(fdData)
+	print('Calculating Sup Min Distances Brownian Motion')
+	bmDistances = supMinDistanceOverTime(bmData)
 	print('Calculating Sup Min Distances Run And Tumble')
 	rtDistances = supMinDistanceOverTime(rtData)
-	lvPlot, = plt.plot(lvDistances, label = 'LV')
-	fdPlot, = plt.plot(fdDistances, label = 'FD')
+	lvPlot, = plt.plot(bmDistances, label = 'LV')
 	rtPlot, = plt.plot(rtDistances, label = 'RT')
 	lbPlot, = plt.plot(lowerBound(ITERATIONS, N, particlesim.R_MAX), label='LB')
-	plt.legend(handles=[lvPlot, fdPlot, rtPlot, lbPlot])
+	plt.legend(handles=[lvPlot, rtPlot, lbPlot])
 	plt.title('Maximum distance to from target to nearest particle')
 	plt.show()
 
