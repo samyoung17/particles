@@ -19,15 +19,17 @@ def moveParticles(particles, t):
 	xi = np.random.multivariate_normal(mean, cov, len(particles))
 	for i, particle in enumerate(particles):
 		x0 = particle.x
-		# Taking the limit of strong friction, |M*a| << |GAMMA*x|
+		# Brownian motion is the limit of strong friction of the Langevin equation
+		# 		m*a = -gamma*v + sigma*xi
+		# Setting |m*a| << |gamma*x|, we have:
 		v = (sigma / gamma) * xi[i]
 		x = x0 + (v * t)
 		x,v = hardboundary.bounceIfHitsBoundary(x, v, t, particlesim.R_MAX)
 		particle.x, particle.v = x, v
 
 def main():
-	data = particlesim.simulate(5000, 50, moveParticles)
-	particlesim.motionAnimation(data, 500)
+	data = particlesim.simulate(10000, 50, moveParticles)
+	particlesim.motionAnimation(data, 200)
 
 def averageSpeed():
 	data = particlesim.simulate(50000, 50, moveParticles)

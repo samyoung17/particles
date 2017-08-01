@@ -1,11 +1,10 @@
 import particlesim
 import brownianmotion
-import forcedistribution
 import runtumble
 import numpy as np
 import matplotlib.pyplot as plt
 
-ITERATIONS = 2000
+ITERATIONS = 10000
 N = 50
 
 def nearestNeighbour(y, particles):
@@ -34,10 +33,10 @@ def main():
 	bmDistances = supMinDistanceOverTime(bmData)
 	print('Calculating Sup Min Distances Run And Tumble')
 	rtDistances = supMinDistanceOverTime(rtData)
-	lvPlot, = plt.plot(bmDistances, label = 'BM')
+	bmPlot, = plt.plot(bmDistances, label = 'BM')
 	rtPlot, = plt.plot(rtDistances, label = 'RT')
 	lbPlot, = plt.plot(lowerBound(ITERATIONS, N, particlesim.R_MAX), label='LB')
-	plt.legend(handles=[lvPlot, rtPlot, lbPlot])
+	plt.legend(handles=[bmPlot, rtPlot, lbPlot])
 	plt.title('Maximum distance to from target to nearest particle')
 	plt.show()
 

@@ -7,7 +7,7 @@ import linalgutil as la
 
 R_0 = 1
 R_MAX = 10
-TIMESTEP = 0.1
+TIMESTEP = 0.3
 
 class Data(object):
 	def __init__(self, iterations, numpoints, numTargets):

@@ -29,8 +29,8 @@ def moveParticles(particles, t):
 		particle.x, particle.v = x, v
 
 def main():
-	data = particlesim.simulate(5000, 50, moveParticles)
-	particlesim.motionAnimation(data, 100)
+	data = particlesim.simulate(10000, 50, moveParticles)
+	particlesim.motionAnimation(data, 10)
 
 if __name__=='__main__':
 	main()
