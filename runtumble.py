@@ -3,7 +3,7 @@ import particlesim
 import hardboundary
 
 RATE = 0.1
-S = 0.05
+S = 0.2
 
 def randomDirection():
 	theta = np.random.uniform(-np.pi, np.pi)
@@ -29,7 +29,7 @@ def moveParticles(particles, t):
 		particle.x, particle.v = x, v
 
 def main():
-	data = particlesim.simulate(10000, 50, moveParticles)
+	data = particlesim.simulate(5000, 50, moveParticles)
 	particlesim.motionAnimation(data, 100)
 
 if __name__=='__main__':
