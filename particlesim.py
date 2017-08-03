@@ -67,11 +67,11 @@ def recordData(particles, targets, data, i):
 
 def logIteration(i, iterations):
 	perc = (i+1) * 100.0 / iterations
-	sys.stdout.write("\rSimulating... %.2f%%" % perc)
+	sys.stdout.write("\rCalculating... %.2f%%" % perc)
 	sys.stdout.flush()
 
 def loadData(fname):
-	f = open('data/' + fname, 'r')
+	f = open(fname, 'r')
 	data = pickle.load(f)
 	f.close()
 	return data
@@ -84,7 +84,7 @@ def writeData(data, fname):
 
 def simulate(iterations, n, moveFn):
 	particles = initParticles(n, R_0)
-	targets = initTargets(R_MAX / 5, R_MAX)
+	targets = initTargets(float(R_MAX) / 20, R_MAX)
 	data = Data(iterations, n, len(targets))
 	recordData(particles, targets, data, 0)
 	for i in range(1, iterations):
@@ -104,7 +104,7 @@ def motionAnimation(data, speedMultiplier, ring=True):
 	padding = 1.5
 	axes.set_xlim([-R_MAX * padding, R_MAX * padding])
 	axes.set_ylim([-R_MAX * padding, R_MAX * padding])
-	axes.scatter(data.y[0,:,0], data.y[0,:,1], color='r')
+	axes.scatter(data.y[0,:,0], data.y[0,:,1], color='r', s=1)
 	if ring:
 		circle = plt.Circle((0,0), radius=R_MAX, color='g', fill=False)
 		axes.add_patch(circle)
@@ -112,3 +112,13 @@ def motionAnimation(data, speedMultiplier, ring=True):
 	interval = TIMESTEP * 1000 / speedMultiplier
 	ani = animation.FuncAnimation(fig, draw, interval=interval, frames = xrange(data.iterations), fargs=(scat, data), repeat=False)
 	plt.show()
+
+def main(filePath, speedMultiplier):
+	data = loadData(filePath)
+	motionAnimation(data, speedMultiplier)
+
+if __name__ == '__main__':
+	if not len(sys.argv) == 3:
+		raise ValueError('Arguments should be <data file path>, <speed multiplier>')
+	python, fPath, speedMultiplier = sys.argv
+	main(fPath, int(speedMultiplier))

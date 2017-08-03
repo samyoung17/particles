@@ -20,8 +20,11 @@ def moveParticles(particles, t):
 		particle.x, particle.v = x, v
 
 def main():
-	data = particlesim.simulate(5000, 50, moveParticles)
-	particlesim.motionAnimation(data, 100)
+	iterations = 5000
+	n = 200
+	data = particlesim.simulate(iterations, n, moveParticles)
+	particlesim.writeData(data, 'langevin n={} iter={}.pickle'.format(n, iterations))
+	particlesim.motionAnimation(data, 10)
 
 def averageSpeed():
 	data = particlesim.simulate(100000, 50, moveParticles)

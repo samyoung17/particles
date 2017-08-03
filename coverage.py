@@ -1,6 +1,4 @@
 import particlesim
-import brownianmotion
-import runtumble
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -17,6 +15,7 @@ def supMinDistance(particles, targets):
 def supMinDistanceOverTime(data):
 	d = np.zeros((data.iterations))
 	for i in range(data.iterations):
+		particlesim.logIteration(i, data.iterations)
 		d[i] = supMinDistance(data.x[i], data.y[i])
 	return d
 
@@ -24,21 +23,31 @@ def lowerBound(iterations, n, rMax):
 	bound = rMax / np.sqrt(n)
 	return bound * np.ones((iterations))
 
-def main():
-	print('Simulating Brownian Motion')
-	bmData = particlesim.simulate(ITERATIONS, N, brownianmotion.moveParticles)
-	print('Simulating Run and Tumble')
-	rtData = particlesim.simulate(ITERATIONS, N, runtumble.moveParticles)
-	print('Calculating Sup Min Distances Brownian Motion')
-	bmDistances = supMinDistanceOverTime(bmData)
-	print('Calculating Sup Min Distances Run And Tumble')
-	rtDistances = supMinDistanceOverTime(rtData)
-	bmPlot, = plt.plot(bmDistances, label = 'BM')
-	rtPlot, = plt.plot(rtDistances, label = 'RT')
-	lbPlot, = plt.plot(lowerBound(ITERATIONS, N, particlesim.R_MAX), label='LB')
-	plt.legend(handles=[bmPlot, rtPlot, lbPlot])
+def compareFromFiles(dataSets):
+	plots = []
+	for d in dataSets:
+		print('Calculating Distances for {}...'.format(d['label']))
+		data = particlesim.loadData(d['filePath'])
+		distances = supMinDistanceOverTime(data)
+		plot, = plt.plot(distances, label = d['label'])
+		plots.append(plot)
+	plt.legend(handles=plots)
 	plt.title('Maximum distance to from target to nearest particle')
 	plt.show()
 
 if __name__=='__main__':
-	main()
+	dataSets = [
+		{
+			'label': 'RT Fixed',
+			'filePath': 'data/run tumble n=200 iter=5000.pickle'
+		},
+		{
+			'label': 'RT Avoident',
+			'filePath': 'data/run tumble variable n=200 iter=5000.pickle'
+		},
+		{
+			'label': 'Metropolis',
+			'filePath': 'data/metropolis n=200 iter=5000.pickle'
+		}
+	]
+	compareFromFiles(dataSets)
