@@ -2,8 +2,7 @@ import particlesim
 import numpy as np
 import matplotlib.pyplot as plt
 
-ITERATIONS = 10000
-N = 50
+
 
 def distanceToNearestTarget(y, particles):
 	return np.min(map(lambda x: np.linalg.norm(x - y), particles))
