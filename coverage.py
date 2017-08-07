@@ -33,6 +33,7 @@ def compareFromFiles(dataSets):
 		plots.append(plot)
 	plt.legend(handles=plots)
 	plt.title('Maximum distance to from target to nearest particle')
+	plt.savefig('data/coveragePlot.png')
 	plt.show()
 
 if __name__=='__main__':
