@@ -5,11 +5,11 @@ import matplotlib.pyplot as plt
 ITERATIONS = 10000
 N = 50
 
-def nearestNeighbour(y, particles):
+def distanceToNearestTarget(y, particles):
 	return np.min(map(lambda x: np.linalg.norm(x - y), particles))
 
 def supMinDistance(particles, targets):
-	distances = map(lambda y: nearestNeighbour(y, particles), targets)
+	distances = map(lambda y: distanceToNearestTarget(y, particles), targets)
 	return np.max(distances)
 
 def supMinDistanceOverTime(data):
@@ -42,16 +42,12 @@ if __name__=='__main__':
 			'filePath': 'data/run tumble n=200 iter=5000.pickle'
 		},
 		{
-			'label': 'RT Avoident',
+			'label': 'RT Density',
 			'filePath': 'data/run tumble variable n=200 iter=5000.pickle'
 		},
 		{
-			'label': 'Metropolis',
-			'filePath': 'data/metropolis n=200 iter=5000.pickle'
-		},
-		{
-			'label': 'Langevin',
-			'filePath': 'data/langevin n=200 iter=5000.pickle'
+			'label': 'RT Density Gradient',
+			'filePath': 'data/run tumble gradient n=200 iter=5000.pickle'
 		}
 	]
 	compareFromFiles(dataSets)

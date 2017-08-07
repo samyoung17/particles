@@ -85,7 +85,7 @@ def writeData(data, fname):
 
 def simulate(iterations, n, moveFn):
 	particles = initParticles(n, R_0)
-	targets = initTargets(float(R_MAX) / 20, R_MAX)
+	targets = initTargets(float(R_MAX) / 10, R_MAX)
 	data = Data(iterations, n, len(targets))
 	recordData(particles, targets, data, 0)
 	for i in range(1, iterations):
