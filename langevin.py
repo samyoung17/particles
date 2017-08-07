@@ -27,7 +27,7 @@ def main():
 	particlesim.motionAnimation(data, 10)
 
 def averageSpeed():
-	data = particlesim.simulate(100000, 50, moveParticles)
+	data = particlesim.simulate(5000, 50, moveParticles)
 	s = np.linalg.norm(data.v, axis=2)
 	sbar = s.mean(axis=1)
 	plt.plot(sbar)

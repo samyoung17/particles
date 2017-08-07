@@ -48,6 +48,10 @@ if __name__=='__main__':
 		{
 			'label': 'Metropolis',
 			'filePath': 'data/metropolis n=200 iter=5000.pickle'
+		},
+		{
+			'label': 'Langevin',
+			'filePath': 'data/langevin n=200 iter=5000.pickle'
 		}
 	]
 	compareFromFiles(dataSets)
