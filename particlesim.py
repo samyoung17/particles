@@ -26,6 +26,7 @@ class Particle(object):
 		self.v = v
 		self.F = np.zeros((1,2))
 		self.Fd = np.zeros((1,2))
+		self.neighbours = 0
 
 class Target(object):
 	def __init__(self, y):
