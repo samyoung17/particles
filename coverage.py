@@ -32,7 +32,7 @@ def compareFromFiles(dataSets):
 		plots.append(plot)
 	plt.legend(handles=plots)
 	plt.title('Maximum distance to from target to nearest particle')
-	plt.savefig('data/coveragePlot.png')
+	plt.savefig('data/coverage_s=02_rt_langevin_metropolis.png')
 	plt.show()
 
 if __name__=='__main__':
@@ -42,12 +42,12 @@ if __name__=='__main__':
 			'filePath': 'data/run tumble n=200 iter=5000.pickle'
 		},
 		{
-			'label': 'RT Density',
-			'filePath': 'data/run tumble variable n=200 iter=5000.pickle'
+			'label': 'Langevin',
+			'filePath': 'data/langevin n=200 iter=5000.pickle'
 		},
 		{
-			'label': 'RT Density Gradient',
-			'filePath': 'data/run tumble gradient n=200 iter=5000.pickle'
+			'label': 'Metropolis',
+			'filePath': 'data/metropolis n=200 iter=5000.pickle'
 		}
 	]
 	compareFromFiles(dataSets)

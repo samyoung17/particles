@@ -3,9 +3,11 @@ import math
 import particlesim
 import scipy.special
 import linalgutil
+import matplotlib.pyplot as plt
 
 LAMBDA = 1
-SIGMA = np.diag(0.001 * np.ones(2))
+SIGMA = np.diag(0.00001 * np.ones(2))
+S = 0.2
 
 def M(x):
 	return np.exp(-LAMBDA * np.linalg.norm(x))
@@ -39,17 +41,23 @@ def ballToRn(x):
 def P(y):
 	return np.random.multivariate_normal(y, SIGMA)
 
+# Metropolis Algorithm for even sampling accross a convex region
+# From Bubley, Dyer and Jerrum 1997
+def metropolisStep(x0):
+	y = ballToRn(x0)
+	yPrime = P(y)
+	while np.random.uniform(0, 1) > A(y, yPrime):
+		yPrime = P(y)
+	return rNtoBall(yPrime)
+
 def moveParticles(particles, t):
-	# Metropolis Algorithm for even sampling accross a convex region
-	# From Bubley, Dyer and Jerrum 1997
 	for i, particle in enumerate(particles):
 		x0, v0 = particle.x, particle.v
-		y = ballToRn(x0)
-		yPrime = P(y)
-		while np.random.uniform(0,1) > A(y, yPrime):
-			yPrime = P(y)
-		x = rNtoBall(yPrime)
-		v = x/t
+		x = x0
+		v = (0,0)
+		while np.linalg.norm(v) < S:
+			x = metropolisStep(x)
+			v = (x - x0) / t
 		particle.x, particle.v = x, v
 
 def main():
@@ -58,6 +66,13 @@ def main():
 	data = particlesim.simulate(iterations, n, moveParticles)
 	particlesim.writeData(data, 'metropolis n={} iter={}.pickle'.format(n, iterations))
 	particlesim.motionAnimation(data, 10)
+
+def averageSpeed():
+	data = particlesim.simulate(1000, 100, moveParticles)
+	s = np.linalg.norm(data.v, axis=2)
+	sbar = s.mean(axis=1)
+	plt.plot(sbar)
+	plt.show()
 
 if __name__=='__main__':
 	main()
