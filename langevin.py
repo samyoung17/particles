@@ -2,15 +2,21 @@ import numpy as np
 import particlesim
 import hardboundary
 import matplotlib.pyplot as plt
+import linalgutil
 
-M = 1
-GAMMA = 0.01
-D = 0.1
+M = 1.0
+GAMMA = 0.1
+S = 0.2
+# Approximate the expected velocity using the thermal velocity
+T = M * pow(S,2) * np.pi / 2
+
 
 def moveParticles(particles, t):
-	cov = [[t, 0], [0, t]]
+	var = 2 * GAMMA * T * t
+	cov = [[var, 0], [0, var]]
 	mean = (0, 0)
-	xi = D * np.random.multivariate_normal(mean, cov, len(particles))
+	xi = np.random.multivariate_normal(mean, cov, len(particles)) \
+		  * linalgutil.expectedNormMultivariateGaussian(1) # Shouldn't this be a division???
 	for i, particle in enumerate(particles):
 		x0, v0 = particle.x, particle.v
 		a = - v0 * GAMMA / M + (1/M) * xi[i]
@@ -27,11 +33,15 @@ def main():
 	particlesim.motionAnimation(data, 10)
 
 def averageSpeed():
-	data = particlesim.simulate(5000, 50, moveParticles)
+	data = particlesim.simulate(5000, 200, moveParticles)
 	s = np.linalg.norm(data.v, axis=2)
 	sbar = s.mean(axis=1)
 	plt.plot(sbar)
 	plt.show()
+	e = np.apply_along_axis(lambda v: M * pow(np.linalg.norm(v), 2), 2, data.v)
+	sbar = e.mean(axis=1)
+	plt.plot(sbar)
+	plt.show()
 
 if __name__=='__main__':
-	main()
+	averageSpeed()
