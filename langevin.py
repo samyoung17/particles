@@ -6,7 +6,7 @@ import linalgutil
 
 M = 1.0
 GAMMA = 0.1
-S = 0.15
+S = 0.2
 T = 4 * M * pow(S,2) / np.pi
 
 
