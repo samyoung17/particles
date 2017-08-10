@@ -6,20 +6,19 @@ import linalgutil
 
 M = 1.0
 GAMMA = 0.1
-S = 0.2
-# Approximate the expected velocity using the thermal velocity
-T = M * pow(S,2) * np.pi / 2
+S = 0.15
+T = 4 * M * pow(S,2) / np.pi
 
 
 def moveParticles(particles, t):
 	var = 2 * GAMMA * T * t
 	cov = [[var, 0], [0, var]]
 	mean = (0, 0)
-	xi = np.random.multivariate_normal(mean, cov, len(particles)) \
+	b = np.random.multivariate_normal(mean, cov, len(particles)) \
 		  * linalgutil.expectedNormMultivariateGaussian(1) # Shouldn't this be a division???
 	for i, particle in enumerate(particles):
 		x0, v0 = particle.x, particle.v
-		a = - v0 * GAMMA / M + (1/M) * xi[i]
+		a = - v0 * GAMMA / M + (1/M) * b[i]
 		v = v0 + a
 		x = x0 + (v + v0)/2 * t
 		x,v = hardboundary.bounceIfHitsBoundary(x, v, t, particlesim.R_MAX)
@@ -38,9 +37,11 @@ def averageSpeed():
 	sbar = s.mean(axis=1)
 	plt.plot(sbar)
 	plt.show()
+
+def averageTemperature():
 	e = np.apply_along_axis(lambda v: M * pow(np.linalg.norm(v), 2), 2, data.v)
-	sbar = e.mean(axis=1)
-	plt.plot(sbar)
+	ebar = e.mean(axis=1)
+	plt.plot(ebar)
 	plt.show()
 
 if __name__=='__main__':
