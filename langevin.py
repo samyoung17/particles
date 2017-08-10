@@ -31,14 +31,12 @@ def main():
 	particlesim.writeData(data, 'langevin n={} iter={}.pickle'.format(n, iterations))
 	particlesim.motionAnimation(data, 10)
 
-def averageSpeed():
+def averageSpeedAndTemp():
 	data = particlesim.simulate(5000, 200, moveParticles)
 	s = np.linalg.norm(data.v, axis=2)
 	sbar = s.mean(axis=1)
 	plt.plot(sbar)
 	plt.show()
-
-def averageTemperature():
 	e = np.apply_along_axis(lambda v: M * pow(np.linalg.norm(v), 2), 2, data.v)
 	ebar = e.mean(axis=1)
 	plt.plot(ebar)
