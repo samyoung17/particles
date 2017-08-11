@@ -16,9 +16,9 @@ def moveParticles(particles, t):
 	b = np.random.multivariate_normal(mean, cov, len(particles))
 	for i, particle in enumerate(particles):
 		x0, v0 = particle.x, particle.v
-		dv = - v0 * GAMMA / M * t + (1/M) * b[i]
+		dv = - (GAMMA/M)*v0*t + (1/M)*b[i]
 		v = v0 + dv
-		x = x0 + (v + v0)/2 * t
+		x = x0 + (v+v0)/2 * t
 		x,v = hardboundary.bounceIfHitsBoundary(x, v, t, particlesim.R_MAX)
 		particle.x, particle.v = x, v
 
