@@ -114,6 +114,12 @@ def motionAnimation(data, speedMultiplier, ring=True):
 	ani = animation.FuncAnimation(fig, draw, interval=interval, frames = xrange(data.iterations), fargs=(scat, data), repeat=False)
 	plt.show()
 
+def averageSpeed(data):
+	s = np.linalg.norm(data.v, axis=2)
+	sbar = s.mean(axis=1)
+	plt.plot(sbar)
+	plt.show()
+
 def main(filePath, speedMultiplier):
 	data = loadData(filePath)
 	motionAnimation(data, speedMultiplier)
