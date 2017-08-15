@@ -39,15 +39,15 @@ if __name__=='__main__':
 	dataSets = [
 		{
 			'label': 'RT Fixed',
-			'filePath': 'data/run tumble n=200 iter=5000.pickle'
+			'filePath': 'data/run tumble n=200 iter=20000.pickle'
 		},
 		{
 			'label': 'Langevin',
-			'filePath': 'data/langevin n=200 iter=5000.pickle'
+			'filePath': 'data/langevin n=200 iter=20000.pickle'
 		},
 		{
 			'label': 'Metropolis',
-			'filePath': 'data/metropolis n=200 iter=5000.pickle'
+			'filePath': 'data/metropolis n=200 iter=20000.pickle'
 		}
 	]
 	compareFromFiles(dataSets)

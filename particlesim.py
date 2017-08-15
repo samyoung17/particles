@@ -1,13 +1,13 @@
 import numpy as np
 import sys
-import pickle
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import linalgutil as la
+import sPickle
 
 R_0 = 1
 R_MAX = 10
-TIMESTEP = 0.3
+TIMESTEP = 0.5
 
 class Data(object):
 	def __init__(self, iterations, numpoints, numTargets):
@@ -73,13 +73,13 @@ def logIteration(i, iterations):
 
 def loadData(fname):
 	f = open(fname, 'r')
-	data = pickle.load(f)
+	data = sPickle.load(f)
 	f.close()
 	return data
 
 def writeData(data, fname):
 	f = open('data/' + fname, 'w')
-	pickle.dump(data, f)
+	sPickle.dump(data, f)
 	f.close()
 	print('\nSaved data to file: \'data/' + fname)
 
@@ -117,7 +117,13 @@ def motionAnimation(data, speedMultiplier, ring=True):
 def averageSpeed(data):
 	s = np.linalg.norm(data.v, axis=2)
 	sbar = s.mean(axis=1)
-	plt.plot(sbar)
+	plt.plot(data.t, sbar)
+	plt.show()
+
+def averageRadialDisplacement(data):
+	r = np.linalg.norm(data.x, axis=2)
+	rbar = r.mean(axis=1)
+	plt.plot(data.t, rbar)
 	plt.show()
 
 def main(filePath, speedMultiplier):

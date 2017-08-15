@@ -2,7 +2,7 @@ import numpy as np
 import particlesim
 import hardboundary
 
-RATE = 0.15
+RATE = 0.1
 S = 0.2
 
 
@@ -24,11 +24,11 @@ def moveParticles(particles, t):
 		particle.x, particle.v = x, v
 
 def main():
-	iterations = 5000
+	iterations = 20000
 	n = 200
 	data = particlesim.simulate(iterations, n, moveParticles)
 	particlesim.writeData(data, 'run tumble n={} iter={}.pickle'.format(n, iterations))
-	particlesim.motionAnimation(data, 10)
+	particlesim.motionAnimation(data, 15)
 
 if __name__=='__main__':
 	main()

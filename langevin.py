@@ -23,11 +23,11 @@ def moveParticles(particles, t):
 		particle.x, particle.v = x, v
 
 def main():
-	iterations = 5000
+	iterations = 20000
 	n = 200
 	data = particlesim.simulate(iterations, n, moveParticles)
 	particlesim.writeData(data, 'langevin n={} iter={}.pickle'.format(n, iterations))
-	particlesim.motionAnimation(data, 10)
+	particlesim.motionAnimation(data, 15)
 
 def averageTemp(data):
 	e = np.apply_along_axis(lambda v: 0.5 * M * pow(np.linalg.norm(v), 2), 2, data.v)
