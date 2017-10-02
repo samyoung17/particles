@@ -47,7 +47,7 @@ def compareFromFiles(dataSets):
 if __name__=='__main__':
 	dataSets = [
 		{
-			'label': 'RT Fixed',
+			'label': 'Run and Tumble',
 			'filePath': 'data/run tumble n=200 iter=20000.pickle'
 		},
 		{
@@ -57,6 +57,10 @@ if __name__=='__main__':
 		{
 			'label': 'Metropolis',
 			'filePath': 'data/metropolis n=200 iter=20000.pickle'
+		},
+		{
+			'label': 'Brownian',
+			'filePath': 'data/brownian n=200 iter=20000.pickle'
 		}
 	]
 	compareFromFiles(dataSets)
