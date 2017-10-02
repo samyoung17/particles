@@ -30,7 +30,7 @@ def moveParticles(particles, t):
 def main():
 	iterations, n = 20000, 200
 	data = particlesim.simulate(iterations, n, moveParticles)
-	particlesim.writeData(data, 'brownain n={} iter={}.pickle'.format(n, iterations))
+	particlesim.writeData(data, 'brownian n={} iter={}.pickle'.format(n, iterations))
 	particlesim.motionAnimation(data, 200)
 
 if __name__=='__main__':

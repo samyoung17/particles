@@ -24,8 +24,8 @@ def moveParticles(particles, t):
 		particle.x, particle.v = x, v
 
 def main():
-	iterations = 20000
-	n = 200
+	iterations = 1000
+	n = 10
 	data = particlesim.simulate(iterations, n, moveParticles)
 	particlesim.writeData(data, 'run tumble n={} iter={}.pickle'.format(n, iterations))
 	particlesim.motionAnimation(data, 15)

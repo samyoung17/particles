@@ -1,6 +1,7 @@
 import particlesim
 import numpy as np
 import matplotlib.pyplot as plt
+from multiprocessing import Pool
 
 
 
@@ -28,14 +29,20 @@ def meanDistanceTravelled(data):
 	dx = sbar * particlesim.TIMESTEP
 	return np.cumsum(dx)
 
+def calculateDistanceAndCoverage(dataSet):
+	print('\nCalculating coverage distance for {}...'.format(dataSet['label']))
+	data = particlesim.loadData(dataSet['filePath'])
+	covarageDistance = supMinDistanceOverTime(data)
+	distanceTravelled = meanDistanceTravelled(data)
+	return (dataSet['label'], (distanceTravelled, covarageDistance))
+
 def compareFromFiles(dataSets):
+	p = Pool(len(dataSets))
+	xy = dict(p.map(calculateDistanceAndCoverage, dataSets))
 	plots = []
 	for d in dataSets:
-		print('Calculating Distances for {}...'.format(d['label']))
-		data = particlesim.loadData(d['filePath'])
-		covarageDistances = supMinDistanceOverTime(data)
-		distancesTravelled = meanDistanceTravelled(data)
-		plot, = plt.plot(distancesTravelled, covarageDistances, label = d['label'])
+		x, y = xy[d['label']]
+		plot, = plt.plot(x, y, label = d['label'])
 		plots.append(plot)
 	plt.legend(handles=plots)
 	plt.xlabel('Mean distance travelled')
@@ -44,7 +51,20 @@ def compareFromFiles(dataSets):
 	plt.savefig('data/coverage_s=02_rt_langevin_metropolis.png')
 	plt.show()
 
-if __name__=='__main__':
+def test():
+	dataSets = [
+		{
+			'label': 'Langevin',
+			'filePath': 'data/langevin n=10 iter=1000.pickle'
+		},
+		{
+			'label': 'Run and Tumble',
+			'filePath': 'data/run tumble n=10 iter=1000.pickle'
+		}
+	]
+	compareFromFiles(dataSets)
+
+def main():
 	dataSets = [
 		{
 			'label': 'Run and Tumble',
@@ -64,3 +84,6 @@ if __name__=='__main__':
 		}
 	]
 	compareFromFiles(dataSets)
+
+if __name__=='__main__':
+	main()
