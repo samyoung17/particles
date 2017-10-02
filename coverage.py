@@ -22,15 +22,24 @@ def lowerBound(iterations, n, rMax):
 	bound = rMax / np.sqrt(n)
 	return bound * np.ones((iterations))
 
+def meanDistanceTravelled(data):
+	s = np.linalg.norm(data.v, axis = 2)
+	sbar = np.average(s, axis = 1)
+	dx = sbar * particlesim.TIMESTEP
+	return np.cumsum(dx)
+
 def compareFromFiles(dataSets):
 	plots = []
 	for d in dataSets:
 		print('Calculating Distances for {}...'.format(d['label']))
 		data = particlesim.loadData(d['filePath'])
-		distances = supMinDistanceOverTime(data)
-		plot, = plt.plot(distances, label = d['label'])
+		covarageDistances = supMinDistanceOverTime(data)
+		distancesTravelled = meanDistanceTravelled(data)
+		plot, = plt.plot(distancesTravelled, covarageDistances, label = d['label'])
 		plots.append(plot)
 	plt.legend(handles=plots)
+	plt.xlabel('Mean distance travelled')
+	plt.ylabel('Coverage distance')
 	plt.title('Maximum distance to from target to nearest particle')
 	plt.savefig('data/coverage_s=02_rt_langevin_metropolis.png')
 	plt.show()
