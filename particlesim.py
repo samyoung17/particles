@@ -70,6 +70,8 @@ def logIteration(i, iterations):
 	perc = (i+1) * 100.0 / iterations
 	sys.stdout.write("\rCalculating... %.2f%%" % perc)
 	sys.stdout.flush()
+	if i + 1 == iterations:
+		print('\n')
 
 def loadData(fname):
 	f = open(fname, 'r')
