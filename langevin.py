@@ -23,10 +23,9 @@ def moveParticles(particles, t):
 		particle.x, particle.v = x, v
 
 def main():
-	iterations = 1000
-	n = 10
-	data = particlesim.simulate(iterations, n, moveParticles)
-	particlesim.writeData(data, 'langevin n={} iter={}.pickle'.format(n, iterations))
+	n, iterations = 10, 1000
+	folder = 'data/langevin n={} iter={}'.format(n, iterations)
+	data = particlesim.simulate(iterations, n, moveParticles, folder)
 	particlesim.motionAnimation(data, 15)
 
 def averageTemp(data):

@@ -8,6 +8,7 @@ import runtumble
 import langevin
 import metropolis
 import brownianmotion
+import datamodel
 
 ITERATIONS = 10000
 N = 10
@@ -42,17 +43,17 @@ def meanDistanceTravelled(data):
 	return np.cumsum(dx)
 
 def loadDataFromFile(algorithmProperties):
-	data = particlesim.loadData(algorithmProperties['filePath'])
+	data = datamodel.Data(algorithmProperties['filePath'], 'r')
 	dataSet = {
 		'name': algorithmProperties['name'],
 		'data': data
 	}
 	return dataSet
 
-def runSimulations(algorithmProperties):
-	data = particlesim.simulate(ITERATIONS, N, algorithmProperties['moveFn'])
+def runSimulations(algorithmProps):
+	data = particlesim.simulate(ITERATIONS, N, algorithmProps['moveFn'], algorithmProps['filePath'])
 	dataSet = {
-		'name': algorithmProperties['name'],
+		'name': algorithmProps['name'],
 		'data': data
 	}
 	return dataSet
@@ -62,9 +63,9 @@ def calculateCoverage(dataSet):
 	distanceTravelled = meanDistanceTravelled(dataSet['data'])
 	return (dataSet['name'], (distanceTravelled, covarageDistance))
 
-def drawGraph(configs, xy):
+def drawGraph(dataSet, xy):
 	plots = []
-	for algorithmProperties in configs:
+	for algorithmProperties in dataSet:
 		x, y = xy[algorithmProperties['name']]
 		plot, = plt.plot(x, y, label=algorithmProperties['name'])
 		plots.append(plot)
@@ -95,12 +96,12 @@ def test():
 	config = [
 		{
 			'name': 'Langevin',
-			'filePath': 'data/langevin n=10 iter=1000.pickle',
+			'filePath': 'data/langevin n=10 iter=1000',
 			'moveFn': langevin.moveParticles
 		},
 		{
 			'name': 'Run and Tumble',
-			'filePath': 'data/run tumble n=10 iter=1000.pickle',
+			'filePath': 'data/run tumble n=10 iter=1000',
 			'moveFn': runtumble.moveParticles
 		}
 	]
@@ -110,22 +111,22 @@ def main():
 	config = [
 		{
 			'name': 'Run and Tumble',
-			'filePath': 'data/run tumble n=200 iter=20000.pickle',
+			'filePath': 'data/run tumble n=200 iter=20000',
 			'moveFn': runtumble.moveParticles
 		},
 		{
 			'name': 'Langevin',
-			'filePath': 'data/langevin n=200 iter=20000.pickle',
+			'filePath': 'data/langevin n=200 iter=20000',
 			'moveFn': langevin.moveParticles
 		},
 		{
 			'name': 'Metropolis',
-			'filePath': 'data/metropolis n=200 iter=20000.pickle',
+			'filePath': 'data/metropolis n=200 iter=20000',
 			'moveFn': metropolis.moveParticles
 		},
 		{
 			'name': 'Brownian',
-			'filePath': 'data/brownian n=200 iter=20000.pickle',
+			'filePath': 'data/brownian n=200 iter=20000',
 			'moveFn': brownianmotion.moveParticles
 		}
 	]
@@ -133,4 +134,4 @@ def main():
 	# compareFromFiles(dataSets)
 
 if __name__=='__main__':
-	main()
+	test()

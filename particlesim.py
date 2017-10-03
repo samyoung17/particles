@@ -3,22 +3,12 @@ import sys
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import linalgutil as la
-import sPickle
+import datamodel
 
 R_0 = 1
 R_MAX = 10
 TIMESTEP = 0.5
 
-class Data(object):
-	def __init__(self, iterations, numpoints, numTargets):
-		self.numpoints = numpoints
-		self.iterations = iterations
-		self.x = np.zeros((iterations, numpoints, 2))
-		self.v = np.zeros((iterations, numpoints, 2))
-		self.F = np.zeros((iterations, numpoints, 2))
-		self.Fd = np.zeros((iterations, numpoints, 2))
-		self.t = np.zeros((iterations))
-		self.y = np.zeros((iterations, numTargets, 2))
 
 class Particle(object):
 	def __init__(self, x, v):
@@ -71,22 +61,10 @@ def logIteration(i, iterations):
 	sys.stdout.write("\rCalculating... %.2f%%" % perc)
 	sys.stdout.flush()
 
-def loadData(fname):
-	f = open(fname, 'r')
-	data = sPickle.load(f)
-	f.close()
-	return data
-
-def writeData(data, fname):
-	f = open('data/' + fname, 'w')
-	sPickle.dump(data, f)
-	f.close()
-	print('\nSaved data to file: \'data/' + fname)
-
-def simulate(iterations, n, moveFn):
+def simulate(iterations, n, moveFn, folder):
 	particles = initParticles(n, R_0)
 	targets = initTargets(float(R_MAX) / 10, R_MAX)
-	data = Data(iterations, n, len(targets))
+	data = datamodel.Data(folder, 'w+', iterations, n, len(targets))
 	recordData(particles, targets, data, 0)
 	for i in range(1, iterations):
 		moveFn(particles, TIMESTEP)
@@ -127,7 +105,7 @@ def averageRadialDisplacement(data):
 	plt.show()
 
 def main(filePath, speedMultiplier):
-	data = loadData(filePath)
+	data = datamodel.Data(filePath, 'r')
 	motionAnimation(data, speedMultiplier)
 
 if __name__ == '__main__':

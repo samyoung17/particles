@@ -50,8 +50,7 @@ def main():
 	if len(sys.argv) != 4:
 		raise ValueError('Arguments should be: n, iter, outfile')
 	script, n, iterations, fname = sys.argv
-	data = particlesim.simulate(int(iterations), int(n), moveParticles)
-	particlesim.writeData(data, fname)
+	data = particlesim.simulate(int(iterations), int(n), moveParticles, fname)
 	speedMultiplier = 10
 	particlesim.motionAnimation(data, speedMultiplier)
 

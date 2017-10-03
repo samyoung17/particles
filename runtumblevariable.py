@@ -46,10 +46,9 @@ def moveParticles(particles, t):
 		particle.x, particle.v = x, v
 
 def main():
-	iterations = 5000
-	n = 200
-	data = particlesim.simulate(iterations, n, moveParticles)
-	particlesim.writeData(data, 'run tumble variable n={} iter={}.pickle'.format(n, iterations))
+	iterations, n = 5000, 200
+	folder = 'data/run tumble variable n={} iter={}'.format(n, iterations)
+	data = particlesim.simulate(iterations, n, moveParticles, folder)
 	particlesim.motionAnimation(data, 10)
 
 if __name__=='__main__':
