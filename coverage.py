@@ -1,14 +1,21 @@
-import particlesim
 import numpy as np
 import matplotlib.pyplot as plt
 from multiprocessing import Pool
+import signal
+
+import particlesim
 import runtumble
 import langevin
 import metropolis
 import brownianmotion
 
-ITERATIONS = 20000
-N = 200
+ITERATIONS = 10000
+N = 10
+
+TIMEOUT = 99999999999999999
+
+def init_worker():
+	signal.signal(signal.SIGINT, signal.SIG_IGN)
 
 def distanceToNearestTarget(y, particles):
 	return np.min(map(lambda x: np.linalg.norm(x - y), particles))
@@ -34,26 +41,32 @@ def meanDistanceTravelled(data):
 	dx = sbar * particlesim.TIMESTEP
 	return np.cumsum(dx)
 
-def calculateCoverageFromFiles(algorithmProperties):
-	print('Calculating coverage distance for {}...'.format(algorithmProperties['name']))
+def loadDataFromFile(algorithmProperties):
 	data = particlesim.loadData(algorithmProperties['filePath'])
-	covarageDistance = supMinDistanceOverTime(data)
-	distanceTravelled = meanDistanceTravelled(data)
-	return (algorithmProperties['name'], (distanceTravelled, covarageDistance))
+	dataSet = {
+		'name': algorithmProperties['name'],
+		'data': data
+	}
+	return dataSet
 
-def simulateAndCalculateCoverage(algorithmProperties):
-	print('Running simulation for {}...'.format(algorithmProperties['name']))
+def runSimulations(algorithmProperties):
 	data = particlesim.simulate(ITERATIONS, N, algorithmProperties['moveFn'])
-	print('Calculating coverage distance for {}...'.format(algorithmProperties['name']))
-	covarageDistance = supMinDistanceOverTime(data)
-	distanceTravelled = meanDistanceTravelled(data)
-	return (algorithmProperties['name'], (distanceTravelled, covarageDistance))
+	dataSet = {
+		'name': algorithmProperties['name'],
+		'data': data
+	}
+	return dataSet
+
+def calculateCoverage(dataSet):
+	covarageDistance = supMinDistanceOverTime(dataSet['data'])
+	distanceTravelled = meanDistanceTravelled(dataSet['data'])
+	return (dataSet['name'], (distanceTravelled, covarageDistance))
 
 def drawGraph(configs, xy):
 	plots = []
-	for config in configs:
-		x, y = xy[config['name']]
-		plot, = plt.plot(x, y, label=config['name'])
+	for algorithmProperties in configs:
+		x, y = xy[algorithmProperties['name']]
+		plot, = plt.plot(x, y, label=algorithmProperties['name'])
 		plots.append(plot)
 	plt.legend(handles=plots)
 	plt.xlabel('Mean distance travelled')
@@ -63,17 +76,23 @@ def drawGraph(configs, xy):
 	plt.show()
 
 def compareFromFiles(config):
-	p = Pool(len(config))
-	xy = dict(p.map(calculateCoverageFromFiles, config))
+	pool = Pool(len(config), init_worker)
+	print('Loading data...')
+	dataSets = pool.map_async(loadDataFromFile, config).get(TIMEOUT)
+	print('Calculating coverage distances...')
+	xy = dict(pool.map_async(calculateCoverage, dataSets).get(TIMEOUT))
 	drawGraph(config, xy)
 
 def simulateAndCompare(config):
-	p = Pool(len(config))
-	xy = dict(p.map(simulateAndCalculateCoverage, config))
+	pool = Pool(len(config))
+	print('Running simulations...')
+	dataSets = pool.map_async(runSimulations, config).get(TIMEOUT)
+	print('\nCalculating coverage distances...')
+	xy = dict(pool.map_async(calculateCoverage, dataSets).get(TIMEOUT))
 	drawGraph(config, xy)
 
 def test():
-	dataSets = [
+	config = [
 		{
 			'name': 'Langevin',
 			'filePath': 'data/langevin n=10 iter=1000.pickle',
@@ -85,10 +104,10 @@ def test():
 			'moveFn': runtumble.moveParticles
 		}
 	]
-	compareFromFiles(dataSets)
+	compareFromFiles(config)
 
 def main():
-	dataSets = [
+	config = [
 		{
 			'name': 'Run and Tumble',
 			'filePath': 'data/run tumble n=200 iter=20000.pickle',
@@ -110,7 +129,7 @@ def main():
 			'moveFn': brownianmotion.moveParticles
 		}
 	]
-	simulateAndCompare(dataSets)
+	simulateAndCompare(config)
 	# compareFromFiles(dataSets)
 
 if __name__=='__main__':
