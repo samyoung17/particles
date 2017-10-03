@@ -2,6 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from multiprocessing import Pool
 import signal
+import os
+import pandas as pd
 
 import particlesim
 import runtumble
@@ -65,47 +67,46 @@ def calculateCoverage(dataSet):
 
 def drawGraph(dataSet, xy):
 	plots = []
-	for algorithmProperties in dataSet:
-		x, y = xy[algorithmProperties['name']]
-		plot, = plt.plot(x, y, label=algorithmProperties['name'])
+	for dataSet in dataSet:
+		x, y = xy[dataSet['name']]
+		plot, = plt.plot(x, y, label=dataSet['name'])
 		plots.append(plot)
 	plt.legend(handles=plots)
 	plt.xlabel('Mean distance travelled')
 	plt.ylabel('Coverage distance')
 	plt.title('Maximum distance to from target to nearest particle')
-	plt.savefig('data/coverage_s=02_rt_langevin_metropolis.png')
+	plt.savefig('data/coverage graph N={} ITER={}.png')
 	plt.show()
+
+def saveDataFrame(dataSets, distanceAndCoverage):
+	df = pd.DataFrame()
+	df['time'] = dataSets[0]['data'].t
+	for dataSet in dataSets:
+		distance, coverage = distanceAndCoverage[dataSet['name']]
+		distanceColName = dataSet['name'] + '.distance'
+		coverageColName = dataSet['name'] + '.coverage'
+		df[distanceColName] = distance
+		df[coverageColName] = coverage
+	df.to_csv('data/coverage N={} ITER={}.csv'.format(N, ITERATIONS))
 
 def compareFromFiles(config):
 	pool = Pool(len(config), init_worker)
 	print('Loading data...')
 	dataSets = pool.map_async(loadDataFromFile, config).get(TIMEOUT)
 	print('Calculating coverage distances...')
-	xy = dict(pool.map_async(calculateCoverage, dataSets).get(TIMEOUT))
-	drawGraph(config, xy)
+	distanceAndCoverage = dict(pool.map_async(calculateCoverage, dataSets).get(TIMEOUT))
+	saveDataFrame(dataSets, distanceAndCoverage)
+	drawGraph(config, distanceAndCoverage)
 
 def simulateAndCompare(config):
 	pool = Pool(len(config))
 	print('Running simulations...')
 	dataSets = pool.map_async(runSimulations, config).get(TIMEOUT)
 	print('\nCalculating coverage distances...')
-	xy = dict(pool.map_async(calculateCoverage, dataSets).get(TIMEOUT))
-	drawGraph(config, xy)
+	distanceAndCoverage = dict(pool.map_async(calculateCoverage, dataSets).get(TIMEOUT))
+	saveDataFrame(dataSets, distanceAndCoverage)
+	drawGraph(config, distanceAndCoverage)
 
-def test():
-	config = [
-		{
-			'name': 'Langevin',
-			'filePath': 'data/langevin n={} iter={}'.format(N, ITERATIONS),
-			'moveFn': langevin.moveParticles
-		},
-		{
-			'name': 'Run and Tumble',
-			'filePath': 'data/run tumble n={} iter={}'.format(N, ITERATIONS),
-			'moveFn': runtumble.moveParticles
-		}
-	]
-	compareFromFiles(config)
 
 def main():
 	config = [
@@ -130,8 +131,10 @@ def main():
 			'moveFn': brownianmotion.moveParticles
 		}
 	]
-	simulateAndCompare(config)
-	# compareFromFiles(dataSets)
+	if all(map(lambda c: os.path.isdir(c['filePath']), config)):
+		compareFromFiles(config)
+	else:
+		simulateAndCompare(config)
 
 if __name__=='__main__':
 	main()
