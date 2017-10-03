@@ -75,7 +75,7 @@ def drawGraph(dataSet, xy):
 	plt.xlabel('Mean distance travelled')
 	plt.ylabel('Coverage distance')
 	plt.title('Maximum distance to from target to nearest particle')
-	plt.savefig('data/coverage graph N={} ITER={}.png')
+	plt.savefig('data/coverage graph N={} ITER={}.png'.format(N, ITERATIONS))
 	plt.show()
 
 def saveDataFrame(dataSets, distanceAndCoverage):
@@ -89,24 +89,10 @@ def saveDataFrame(dataSets, distanceAndCoverage):
 		df[coverageColName] = coverage
 	df.to_csv('data/coverage N={} ITER={}.csv'.format(N, ITERATIONS))
 
-def compareFromFiles(config):
-	pool = Pool(len(config), init_worker)
-	print('Loading data...')
-	dataSets = pool.map_async(loadDataFromFile, config).get(TIMEOUT)
-	print('Calculating coverage distances...')
+def coverageComparison(dataSets, pool):
 	distanceAndCoverage = dict(pool.map_async(calculateCoverage, dataSets).get(TIMEOUT))
 	saveDataFrame(dataSets, distanceAndCoverage)
-	drawGraph(config, distanceAndCoverage)
-
-def simulateAndCompare(config):
-	pool = Pool(len(config))
-	print('Running simulations...')
-	dataSets = pool.map_async(runSimulations, config).get(TIMEOUT)
-	print('\nCalculating coverage distances...')
-	distanceAndCoverage = dict(pool.map_async(calculateCoverage, dataSets).get(TIMEOUT))
-	saveDataFrame(dataSets, distanceAndCoverage)
-	drawGraph(config, distanceAndCoverage)
-
+	drawGraph(dataSets, distanceAndCoverage)
 
 def main():
 	config = [
@@ -131,10 +117,15 @@ def main():
 			'moveFn': brownianmotion.moveParticles
 		}
 	]
+	pool = Pool(len(config))
 	if all(map(lambda c: os.path.isdir(c['filePath']), config)):
-		compareFromFiles(config)
+		print('Loading data...')
+		dataSets = pool.map_async(loadDataFromFile, config).get(TIMEOUT)
 	else:
-		simulateAndCompare(config)
+		print('Running simulations...')
+		dataSets = pool.map_async(runSimulations, config).get(TIMEOUT)
+	print('\nCalculating coverage distances...')
+	coverageComparison(dataSets, pool)
 
 if __name__=='__main__':
 	main()
