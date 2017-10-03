@@ -10,8 +10,8 @@ import metropolis
 import brownianmotion
 import datamodel
 
-ITERATIONS = 10000
-N = 10
+ITERATIONS = 20000
+N = 200
 
 TIMEOUT = 99999999999999999
 
@@ -96,12 +96,12 @@ def test():
 	config = [
 		{
 			'name': 'Langevin',
-			'filePath': 'data/langevin n=10 iter=1000',
+			'filePath': 'data/langevin n={} iter={}'.format(N, ITERATIONS),
 			'moveFn': langevin.moveParticles
 		},
 		{
 			'name': 'Run and Tumble',
-			'filePath': 'data/run tumble n=10 iter=1000',
+			'filePath': 'data/run tumble n={} iter={}'.format(N, ITERATIONS),
 			'moveFn': runtumble.moveParticles
 		}
 	]
@@ -111,22 +111,22 @@ def main():
 	config = [
 		{
 			'name': 'Run and Tumble',
-			'filePath': 'data/run tumble n=200 iter=20000',
+			'filePath': 'data/run tumble n={} iter={}'.format(N, ITERATIONS),
 			'moveFn': runtumble.moveParticles
 		},
 		{
 			'name': 'Langevin',
-			'filePath': 'data/langevin n=200 iter=20000',
+			'filePath': 'data/langevin n={} iter={}'.format(N, ITERATIONS),
 			'moveFn': langevin.moveParticles
 		},
 		{
 			'name': 'Metropolis',
-			'filePath': 'data/metropolis n=200 iter=20000',
+			'filePath': 'data/metropolis n={} iter={}'.format(N, ITERATIONS),
 			'moveFn': metropolis.moveParticles
 		},
 		{
 			'name': 'Brownian',
-			'filePath': 'data/brownian n=200 iter=20000',
+			'filePath': 'data/brownian n={} iter={}'.format(N, ITERATIONS),
 			'moveFn': brownianmotion.moveParticles
 		}
 	]
@@ -134,4 +134,4 @@ def main():
 	# compareFromFiles(dataSets)
 
 if __name__=='__main__':
-	test()
+	main()
