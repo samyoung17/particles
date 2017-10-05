@@ -15,6 +15,10 @@ import datamodel
 ITERATIONS = 20000
 N = 200
 
+C = np.sqrt(8 * np.pi/ (3 * np.sqrt(3)))
+LOWER_BOUND = particlesim.R_MAX / np.sqrt(N)
+UPPER_BOUND = C * particlesim.R_MAX / np.sqrt(N / np.log(N))
+
 TIMEOUT = 99999999999999999
 
 def init_worker():
@@ -33,10 +37,6 @@ def supMinDistanceOverTime(data):
 		particlesim.logIteration(i, data.iterations)
 		d[i] = supMinDistance(data.x[i], data.y[i])
 	return d
-
-def lowerBound(iterations, n, rMax):
-	bound = rMax / np.sqrt(n)
-	return bound * np.ones((iterations))
 
 def meanDistanceTravelled(data):
 	s = np.linalg.norm(data.v, axis = 2)
@@ -65,12 +65,13 @@ def calculateCoverage(dataSet):
 	distanceTravelled = meanDistanceTravelled(dataSet['data'])
 	return (dataSet['name'], (distanceTravelled, covarageDistance))
 
-def drawGraph(dataSet, xy):
+def drawGraph(df, algoNames):
 	plots = []
-	for dataSet in dataSet:
-		x, y = xy[dataSet['name']]
-		plot, = plt.plot(x, y, label=dataSet['name'])
+	for name in algoNames:
+		plot, = plt.plot(df[name + '.distance'], df[name + '.coverage'], label=name)
 		plots.append(plot)
+	plt.axhline(y=LOWER_BOUND, color='k')
+	plt.axhline(y=UPPER_BOUND, color='k')
 	plt.legend(handles=plots)
 	plt.xlabel('Mean distance travelled')
 	plt.ylabel('Coverage distance')
@@ -78,7 +79,7 @@ def drawGraph(dataSet, xy):
 	plt.savefig('data/coverage graph N={} ITER={}.png'.format(N, ITERATIONS))
 	plt.show()
 
-def saveDataFrame(dataSets, distanceAndCoverage):
+def createDataFrame(dataSets, distanceAndCoverage):
 	df = pd.DataFrame()
 	df['time'] = dataSets[0]['data'].t
 	for dataSet in dataSets:
@@ -87,12 +88,14 @@ def saveDataFrame(dataSets, distanceAndCoverage):
 		coverageColName = dataSet['name'] + '.coverage'
 		df[distanceColName] = distance
 		df[coverageColName] = coverage
-	df.to_csv('data/coverage N={} ITER={}.csv'.format(N, ITERATIONS))
+	return df
 
 def coverageComparison(dataSets, pool):
 	distanceAndCoverage = dict(pool.map_async(calculateCoverage, dataSets).get(TIMEOUT))
-	saveDataFrame(dataSets, distanceAndCoverage)
-	drawGraph(dataSets, distanceAndCoverage)
+	df = createDataFrame(dataSets, distanceAndCoverage)
+	df.to_csv('data/coverage N={} ITER={}.csv'.format(N, ITERATIONS))
+	names = map(lambda d: d['name'], dataSets)
+	drawGraph(df, names)
 
 def main():
 	config = [
