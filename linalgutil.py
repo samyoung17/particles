@@ -10,6 +10,10 @@ def cartToPolar(y):
 	r = np.linalg.norm(y,2)
 	return np.array((r, theta))
 
+def boundPoint(x, rMax):
+	r, theta = cartToPolar(x)
+	return polarToCart((np.min([r, rMax]), theta))
+
 def angleBetweenTwoVectors(a, b):
 	return np.arccos(np.dot(a,b) / (np.linalg.norm(a,2) * np.linalg.norm(b,2)))
 
