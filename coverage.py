@@ -4,20 +4,24 @@ from multiprocessing import Pool
 import signal
 import os
 import pandas as pd
+import scipy.special
 
 import particlesim
+import datamodel
 import runtumble
 import langevin
 import metropolis
 import brownianmotion
-import datamodel
+import forcedistribution
+import voronoi
 
-ITERATIONS = 20000
-N = 200
+ITERATIONS = 1000
+N = 100
 
 C = np.sqrt(8 * np.pi/ (3 * np.sqrt(3)))
 LOWER_BOUND = particlesim.R_MAX / np.sqrt(N)
 UPPER_BOUND = C * particlesim.R_MAX / np.sqrt(N / np.log(N))
+EXPECTED_DISTANCE = C * particlesim.R_MAX / np.sqrt(N / np.real(scipy.special.lambertw(N)))
 
 TIMEOUT = 99999999999999999
 
@@ -72,9 +76,11 @@ def drawGraph(df, algoNames):
 		plots.append(plot)
 	plt.axhline(y=LOWER_BOUND, color='k')
 	plt.axhline(y=UPPER_BOUND, color='k')
+	plt.axhline(y=EXPECTED_DISTANCE, color='k')
 	plt.legend(handles=plots)
 	plt.xlabel('Mean distance travelled')
 	plt.ylabel('Coverage distance')
+	plt.gca().set_ylim(bottom=0)
 	plt.title('Maximum distance to from target to nearest particle')
 	plt.savefig('data/coverage graph N={} ITER={}.png'.format(N, ITERATIONS))
 	plt.show()
@@ -109,15 +115,25 @@ def main():
 			'filePath': 'data/langevin n={} iter={}'.format(N, ITERATIONS),
 			'moveFn': langevin.moveParticles
 		},
+		# {
+		# 	'name': 'Metropolis',
+		# 	'filePath': 'data/metropolis n={} iter={}'.format(N, ITERATIONS),
+		# 	'moveFn': metropolis.moveParticles
+		# },
+		# {
+		# 	'name': 'Brownian',
+		# 	'filePath': 'data/brownian n={} iter={}'.format(N, ITERATIONS),
+		# 	'moveFn': brownianmotion.moveParticles
+		# },
 		{
-			'name': 'Metropolis',
-			'filePath': 'data/metropolis n={} iter={}'.format(N, ITERATIONS),
-			'moveFn': metropolis.moveParticles
+			'name': 'Voronoi',
+			'filePath': 'data/voronoi n={} iter={}'.format(N, ITERATIONS),
+			'moveFn': voronoi.moveParticles
 		},
 		{
-			'name': 'Brownian',
-			'filePath': 'data/brownian n={} iter={}'.format(N, ITERATIONS),
-			'moveFn': brownianmotion.moveParticles
+			'name': 'Electrostatic',
+			'filePath': 'data/electrostatic n={} iter={}'.format(N, ITERATIONS),
+			'moveFn': forcedistribution.moveParticles
 		}
 	]
 	pool = Pool(len(config))

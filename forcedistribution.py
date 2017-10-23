@@ -1,12 +1,8 @@
 import particlesim
 import numpy as np
-import sys
 
-K_E  = 8.99E9
-Q = 3E-8
-VISCOUSITY = 1E-2
-PARTICLE_RADIUS = 1E-3
-NU = 0.2
+K_E  = 1
+NU = 0.1
 M = 1
 
 def forceBetweenTwoPointCharges(q1, q2, r):
@@ -15,9 +11,6 @@ def forceBetweenTwoPointCharges(q1, q2, r):
 def forceBetweenTwoPointChargesUnitConstants(r, qSquared):
 	# This function is called iter * N^2 times, so optimise for speed
 	return - r * qSquared / pow(r[0] ** 2 + r[1] ** 2, 1.5)
-
-def forceDueToDrag(v):
-	return - 6 * np.pi * VISCOUSITY * PARTICLE_RADIUS * v
 
 def forceDueToDragUnitConstants(v, m):
 	return - NU * v * m
@@ -47,12 +40,10 @@ def moveParticles(particles, t):
 		particle.x, particle.v, particle.F, particle.Fd = x, v, F, Fd
 
 def main():
-	if len(sys.argv) != 4:
-		raise ValueError('Arguments should be: n, iter, outfile')
-	script, n, iterations, fname = sys.argv
-	data = particlesim.simulate(int(iterations), int(n), moveParticles, fname)
-	speedMultiplier = 10
-	particlesim.motionAnimation(data, speedMultiplier)
+	n, iterations = 100, 1000
+	folder = 'data/electrostatic n={} iter={}'.format(n, iterations)
+	data = particlesim.simulate(iterations, n, moveParticles, folder)
+	particlesim.motionAnimation(data, 15)
 
 if __name__ == '__main__':
 	main()
