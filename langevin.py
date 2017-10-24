@@ -19,7 +19,7 @@ def moveParticles(particles, t):
 		dv = - (GAMMA/M)*v0*t + (1/M)*b[i]
 		v = v0 + dv
 		x = x0 + (v+v0)/2 * t
-		x,v = hardboundary.bounceIfHitsBoundary(x, v, t, particlesim.R_MAX)
+		x,v = hardboundary.bounceIfHitsBox(x, v, t)
 		particle.x, particle.v = x, v
 
 def main():
