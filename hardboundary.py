@@ -20,13 +20,6 @@ def bounceIfHitsBoundary(x, v, t, rMax):
 	else:
 		return x, v
 
-SQUARE = geom.LinearRing((
-		(-10.0, -10.0),
-		(-10.0, 10.0),
-		(10.0, 10.0),
-		(-10.0, 10.0)
-	))
-
 SQUARE_SEGMENTS = [
 	geom.LineString([(-10.0, -10.0), (-10.0, 10.0)]),
 	geom.LineString([(-10.0, 10.0), (10.0, 10.0)]),
@@ -34,13 +27,16 @@ SQUARE_SEGMENTS = [
 	geom.LineString([(10.0, -10.0), (-10.0, -10.0)])
 ]
 
-def bounceIfHitsBox(x, v, t):
-	xPrime = x + v * t
-	trajectory = geom.LineString([x, xPrime])
+def bounceIfHitsBox(x0, v0, x, v):
+	trajectory = geom.LineString([x0, x])
+	xPrime, vPrime = x, v
 	for seg in SQUARE_SEGMENTS:
 		intersection = seg.intersection(trajectory)
 		if not intersection.is_empty:
 			a = np.array([intersection.x, intersection.y])
-			c = seg.coords.xy
-			d = 'lol'
-	return x,v
+			c = np.array(seg.coords[1]) - np.array(seg.coords[0])
+			n = np.array((c[1], c[0]))
+			nHat = n / np.linalg.norm(n)
+			xPrime = x - 2*np.dot(x-a, nHat)*nHat
+			vPrime = v - 2*np.dot(v, nHat)*nHat
+	return xPrime,vPrime
