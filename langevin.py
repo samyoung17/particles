@@ -8,6 +8,8 @@ GAMMA = 0.1
 S = 0.2
 T = 2 * M * pow(S,2) / np.pi
 
+# BOUNDARY = hardboundary.SquareBoundary(2 * particlesim.R_MAX)
+BOUNDARY = hardboundary.CircularBoundary(particlesim.R_MAX)
 
 def moveParticles(particles, t):
 	var = 2 * GAMMA * T * t
@@ -18,15 +20,15 @@ def moveParticles(particles, t):
 		x0, v0 = particle.x, particle.v
 		dv = - (GAMMA/M)*v0*t + (1/M)*b[i]
 		v = v0 + dv
-		x = x0 + (v+v0)/2 * t
-		x,v = hardboundary.bounceIfHitsBox(x0, v0, x, v)
+		x = x0 + v * t
+		x,v = BOUNDARY.bounceIfHits(x0, v0, x, v)
 		particle.x, particle.v = x, v
 
 def main():
-	n, iterations = 10, 1000
+	n, iterations = 20, 1000
 	folder = 'data/langevin n={} iter={}'.format(n, iterations)
-	data = particlesim.simulate(iterations, n, moveParticles, folder)
-	particlesim.motionAnimation(data, 15)
+	data = particlesim.simulate(iterations, n, moveParticles, folder, BOUNDARY)
+	particlesim.motionAnimation(data, 15, BOUNDARY)
 
 def averageTemp(data):
 	e = np.apply_along_axis(lambda v: 0.5 * M * pow(np.linalg.norm(v), 2), 2, data.v)

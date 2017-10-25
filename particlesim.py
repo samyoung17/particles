@@ -4,11 +4,13 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import linalgutil as la
 import datamodel
+import hardboundary
 
 R_0 = 1
 R_MAX = 10
 TIMESTEP = 0.5
 
+DEFAULT_BOUNDARY = hardboundary.CircularBoundary(R_MAX)
 
 class Particle(object):
 	def __init__(self, x, v):
@@ -38,13 +40,12 @@ def initParticles(n, r0):
 		particles.append(particle)
 	return particles
 
-def initTargets(d, rMax):
+def initTargets(d, rMax, boundary):
 	targets = []
 	for x1 in np.arange(-rMax, rMax, d):
 		for x2 in np.arange(-rMax, rMax, d):
 			x = np.array((x1, x2))
-			r, theta = la.cartToPolar(x)
-			if (r < rMax):
+			if boundary.contains(x):
 				targets.append(Target(x))
 	return targets
 
@@ -61,9 +62,9 @@ def logIteration(i, iterations):
 	sys.stdout.write("\rCalculating... %.2f%%" % perc)
 	sys.stdout.flush()
 
-def simulate(iterations, n, moveFn, folder):
+def simulate(iterations, n, moveFn, folder, boundary=DEFAULT_BOUNDARY):
 	particles = initParticles(n, R_0)
-	targets = initTargets(float(R_MAX) / 10, R_MAX)
+	targets = initTargets(float(R_MAX) / 10, R_MAX, boundary)
 	data = datamodel.Data(folder, 'w+', iterations, n, len(targets))
 	recordData(particles, targets, data, 0)
 	for i in range(1, iterations):
@@ -77,16 +78,14 @@ def draw(i, scat, data):
 	scat.set_offsets(points)
 	return scat,
 
-def motionAnimation(data, speedMultiplier, ring=True):
+def motionAnimation(data, speedMultiplier, boundary=DEFAULT_BOUNDARY):
 	fig = plt.figure()
 	axes = plt.gca()
 	padding = 1.5
 	axes.set_xlim([-R_MAX * padding, R_MAX * padding])
 	axes.set_ylim([-R_MAX * padding, R_MAX * padding])
 	axes.scatter(data.y[0,:,0], data.y[0,:,1], color='r', s=1)
-	if ring:
-		circle = plt.Circle((0,0), radius=R_MAX, color='g', fill=False)
-		axes.add_patch(circle)
+	boundary.plot(axes)
 	scat = axes.scatter(data.x[0,:,0], data.x[0,:,1])
 	interval = TIMESTEP * 1000 / speedMultiplier
 	ani = animation.FuncAnimation(fig, draw, interval=interval, frames = xrange(data.iterations), fargs=(scat, data), repeat=False)
