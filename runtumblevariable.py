@@ -1,6 +1,5 @@
 import numpy as np
 import particlesim
-import hardboundary
 import linalgutil
 
 S = 0.2
@@ -30,7 +29,7 @@ def rate(concentration):
 	r = M * (1 - concentration) + C
 	return max(min(r, MAX_RATE), MIN_RATE)
 
-def moveParticles(particles, t):
+def moveParticles(particles, t, boundary):
 	m = densityMultiplier(len(particles))
 	D = linalgutil.distanceMatrix(map(lambda p: p.x, particles))
 	for i, particle in enumerate(particles):
@@ -42,7 +41,7 @@ def moveParticles(particles, t):
 			v = S * newDirection(np.arctan2(v0[0], v0[1]),[-np.pi, np.pi])
 		else:
 			v = v0
-		x, v = hardboundary.bounceIfHitsBoundary(x, v, t, particlesim.R_MAX)
+		x, v = boundary.bounceIfHits(x, v, t, particlesim.R_MAX)
 		particle.x, particle.v = x, v
 
 def main():

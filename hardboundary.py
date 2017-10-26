@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 EPSILON = 0.00000000000000001
 
-class CircularBoundary(object):
+class Circle(object):
 
 	def __init__(self, r):
 		self.r = float(r)
@@ -31,7 +31,7 @@ class CircularBoundary(object):
 		axes.add_patch(circle)
 
 
-class SquareBoundary(object):
+class Square(object):
 
 	def __init__(self, l):
 		self.l = l

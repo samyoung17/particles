@@ -10,7 +10,7 @@ R_0 = 1
 R_MAX = 10
 TIMESTEP = 0.5
 
-DEFAULT_BOUNDARY = hardboundary.CircularBoundary(R_MAX)
+DEFAULT_BOUNDARY = hardboundary.Circle(R_MAX)
 
 class Particle(object):
 	def __init__(self, x, v):
@@ -68,7 +68,7 @@ def simulate(iterations, n, moveFn, folder, boundary=DEFAULT_BOUNDARY):
 	data = datamodel.Data(folder, 'w+', iterations, n, len(targets))
 	recordData(particles, targets, data, 0)
 	for i in range(1, iterations):
-		moveFn(particles, TIMESTEP)
+		moveFn(particles, TIMESTEP, boundary)
 		recordData(particles, targets, data, i)
 		logIteration(i, iterations)
 	return data

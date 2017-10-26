@@ -11,7 +11,7 @@ def expectedNormMultivariateGaussian(sigma):
 	# formula derived in https://arxiv.org/abs/1012.0621
 	return sigma * math.sqrt(2) * math.gamma((N+1)/2) / math.gamma(N/2)
 
-def moveParticles(particles, t):
+def moveParticles(particles, t, boundary):
 	cov = [[1, 0], [0, 1]]
 	mean = (0, 0)
 	sigma = math.sqrt(t)

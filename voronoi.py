@@ -112,7 +112,7 @@ def createVornoiCells(points):
 def targetVelocity(cell):
 	return - K_PROP * (cell.point - cell.centroid)
 
-def moveParticles(particles, t):
+def moveParticles(particles, t, boundary):
 	xx = np.array(map(lambda p: p.x, particles))
 	cells = createVornoiCells(xx)
 	velocities = map(targetVelocity, cells)

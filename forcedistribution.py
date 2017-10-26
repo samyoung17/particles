@@ -25,7 +25,7 @@ def boundingForceUnitConstants(x, q, n):
 	xUnit = x / r
 	return  - xUnit * q / pow(particlesim.R_MAX - r, 2)
 
-def moveParticles(particles, t):
+def moveParticles(particles, t, boundary):
 	q = 1.0 / len(particles)
 	for i, particle in enumerate(particles):
 		other_particles = particles[:i] + particles[i + 1:]

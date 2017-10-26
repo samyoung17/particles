@@ -42,7 +42,7 @@ def ballToRn(x):
 def P(y):
 	return np.random.multivariate_normal(y, COV)
 
-def moveParticles(particles, t):
+def moveParticles(particles, t, boundary):
 	# Metropolis Algorithm for even sampling accross a convex region
 	# From Bubley, Dyer and Jerrum 1997
 	for i, particle in enumerate(particles):

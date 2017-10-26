@@ -8,12 +8,7 @@ import scipy.special
 
 import particlesim
 import datamodel
-import runtumble
-import langevin
-import metropolis
-import brownianmotion
-import forcedistribution
-import voronoi
+import coverageconfig
 
 ITERATIONS = 1000
 N = 100
@@ -57,7 +52,7 @@ def loadDataFromFile(algorithmProperties):
 	return dataSet
 
 def runSimulations(algorithmProps):
-	data = particlesim.simulate(ITERATIONS, N, algorithmProps['moveFn'], algorithmProps['filePath'])
+	data = particlesim.simulate(ITERATIONS, N, algorithmProps['moveFn'], algorithmProps['filePath'], algorithmProps['boundary'])
 	dataSet = {
 		'name': algorithmProps['name'],
 		'data': data
@@ -77,7 +72,7 @@ def drawGraph(df, algoNames):
 	plt.axhline(y=LOWER_BOUND, color='k')
 	plt.axhline(y=UPPER_BOUND, color='k')
 	plt.axhline(y=EXPECTED_DISTANCE, color='k')
-	plt.legend(handles=plots)
+	plt.legend(plots)
 	plt.xlabel('Mean distance travelled')
 	plt.ylabel('Coverage distance')
 	plt.gca().set_ylim(bottom=0)
@@ -104,38 +99,7 @@ def coverageComparison(dataSets, pool):
 	drawGraph(df, names)
 
 def main():
-	config = [
-		{
-			'name': 'Run and Tumble',
-			'filePath': 'data/run tumble n={} iter={}'.format(N, ITERATIONS),
-			'moveFn': runtumble.moveParticles
-		},
-		{
-			'name': 'Langevin',
-			'filePath': 'data/langevin n={} iter={}'.format(N, ITERATIONS),
-			'moveFn': langevin.moveParticles
-		},
-		# {
-		# 	'name': 'Metropolis',
-		# 	'filePath': 'data/metropolis n={} iter={}'.format(N, ITERATIONS),
-		# 	'moveFn': metropolis.moveParticles
-		# },
-		# {
-		# 	'name': 'Brownian',
-		# 	'filePath': 'data/brownian n={} iter={}'.format(N, ITERATIONS),
-		# 	'moveFn': brownianmotion.moveParticles
-		# },
-		{
-			'name': 'Voronoi',
-			'filePath': 'data/voronoi n={} iter={}'.format(N, ITERATIONS),
-			'moveFn': voronoi.moveParticles
-		},
-		{
-			'name': 'Electrostatic',
-			'filePath': 'data/electrostatic n={} iter={}'.format(N, ITERATIONS),
-			'moveFn': forcedistribution.moveParticles
-		}
-	]
+	config = coverageconfig.getConfig(N, ITERATIONS)
 	pool = Pool(len(config))
 	if all(map(lambda c: os.path.isdir(c['filePath']), config)):
 		print('Loading data...')

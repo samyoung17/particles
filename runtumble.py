@@ -5,8 +5,8 @@ import hardboundary
 RATE = 0.1
 S = 0.2
 
-BOUNDARY = hardboundary.SquareBoundary(2 * particlesim.R_MAX)
-# BOUNDARY = hardboundary.CircularBoundary(particlesim.R_MAX)
+BOUNDARY = hardboundary.Square(2 * particlesim.R_MAX)
+# BOUNDARY = hardboundary.Circle(particlesim.R_MAX)
 
 def newDirection(angle, rng):
 	theta = angle + np.random.uniform(rng[0], rng[1])
@@ -14,7 +14,7 @@ def newDirection(angle, rng):
 	y = np.cos(theta)
 	return np.array((x,y))
 
-def moveParticles(particles, t):
+def moveParticles(particles, t, boundary):
 	for i, particle in enumerate(particles):
 		x0, v0 = particle.x, particle.v
 		x = x0 + v0
@@ -22,7 +22,7 @@ def moveParticles(particles, t):
 			v = S * newDirection(np.arctan2(v0[0], v0[1]),[-np.pi, np.pi])
 		else:
 			v = v0
-		x, v = BOUNDARY.bounceIfHits(x0, v0, x, v)
+		x, v = boundary.bounceIfHits(x0, v0, x, v)
 		particle.x, particle.v = x, v
 
 def main():
