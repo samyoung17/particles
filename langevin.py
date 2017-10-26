@@ -8,8 +8,8 @@ GAMMA = 0.1
 S = 0.2
 T = 2 * M * pow(S,2) / np.pi
 
-# BOUNDARY = hardboundary.Square(2 * particlesim.R_MAX)
-BOUNDARY = hardboundary.Circle(particlesim.R_MAX)
+BOUNDARY = hardboundary.Rectangle(particlesim.R_MAX, particlesim.R_MAX * 2)
+# BOUNDARY = hardboundary.Circle(particlesim.R_MAX)
 
 def moveParticles(particles, t, boundary):
 	var = 2 * GAMMA * T * t

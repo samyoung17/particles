@@ -41,9 +41,10 @@ def initParticles(n, r0):
 	return particles
 
 def initTargets(d, rMax, boundary):
+	furtherestTarget = rMax * 10.0
 	targets = []
-	for x1 in np.arange(-rMax, rMax, d):
-		for x2 in np.arange(-rMax, rMax, d):
+	for x1 in np.arange(-furtherestTarget, furtherestTarget, d):
+		for x2 in np.arange(-furtherestTarget, furtherestTarget, d):
 			x = np.array((x1, x2))
 			if boundary.contains(x):
 				targets.append(Target(x))

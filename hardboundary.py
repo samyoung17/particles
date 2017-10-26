@@ -5,6 +5,20 @@ import matplotlib.pyplot as plt
 
 EPSILON = 0.00000000000000001
 
+def bounceIfHitsSegment(lineSegments, x0, v0, x, v):
+	trajectory = geom.LineString([x0, x])
+	xPrime, vPrime = x, v
+	for seg in lineSegments:
+		intersection = seg.intersection(trajectory)
+		if not intersection.is_empty:
+			a = np.array([intersection.x, intersection.y])
+			c = np.array(seg.coords[1]) - np.array(seg.coords[0])
+			n = np.array((c[1], c[0]))
+			nHat = n / np.linalg.norm(n)
+			xPrime = x - 2*np.dot(x-a, nHat)*nHat
+			vPrime = v - 2*np.dot(v, nHat)*nHat
+	return xPrime,vPrime
+
 class Circle(object):
 
 	def __init__(self, r):
@@ -44,22 +58,35 @@ class Square(object):
 		self.polygon = geom.Polygon([(-l/2, -l/2), (-l/2, l/2), (l/2, l/2), (l/2, -l/2)])
 
 	def bounceIfHits(self, x0, v0, x, v):
-		trajectory = geom.LineString([x0, x])
-		xPrime, vPrime = x, v
-		for seg in self.lineSegments:
-			intersection = seg.intersection(trajectory)
-			if not intersection.is_empty:
-				a = np.array([intersection.x, intersection.y])
-				c = np.array(seg.coords[1]) - np.array(seg.coords[0])
-				n = np.array((c[1], c[0]))
-				nHat = n / np.linalg.norm(n)
-				xPrime = x - 2*np.dot(x-a, nHat)*nHat
-				vPrime = v - 2*np.dot(v, nHat)*nHat
-		return xPrime,vPrime
+		return bounceIfHitsSegment(self.lineSegments, x0, v0, x, v)
 
 	def contains(self, x):
 		return self.polygon.contains(geom.Point(x))
 
 	def plot(self, axes):
 		rectangle = plt.Rectangle((-self.l/2,-self.l/2), self.l, self.l, color='g', fill=False)
+		axes.add_patch(rectangle)
+
+
+class Rectangle(object):
+
+	def __init__(self, l, h):
+		self.l = l
+		self.h = h
+		self.lineSegments = [
+				geom.LineString([(-l/2, -h/2), (-l/2, h/2)]),
+				geom.LineString([(-l/2, h/2), (l/2, h/2)]),
+				geom.LineString([(l/2, h/2), (l/2, -h/2)]),
+				geom.LineString([(l/2, -h/2), (-l/2, -h/2)])
+			]
+		self.polygon = geom.Polygon([(-l/2, -h/2), (-l/2, h/2), (l/2, h/2), (l/2, -h/2)])
+
+	def bounceIfHits(self, x0, v0, x, v):
+		return bounceIfHitsSegment(self.lineSegments, x0, v0, x, v)
+
+	def contains(self, x):
+		return self.polygon.contains(geom.Point(x))
+
+	def plot(self, axes):
+		rectangle = plt.Rectangle((-self.l/2,-self.h/2), self.l, self.h, color='g', fill=False)
 		axes.add_patch(rectangle)

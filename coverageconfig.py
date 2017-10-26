@@ -22,16 +22,16 @@ def getConfig(n, iter):
 			'boundary': hardboundary.Circle(particlesim.R_MAX)
 		},
 		{
-			'name': 'Run and Tumble Square',
-			'filePath': 'data/run tumble square n={} iter={}'.format(n, iter),
+			'name': 'Run and Tumble Rectangle',
+			'filePath': 'data/run tumble Rectangle n={} iter={}'.format(n, iter),
 			'moveFn': runtumble.moveParticles,
-			'boundary': hardboundary.Square(particlesim.R_MAX * 2)
+			'boundary': hardboundary.Rectangle(particlesim.R_MAX * 4, particlesim.R_MAX / 2)
 		},
 		{
-			'name': 'Langevin Square',
-			'filePath': 'data/langevin square n={} iter={}'.format(n, iter),
+			'name': 'Langevin Rectangle',
+			'filePath': 'data/langevin Rectangle n={} iter={}'.format(n, iter),
 			'moveFn': langevin.moveParticles,
-			'boundary': hardboundary.Square(particlesim.R_MAX * 2)
+			'boundary': hardboundary.Rectangle(particlesim.R_MAX * 4, particlesim.R_MAX / 2)
 		},
 		# {
 		# 	'name': 'Metropolis',
