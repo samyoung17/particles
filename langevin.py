@@ -8,8 +8,9 @@ GAMMA = 0.1
 S = 0.2
 T = 2 * M * pow(S,2) / np.pi
 
-BOUNDARY = hardboundary.Rectangle(particlesim.R_MAX, particlesim.R_MAX * 2)
+# BOUNDARY = hardboundary.Rectangle(particlesim.R_MAX, particlesim.R_MAX * 2)
 # BOUNDARY = hardboundary.Circle(particlesim.R_MAX)
+BOUNDARY = hardboundary.WierdQuadrilateral()
 
 def moveParticles(particles, t, boundary):
 	var = 2 * GAMMA * T * t
@@ -20,7 +21,7 @@ def moveParticles(particles, t, boundary):
 		x0, v0 = particle.x, particle.v
 		dv = - (GAMMA/M)*v0*t + (1/M)*b[i]
 		v = v0 + dv
-		x = x0 + v * t
+		x = x0 + v0 * t
 		x,v = boundary.bounceIfHits(x0, v0, x, v)
 		particle.x, particle.v = x, v
 
