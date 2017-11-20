@@ -31,3 +31,7 @@ def expectedNormMultivariateGaussian(sigma):
 	# formula derived in https://arxiv.org/abs/1012.0621
 	# https://math.stackexchange.com/questions/827826/average-norm-of-a-n-dimensional-vector-given-by-a-normal-distribution
 	return sigma * math.sqrt(2) * math.gamma((N+1)/2) / math.gamma(N/2)
+
+def normalVector(x):
+	r, theta = cartToPolar(x)
+	return polarToCart((r, theta + np.pi/2))

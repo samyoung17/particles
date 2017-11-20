@@ -96,9 +96,9 @@ class WierdQuadrilateral(object):
 
 	def __init__(self):
 		a = (-10.0,-10.0)
-		b = (-2.0, 0.0)
-		c = (7.0, 5.0)
-		d = (2.0, -3.0)
+		b = (-3.0, 2.0)
+		c = (7.0, 4.0)
+		d = (9.0, 0)
 		self.lineSegments = [
 				geom.LineString((a,b)),
 				geom.LineString((b,c)),
@@ -110,24 +110,36 @@ class WierdQuadrilateral(object):
 	def bounceIfHits(self, x0, v0, x, v):
 		trajectory = geom.LineString([x0, x])
 		xPrime, vPrime = x, v
-		for seg in self.lineSegments:
-			intersection = seg.intersection(trajectory)
-			if not intersection.is_empty:
-				a = np.array([intersection.x, intersection.y])
-				c = np.array(seg.coords[1]) - np.array(seg.coords[0])
-				n = np.array((c[1], c[0]))
-				nHat = n / np.linalg.norm(n)
-				xPrime = x - 2*np.dot(x-a, nHat)*nHat
-				vPrime = v - 2*np.dot(v, nHat)*nHat
-			if not self.contains(xPrime):
-				self.testPlot(a,n,x,x0, seg)
+		if not self.contains(x0):
+			raise ValueError('Particle has escaped boundary', x0)
+		elif not self.contains(x):
+			for seg in self.lineSegments:
+				intersection = seg.intersection(trajectory)
+				if not intersection.is_empty:
+					a = np.array([intersection.x, intersection.y])
+					c = np.array(seg.coords[1]) - np.array(seg.coords[0])
+					n = la.normalVector(c)
+					nHat = n / np.linalg.norm(n)
+					xPrime = x - 2*np.dot(x-a, nHat)*nHat
+					vPrime = v - 2*np.dot(v, nHat)*nHat
+					if not self.contains(xPrime):
+						# Use recursion in case of multiple bounces
+						# Move a slightly closer to the origin, to ensure that its inside the shape
+						xPrime, vPrime = self.bounceIfHits(a * 0.999999, v0, xPrime, vPrime)
 		return xPrime,vPrime
 
-	def testPlot(self, a, n, x, x0, seg):
-		return
+	def testPlot(self, x0, x, xPrime, a, c, nHat):
+		w,z = self.polygon.exterior.xy
+		plt.plot(w,z)
+		w,z = zip(x0, x)
+		plt.plot(w,z)
+		w,z = zip(a, a+nHat)
+		plt.plot(w,z)
+		plt.show()
 
 	def contains(self, x):
 		return self.polygon.contains(geom.Point(x))
 
 	def plot(self, axes):
-		return
+		w, z = self.polygon.exterior.xy
+		axes.plot(w, z, color='g')
