@@ -16,22 +16,34 @@ def getConfig(n, iter):
 			'boundary': hardboundary.Circle(particlesim.R_MAX)
 		},
 		{
-			'name': 'Langevin Circle',
-			'filePath': 'data/langevin circle n={} iter={}'.format(n, iter),
-			'moveFn': langevin.moveParticles,
-			'boundary': hardboundary.Circle(particlesim.R_MAX)
-		},
-		{
 			'name': 'Run and Tumble Rectangle',
 			'filePath': 'data/run tumble Rectangle n={} iter={}'.format(n, iter),
 			'moveFn': runtumble.moveParticles,
 			'boundary': hardboundary.Rectangle(particlesim.R_MAX * 4, particlesim.R_MAX / 2)
 		},
 		{
+			'name': 'Run and Tumble Quadrilateral',
+			'filePath': 'data/run tumble Quadrilateral n={} iter={}'.format(n, iter),
+			'moveFn': runtumble.moveParticles,
+			'boundary': hardboundary.WierdQuadrilateral()
+		},
+		{
+			'name': 'Langevin Circle',
+			'filePath': 'data/langevin circle n={} iter={}'.format(n, iter),
+			'moveFn': langevin.moveParticles,
+			'boundary': hardboundary.Circle(particlesim.R_MAX)
+		},
+		{
 			'name': 'Langevin Rectangle',
 			'filePath': 'data/langevin Rectangle n={} iter={}'.format(n, iter),
 			'moveFn': langevin.moveParticles,
 			'boundary': hardboundary.Rectangle(particlesim.R_MAX * 4, particlesim.R_MAX / 2)
+		},
+		{
+			'name': 'Langevin Quadrilateral',
+			'filePath': 'data/langevin Quadrilateral n={} iter={}'.format(n, iter),
+			'moveFn': langevin.moveParticles,
+			'boundary': hardboundary.WierdQuadrilateral()
 		},
 		# {
 		# 	'name': 'Metropolis',

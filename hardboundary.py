@@ -5,7 +5,9 @@ import matplotlib.pyplot as plt
 
 EPSILON = 0.00000000000000001
 
-def bounceIfHitsSegment(lineSegments, x0, v0, x, v):
+def bounceIfHitsSegment(lineSegments, polygon, x0, v0, x, v):
+	if not polygon.contains(geom.Point(x0)):
+		raise ValueError('Particle has escaped boundary', x0)
 	trajectory = geom.LineString([x0, x])
 	xPrime, vPrime = x, v
 	for seg in lineSegments:
@@ -13,11 +15,16 @@ def bounceIfHitsSegment(lineSegments, x0, v0, x, v):
 		if not intersection.is_empty:
 			a = np.array([intersection.x, intersection.y])
 			c = np.array(seg.coords[1]) - np.array(seg.coords[0])
-			n = np.array((c[1], c[0]))
+			n = la.normalVector(c)
 			nHat = n / np.linalg.norm(n)
 			xPrime = x - 2*np.dot(x-a, nHat)*nHat
 			vPrime = v - 2*np.dot(v, nHat)*nHat
+			if not polygon.contains(geom.Point(xPrime)):
+				# Use recursion in case of multiple bounces
+				# Move the intersection point slightly closer to the origin, to ensure that its inside the shape
+				xPrime, vPrime = bounceIfHitsSegment(lineSegments, polygon, a * 0.999999, v0, xPrime, vPrime)
 	return xPrime,vPrime
+
 
 class Circle(object):
 
@@ -58,7 +65,7 @@ class Square(object):
 		self.polygon = geom.Polygon([(-l/2, -l/2), (-l/2, l/2), (l/2, l/2), (l/2, -l/2)])
 
 	def bounceIfHits(self, x0, v0, x, v):
-		return bounceIfHitsSegment(self.lineSegments, x0, v0, x, v)
+		return bounceIfHitsSegment(self.lineSegments, self.polygon, x0, v0, x, v)
 
 	def contains(self, x):
 		return self.polygon.contains(geom.Point(x))
@@ -82,7 +89,7 @@ class Rectangle(object):
 		self.polygon = geom.Polygon([(-l/2, -h/2), (-l/2, h/2), (l/2, h/2), (l/2, -h/2)])
 
 	def bounceIfHits(self, x0, v0, x, v):
-		return bounceIfHitsSegment(self.lineSegments, x0, v0, x, v)
+		return bounceIfHitsSegment(self.lineSegments, self.polygon, x0, v0, x, v)
 
 	def contains(self, x):
 		return self.polygon.contains(geom.Point(x))
@@ -108,25 +115,7 @@ class WierdQuadrilateral(object):
 		self.polygon = geom.Polygon([a,b,c,d])
 
 	def bounceIfHits(self, x0, v0, x, v):
-		trajectory = geom.LineString([x0, x])
-		xPrime, vPrime = x, v
-		if not self.contains(x0):
-			raise ValueError('Particle has escaped boundary', x0)
-		elif not self.contains(x):
-			for seg in self.lineSegments:
-				intersection = seg.intersection(trajectory)
-				if not intersection.is_empty:
-					a = np.array([intersection.x, intersection.y])
-					c = np.array(seg.coords[1]) - np.array(seg.coords[0])
-					n = la.normalVector(c)
-					nHat = n / np.linalg.norm(n)
-					xPrime = x - 2*np.dot(x-a, nHat)*nHat
-					vPrime = v - 2*np.dot(v, nHat)*nHat
-					if not self.contains(xPrime):
-						# Use recursion in case of multiple bounces
-						# Move a slightly closer to the origin, to ensure that its inside the shape
-						xPrime, vPrime = self.bounceIfHits(a * 0.999999, v0, xPrime, vPrime)
-		return xPrime,vPrime
+		return bounceIfHitsSegment(self.lineSegments, self.polygon, x0, v0, x, v)
 
 	def testPlot(self, x0, x, xPrime, a, c, nHat):
 		w,z = self.polygon.exterior.xy
