@@ -1,8 +1,12 @@
 import particlesim
+import electrostaticboundary
 import numpy as np
 
+# BOUNDARY = electrostaticboundary.Circle(particlesim.R_MAX)
+BOUNDARY = electrostaticboundary.Square(2 * particlesim.R_MAX)
+
 K_E  = 1
-NU = 0.1
+NU = 0.02
 M = 1
 
 def forceBetweenTwoPointCharges(q1, q2, r):
@@ -15,26 +19,17 @@ def forceBetweenTwoPointChargesUnitConstants(r, qSquared):
 def forceDueToDragUnitConstants(v, m):
 	return - NU * v * m
 
-def boundingForce(x, q, n):
-	r = np.linalg.norm(x)
-	xUnit = x / r
-	return  - K_E * n * q * q * xUnit / pow(particlesim.R_MAX - r, 2)
-
-def boundingForceUnitConstants(x, q, n):
-	r = np.linalg.norm(x)
-	xUnit = x / r
-	return  - xUnit * q / pow(particlesim.R_MAX - r, 2)
-
 def moveParticles(particles, t, boundary):
 	q = 1.0 / len(particles)
 	for i, particle in enumerate(particles):
 		other_particles = particles[:i] + particles[i + 1:]
 		displacements = map(lambda p: p.x - particle.x, other_particles)
 		forces = map(lambda r: forceBetweenTwoPointChargesUnitConstants(r, q**2), displacements)
-		F = sum(forces) + boundingForceUnitConstants(particle.x, q, len(particles))
 		x0, v0 = particle.x, particle.v
+		F = sum(forces)
+		Fb = boundary.force(x0, q)
 		Fd = forceDueToDragUnitConstants(v0, M)
-		a = (F + Fd) / M
+		a = (F + Fb + Fd) / M
 		v = a * t + v0
 		x = x0 + (v + v0) / 2
 		particle.x, particle.v, particle.F, particle.Fd = x, v, F, Fd
@@ -42,8 +37,8 @@ def moveParticles(particles, t, boundary):
 def main():
 	n, iterations = 100, 1000
 	folder = 'data/electrostatic n={} iter={}'.format(n, iterations)
-	data = particlesim.simulate(iterations, n, moveParticles, folder)
-	particlesim.motionAnimation(data, 15)
+	data = particlesim.simulate(iterations, n, moveParticles, folder, BOUNDARY)
+	particlesim.motionAnimation(data, 15, BOUNDARY)
 
 if __name__ == '__main__':
 	main()
