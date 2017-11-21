@@ -5,7 +5,7 @@ import numpy as np
 BOUNDARY = electrostaticboundary.Circle(particlesim.R_MAX)
 # BOUNDARY = electrostaticboundary.Square(2 * particlesim.R_MAX)
 
-EPSILON = 0.0001
+EPSILON = 0.00001
 
 K_E  = 1
 NU = 0.02
@@ -35,8 +35,8 @@ def moveParticles(particles, t, boundary):
 		v = a * t + v0
 		x = x0 + (v + v0) * t / 2
 		# Prevent the particles from jumping across the boundary in between timesteps
-		while not boundary.contains(x * (1 + EPSILON)):
-			x = (x0 + x) / 2
+		if not boundary.contains(x * (1 + EPSILON)):
+			x = x0
 		particle.x, particle.v, particle.F, particle.Fd = x, v, F, Fd
 
 def main():
