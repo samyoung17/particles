@@ -2,8 +2,8 @@ import particlesim
 import electrostaticboundary
 import numpy as np
 
-# BOUNDARY = electrostaticboundary.Circle(particlesim.R_MAX)
-BOUNDARY = electrostaticboundary.Square(2 * particlesim.R_MAX)
+BOUNDARY = electrostaticboundary.Circle(particlesim.R_MAX)
+# BOUNDARY = electrostaticboundary.Square(2 * particlesim.R_MAX)
 
 EPSILON = 0.0001
 

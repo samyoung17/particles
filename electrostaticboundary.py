@@ -2,7 +2,7 @@ import numpy as np
 import linalgutil as la
 import shapely.geometry as geom
 import matplotlib.pyplot as plt
-
+import scipy.special
 
 def perpendicularDistanceToLine(y1, y2, x):
 	a = np.linalg.norm(x - y2)
@@ -28,23 +28,31 @@ def forceDueToSegment(seg, x, rho):
 	verticalUnit = la.normalVector(horizontalUnit)
 	return Ex * horizontalUnit + Ez * verticalUnit
 
+def forceDueToRing(rho, r, s):
+	# rho is the charge density on the ring
+	# r is the distance from the point to the origin
+	# s is the radius of the ring
+	return 2 * rho * s/r * np.sign(r-s) * \
+			 (scipy.special.ellipe(-4*r*s/(r-s)**2)/(r+s) + scipy.special.ellipk(-4*r*s/(r-s)**2)/(r-s))
 
 
 class Circle(object):
 
 	def __init__(self, r):
-		self.r = float(r)
+		self.rMax = float(r)
 		self.circle = geom.Point(0,0).buffer(float(r)).boundary
 
 	def force(self, x, q):
-		xUnit = x / np.linalg.norm(x)
-		return - xUnit * q / pow(self.r - np.linalg.norm(x), 2)
+		r, theta = la.cartToPolar(x)
+		xUnit = la.polarToCart((1, theta))
+		rho = 1 / (2 * np.pi * self.rMax)
+		return xUnit * q * forceDueToRing(rho, r, self.rMax)
 
 	def contains(self, x):
-		return np.linalg.norm(x) < self.r
+		return np.linalg.norm(x) < self.rMax
 
 	def plot(self, axes):
-		circle = plt.Circle((0,0), radius=self.r, color='g', fill=False)
+		circle = plt.Circle((0,0), radius=self.rMax, color='g', fill=False)
 		axes.add_patch(circle)
 
 
