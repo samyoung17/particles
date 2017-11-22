@@ -2,8 +2,9 @@ import particlesim
 import electrostaticboundary
 import numpy as np
 
-BOUNDARY = electrostaticboundary.Circle(particlesim.R_MAX)
-# BOUNDARY = electrostaticboundary.Square(2 * particlesim.R_MAX)
+# BOUNDARY = electrostaticboundary.Circle(particlesim.R_MAX)
+# BOUNDARY = electrostaticboundary.Rectangle(particlesim.R_MAX, particlesim.R_MAX * 2)
+BOUNDARY = electrostaticboundary.WierdQuadrilateral()
 
 EPSILON = 0.00001
 
@@ -40,7 +41,7 @@ def moveParticles(particles, t, boundary):
 		particle.x, particle.v, particle.F, particle.Fd = x, v, F, Fd
 
 def main():
-	n, iterations = 100, 2000
+	n, iterations = 50, 4000
 	folder = 'data/electrostatic n={} iter={}'.format(n, iterations)
 	data = particlesim.simulate(iterations, n, moveParticles, folder, BOUNDARY)
 	particlesim.motionAnimation(data, 20, BOUNDARY)

@@ -94,6 +94,11 @@ class Rectangle(object):
 				geom.LineString([(l/2, -h/2), (-l/2, -h/2)])
 			]
 		self.polygon = geom.Polygon([(-l/2, -h/2), (-l/2, h/2), (l/2, h/2), (l/2, -h/2)])
+		self.perimeterLength = 2*l + 2*h
+
+	def force(self, x, q):
+		forces = map(lambda seg: q * forceDueToSegment(seg, x, seg.length/self.perimeterLength), self.lineSegments)
+		return sum(forces)
 
 	def contains(self, x):
 		return self.polygon.contains(geom.Point(x))
@@ -117,6 +122,11 @@ class WierdQuadrilateral(object):
 				geom.LineString((d,a))
 			]
 		self.polygon = geom.Polygon([a,b,c,d])
+		self.perimeterLength = sum(map(lambda seg: seg.length, self.lineSegments))
+
+	def force(self, x, q):
+		forces = map(lambda seg: q * forceDueToSegment(seg, x, seg.length/self.perimeterLength), self.lineSegments)
+		return sum(forces)
 
 	def contains(self, x):
 		return self.polygon.contains(geom.Point(x))
