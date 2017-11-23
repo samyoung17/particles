@@ -9,7 +9,7 @@ K_PROP = 1
 S_MAX = 0.3
 
 
-BOUNDARY = voronoiboundary.Circle(particlesim.R_MAX)
+BOUNDARY = voronoiboundary.Square(2*particlesim.R_MAX)
 
 class VoronoiCell:
 	def __init__(self, point, vertices=None, centroid=None):
@@ -53,13 +53,13 @@ def printVoronoi(cells, voronoi):
 	plt.show()
 
 def createVornoiCells(points):
-	voronoi = scipy.spatial.Voronoi(points)
+	vrnoi = scipy.spatial.Voronoi(points)
 	cells = []
-	allRidges = createRidgeDict(voronoi)
-	for p1 in range(len(voronoi.points)):
-		regionVertices = findRegionVertices(voronoi, p1, allRidges[p1])
+	allRidges = createRidgeDict(vrnoi)
+	for p1 in range(len(vrnoi.points)):
+		regionVertices = findRegionVertices(vrnoi, p1, allRidges[p1])
 		centroid = calculateCentroid(regionVertices)
-		cells.append(VoronoiCell(voronoi.points[p1], regionVertices, centroid))
+		cells.append(VoronoiCell(vrnoi.points[p1], regionVertices, centroid))
 	# printVoronoi(cells, voronoi)
 	return cells
 
@@ -79,8 +79,8 @@ def moveParticles(particles, t, boundary):
 def main():
 	n, iterations = 50, 1000
 	folder = 'data/voronoi n={} iter={}'.format(n, iterations)
-	data = particlesim.simulate(iterations, n, moveParticles, folder)
-	particlesim.motionAnimation(data, 15)
+	data = particlesim.simulate(iterations, n, moveParticles, folder, BOUNDARY)
+	particlesim.motionAnimation(data, 15, BOUNDARY)
 
 if __name__=='__main__':
 	main()

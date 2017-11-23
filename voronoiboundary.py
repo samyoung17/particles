@@ -17,6 +17,12 @@ def testPlot(v, x1, x2, endpoint, rMax):
 	axes.scatter([x1[0], x2[0]], [x1[1], x2[1]], c='r')
 	plt.show()
 
+def findRidgeUnit(v, midpoint):
+	ridgeUnit = (midpoint - v) / np.linalg.norm(midpoint - v)
+	if np.dot(midpoint, ridgeUnit) < 0:
+		ridgeUnit = -ridgeUnit
+	return ridgeUnit
+
 def findIntersectionWithCircle(v, midpoint, rMax):
 	'''
 	We use the geometry of a triangle with points (origin, midpoint, new boundary vertex)
@@ -26,9 +32,7 @@ def findIntersectionWithCircle(v, midpoint, rMax):
 		beta is the angle between the midpoint/boundary vertex vector and the boundary vertex vector
 		gamma is the angle between the boundary vertex vector and the midpoint vector
 	'''
-	ridgeUnit = (midpoint - v) / np.linalg.norm(midpoint - v)
-	if np.dot(midpoint, ridgeUnit) < 0:
-		ridgeUnit = -ridgeUnit
+	ridgeUnit = findRidgeUnit(v, midpoint)
 	r, theta = la.cartToPolar(v)
 	s, phi = la.cartToPolar(ridgeUnit)
 	alpha = np.pi - theta + phi
@@ -43,6 +47,18 @@ def findIntersectionWithCircle(v, midpoint, rMax):
 	intersectingPoint = la.polarToCart((c, phi)) + midpoint
 	return intersectingPoint
 
+def findIntersectionWithPolygon(v, midpoint, rMax, segments):
+	ridgeUnit = findRidgeUnit(v, midpoint)
+	endpoint = v + rMax * ridgeUnit
+	trajectory = geom.LineString([v, endpoint])
+	for seg in segments:
+		intersection = seg.intersection(trajectory)
+		if not intersection.is_empty:
+			return np.array([intersection.x, intersection.y])
+	raise ValueError('No intersection found')
+
+def boundPointByPolygon(x, rMax, segments):
+	return findIntersectionWithPolygon(np.array([0,0]), x, rMax, segments)
 
 class Circle(object):
 
@@ -68,3 +84,36 @@ class Circle(object):
 	def plot(self, axes):
 		circle = plt.Circle((0,0), radius=self.rMax, color='g', fill=False)
 		axes.add_patch(circle)
+
+
+class Square(object):
+
+	def __init__(self, l):
+		self.l = l
+		self.lineSegments = [
+				geom.LineString([(-l/2, -l/2), (-l/2, l/2)]),
+				geom.LineString([(-l/2, l/2), (l/2, l/2)]),
+				geom.LineString([(l/2, l/2), (l/2, -l/2)]),
+				geom.LineString([(l/2, -l/2), (-l/2, -l/2)])
+			]
+		self.polygon = geom.Polygon([(-l/2, -l/2), (-l/2, l/2), (l/2, l/2), (l/2, -l/2)])
+
+	def findBoundaryVertices(self, p1, ridges, voronoi):
+		semiInfiniteRidges = filter(lambda (p2, v1, v2): v1 == -1 or v2 == -1, ridges)
+		boundaryVertices = []
+		for ridge in semiInfiniteRidges:
+			p2, v1, v2 = ridge
+			vertex = voronoi.vertices[v1 if v1 >= 0 else v2]
+			if not self.contains(vertex):
+				vertex = boundPointByPolygon(vertex, self.l, self.lineSegments) * 0.95
+			midpoint = (voronoi.points[p1] + voronoi.points[p2]) / 2
+			endpoint = findIntersectionWithPolygon(vertex, midpoint, self.l, self.lineSegments)
+			boundaryVertices.append(endpoint)
+		return boundaryVertices
+
+	def contains(self, x):
+		return self.polygon.contains(geom.Point(x))
+
+	def plot(self, axes):
+		rectangle = plt.Rectangle((-self.l/2,-self.l/2), self.l, self.l, color='g', fill=False)
+		axes.add_patch(rectangle)
