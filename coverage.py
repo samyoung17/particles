@@ -101,12 +101,8 @@ def coverageComparison(dataSets, pool):
 def main():
 	config = coverageconfig.getConfig(N, ITERATIONS)
 	pool = Pool(len(config))
-	if all(map(lambda c: os.path.isdir(c['filePath']), config)):
-		print('Loading data...')
-		dataSets = pool.map_async(loadDataFromFile, config).get(TIMEOUT)
-	else:
-		print('Running simulations...')
-		dataSets = pool.map_async(runSimulations, config).get(TIMEOUT)
+	print('Running simulations...')
+	dataSets = pool.map_async(runSimulations, config).get(TIMEOUT)
 	print('\nCalculating coverage distances...')
 	coverageComparison(dataSets, pool)
 
