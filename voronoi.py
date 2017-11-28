@@ -9,7 +9,7 @@ K_PROP = 1
 S_MAX = 0.3
 
 
-BOUNDARY = voronoiboundary.Square(2*particlesim.R_MAX)
+BOUNDARY = voronoiboundary.Circle(particlesim.R_MAX)
 
 class VoronoiCell:
 	def __init__(self, point, vertices=None, centroid=None):

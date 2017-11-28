@@ -4,13 +4,10 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import linalgutil as la
 import datamodel
-import hardboundary
 
 R_0 = 1
 R_MAX = 10
 TIMESTEP = 0.5
-
-DEFAULT_BOUNDARY = hardboundary.Circle(R_MAX)
 
 class Particle(object):
 	def __init__(self, x, v):
@@ -63,7 +60,7 @@ def logIteration(i, iterations):
 	sys.stdout.write("\rCalculating... %.2f%%" % perc)
 	sys.stdout.flush()
 
-def simulate(iterations, n, moveFn, folder, boundary=DEFAULT_BOUNDARY):
+def simulate(iterations, n, moveFn, folder, boundary):
 	particles = initParticles(n, R_0)
 	targets = initTargets(float(R_MAX) / 10, R_MAX, boundary)
 	data = datamodel.Data(folder, 'w+', iterations, n, len(targets))
@@ -79,7 +76,7 @@ def draw(i, scat, data):
 	scat.set_offsets(points)
 	return scat,
 
-def motionAnimation(data, speedMultiplier, boundary=DEFAULT_BOUNDARY):
+def motionAnimation(data, speedMultiplier, boundary):
 	fig = plt.figure()
 	axes = plt.gca()
 	padding = 1.5
