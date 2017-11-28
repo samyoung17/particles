@@ -2,6 +2,7 @@ import hardboundary
 import particlesim
 import langevin
 import runtumble
+import linearrepulsion
 import metropolis
 import brownianmotion
 import voronoi
@@ -84,5 +85,24 @@ def getConfig(n, iter):
 			'filePath': 'data/electrostatic quadrilateral n={} iter={}'.format(n, iter),
 			'moveFn': electrostaticforce.moveParticles,
 			'boundary': electrostaticboundary.CompactPolygon(WIERD_QUADRILATERAL_VERTICES)
+		},
+
+		{
+			'name': 'Linear Repulsion Circle',
+			'filePath': 'data/linear repulsion circle n={} iter={}'.format(n, iter),
+			'moveFn': linearrepulsion.moveParticles,
+			'boundary': hardboundary.Circle(particlesim.R_MAX)
+		},
+		{
+			'name': 'Linear Repulsion Rectangle',
+			'filePath': 'data/linear repulsion Rectangle n={} iter={}'.format(n, iter),
+			'moveFn': linearrepulsion.moveParticles,
+			'boundary': hardboundary.CompactPolygon(RECTANGLE_VERTICES)
+		},
+		{
+			'name': 'Linear Repulsion Quadrilateral',
+			'filePath': 'data/linear repulsion Quadrilateral n={} iter={}'.format(n, iter),
+			'moveFn': linearrepulsion.moveParticles,
+			'boundary': hardboundary.CompactPolygon(WIERD_QUADRILATERAL_VERTICES)
 		}
 	]
