@@ -5,8 +5,7 @@ import hardboundary
 RATE = 0.1
 S = 0.2
 
-BOUNDARY = hardboundary.Square(2 * particlesim.R_MAX)
-# BOUNDARY = hardboundary.Circle(particlesim.R_MAX)
+BOUNDARY = hardboundary.CompactPolygon([(-10.0, -10.0), (-3.0, 2.0), (7.0, 4.0), (9.0, 0.0)])
 
 def newDirection(angle, rng):
 	theta = angle + np.random.uniform(rng[0], rng[1])

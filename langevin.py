@@ -2,15 +2,14 @@ import numpy as np
 import particlesim
 import hardboundary
 import matplotlib.pyplot as plt
+import coverageconfig
 
 M = 1.0
 GAMMA = 0.1
 S = 0.2
 T = 2 * M * pow(S,2) / np.pi
 
-# BOUNDARY = hardboundary.Rectangle(particlesim.R_MAX, particlesim.R_MAX * 2)
-# BOUNDARY = hardboundary.Circle(particlesim.R_MAX)
-BOUNDARY = hardboundary.WierdQuadrilateral()
+BOUNDARY = hardboundary.CompactPolygon(coverageconfig.WIERD_QUADRILATERAL_VERTICES)
 
 def moveParticles(particles, t, boundary):
 	var = 2 * GAMMA * T * t
