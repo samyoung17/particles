@@ -2,14 +2,13 @@ import numpy as np
 import particlesim
 import hardboundary
 import matplotlib.pyplot as plt
-import coverageconfig
 
 M = 1.0
 GAMMA = 0.1
 S = 0.2
 T = 2 * M * pow(S,2) / np.pi
 
-BOUNDARY = hardboundary.CompactPolygon(coverageconfig.WIERD_QUADRILATERAL_VERTICES)
+BOUNDARY = hardboundary.CompactPolygon([(-10.0, -10.0), (-3.0, 2.0), (7.0, 4.0), (9.0, 0.0)])
 
 def moveParticles(particles, t, boundary):
 	var = 2 * GAMMA * T * t
