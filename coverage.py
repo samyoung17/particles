@@ -105,6 +105,7 @@ def main():
 	dataSets = pool.map_async(runSimulations, config).get(TIMEOUT)
 	print('\nCalculating coverage distances...')
 	coverageComparison(dataSets, pool)
+	print('\n')
 
 if __name__=='__main__':
 	main()
