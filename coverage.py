@@ -67,13 +67,13 @@ def calculateCoverage(dataSet):
 def drawGraph(df, algoNames):
 	plots = []
 	for name in algoNames:
-		plot, = plt.plot(df[name + '.distance'], df[name + '.coverage'], label=name)
+		plot, = plt.plot(df['time'], df[name + '.coverage'], label=name)
 		plots.append(plot)
 	plt.axhline(y=LOWER_BOUND, color='k')
 	plt.axhline(y=UPPER_BOUND, color='k')
 	plt.axhline(y=EXPECTED_DISTANCE, color='k')
 	plt.legend(plots)
-	plt.xlabel('Mean distance travelled')
+	plt.xlabel('Time')
 	plt.ylabel('Coverage distance')
 	plt.gca().set_ylim(bottom=0)
 	plt.title('Maximum distance to from target to nearest particle')
