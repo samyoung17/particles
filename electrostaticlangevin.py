@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 M = 1.0
 GAMMA = 0.1
-S = 0.03
+S = 0.01
 T = 2 * M * pow(S,2) / np.pi
 
 R_NEIGHBOUR = 3.0
@@ -36,8 +36,8 @@ def moveParticles(particles, t, boundary):
 		particle.x, particle.v = x, v
 
 def main():
-	n, iterations = 100, 2000
-	folder = 'data/langevin n={} iter={}'.format(n, iterations)
+	n, iterations = 200, 2000
+	folder = 'data/electrostatic langevin n={} iter={}'.format(n, iterations)
 	data = particlesim.simulate(iterations, n, moveParticles, folder, BOUNDARY)
 	particlesim.motionAnimation(data, 15, BOUNDARY)
 
