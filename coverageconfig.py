@@ -6,14 +6,15 @@ import voronoi
 import voronoiboundary
 import electrostaticforce
 import electrostaticboundary
+import electrostaticlangevin
 
 WIERD_QUADRILATERAL_VERTICES = [(-10.0, -10.0), (-3.0, 2.0), (7.0, 4.0), (9.0, 0.0)]
 RECTANGLE_VERTICES = [(-15.71, -3.93), (-15.71, 3.93), (15.71, 3.93), (15.71, -3.93)]
 SQUARE_VERTICES = [(-7.86, -7.86), (-7.86, 7.86), (7.86, 7.86), (7.86, -7.86)]
 R_MAX = 10.0
 
-ITERATIONS = 1000
-N = 100
+ITERATIONS = 2000
+N = 200
 
 SHAPE_COMPARISON = [
 	{
@@ -98,4 +99,28 @@ SHAPE_COMPARISON = [
 	# 	'moveFn': linearrepulsion.moveParticles,
 	# 	'boundary': hardboundary.CompactPolygon(WIERD_QUADRILATERAL_VERTICES)
 	# }
+]
+
+ELECTROSTATIC_LANGEVIN_COMPARISON = [
+	{
+		'name': 'EL qTotal=1',
+		'filePath': 'data/EL qTotal=1'.format(N, ITERATIONS),
+		'moveFn': electrostaticlangevin.moveParticles,
+		'boundary': hardboundary.Circle(R_MAX),
+		'params': {'m': 1.0, 'gamma': 0.1, 's': 0.01, 'rNeighbour': 3.0, 'qTotal': 1.0}
+	},
+	{
+		'name': 'EL qTotal=2',
+		'filePath': 'data/EL qTotal=2'.format(N, ITERATIONS),
+		'moveFn': electrostaticlangevin.moveParticles,
+		'boundary': hardboundary.Circle(R_MAX),
+		'params': {'m': 1.0, 'gamma': 0.1, 's': 0.01, 'rNeighbour': 3.0, 'qTotal': 2.0}
+	},
+	{
+		'name': 'EL qTotal=3',
+		'filePath': 'data/EL qTotal=3'.format(N, ITERATIONS),
+		'moveFn': electrostaticlangevin.moveParticles,
+		'boundary': hardboundary.Circle(R_MAX),
+		'params': {'m': 1.0, 'gamma': 0.1, 's': 0.01, 'rNeighbour': 3.0, 'qTotal': 3.0}
+	}
 ]
