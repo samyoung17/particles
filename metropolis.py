@@ -9,6 +9,7 @@ S = 0.2
 FUDGE = 0.17
 SIGMA = S * particlesim.TIMESTEP * linalgutil.expectedNormMultivariateGaussian(1) * FUDGE
 COV = [[pow(SIGMA, 2), 0], [0, pow(SIGMA, 2)]]
+R_MAX = 10.0
 
 def M(x):
 	return np.exp(-LAMBDA * np.linalg.norm(x))
@@ -33,16 +34,16 @@ def chiInverse(s):
 
 def rNtoBall(x):
 	(r, theta) = linalgutil.cartToPolar(x)
-	return linalgutil.polarToCart((chi(r) * particlesim.R_MAX, theta))
+	return linalgutil.polarToCart((chi(r) * R_MAX, theta))
 
 def ballToRn(x):
 	(r, theta) = linalgutil.cartToPolar(x)
-	return linalgutil.polarToCart((chiInverse(r / particlesim.R_MAX), theta))
+	return linalgutil.polarToCart((chiInverse(r / R_MAX), theta))
 
 def P(y):
 	return np.random.multivariate_normal(y, COV)
 
-def moveParticles(particles, t, boundary):
+def moveParticles(particles, t, boundary, params):
 	# Metropolis Algorithm for even sampling accross a convex region
 	# From Bubley, Dyer and Jerrum 1997
 	for i, particle in enumerate(particles):
@@ -59,7 +60,7 @@ def main():
 	iterations = 1000
 	n = 10
 	folder = 'data/metropolis n={} iter={}'.format(n, iterations)
-	data = particlesim.simulate(iterations, n, moveParticles, folder)
+	data = particlesim.simulate(iterations, n, moveParticles, folder, None)
 	particlesim.motionAnimation(data, 50)
 
 if __name__=='__main__':

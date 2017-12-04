@@ -8,8 +8,6 @@ R_NEIGHBOUR = 2.0
 REPULSION = 0.02
 DRAG = 0.02
 
-# BOUNDARY = hardboundary.Square(2 * particlesim.R_MAX)
-BOUNDARY = hardboundary.Circle(particlesim.R_MAX)
 
 def newDirection(angle, rng):
 	theta = angle + np.random.uniform(rng[0], rng[1])
@@ -21,7 +19,7 @@ def findNearbyParticles(particles, distances):
 	indices = filter(lambda j: distances[j] > 0 and distances[j] < R_NEIGHBOUR, range(len(particles)))
 	return map(lambda j: particles[j], indices)
 
-def moveParticles(particles, t, boundary):
+def moveParticles(particles, t, boundary, params):
 	D = linalgutil.distanceMatrix(map(lambda p: p.x, particles))
 	for i, particle in enumerate(particles):
 		nearbyParticles = findNearbyParticles(particles, D[i,:])
@@ -36,8 +34,9 @@ def moveParticles(particles, t, boundary):
 def main():
 	n, iterations = 50, 1000
 	folder = 'data/repulsion n={} iter={}'.format(n, iterations)
-	data = particlesim.simulate(iterations, n, moveParticles, folder, BOUNDARY)
-	particlesim.motionAnimation(data, 15, BOUNDARY)
+	boundary = hardboundary.Circle(10.0)
+	data = particlesim.simulate(iterations, n, moveParticles, folder, boundary)
+	particlesim.motionAnimation(data, 15, boundary)
 
 if __name__=='__main__':
 	main()

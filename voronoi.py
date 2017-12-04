@@ -9,8 +9,6 @@ K_PROP = 1
 S_MAX = 0.3
 
 
-BOUNDARY = voronoiboundary.Circle(particlesim.R_MAX)
-
 class VoronoiCell:
 	def __init__(self, point, vertices=None, centroid=None):
 		self.point = point
@@ -39,11 +37,11 @@ def createRidgeDict(voronoi):
 		all_ridges.setdefault(p2, []).append((p1, v1, v2))
 	return  all_ridges
 
-def findRegionVertices(voronoi, p1, ridges):
+def findRegionVertices(voronoi, p1, ridges, rMax, boundary):
 	regionVertexIndices = voronoi.regions[voronoi.point_region[p1]]
 	originalVertices = map(lambda i: voronoi.vertices[i], filter(lambda v1: v1>=0, regionVertexIndices))
-	boundaryVertices = BOUNDARY.findBoundaryVertices(p1, ridges, voronoi)
-	vertices = np.array(map(lambda v: la.boundPoint(v, particlesim.R_MAX), originalVertices + boundaryVertices))
+	boundaryVertices = boundary.findBoundaryVertices(p1, ridges, voronoi)
+	vertices = np.array(map(lambda v: la.boundPoint(v, rMax), originalVertices + boundaryVertices))
 	return vertices
 
 def printVoronoi(cells, voronoi):
@@ -52,12 +50,12 @@ def printVoronoi(cells, voronoi):
 	plt.scatter(centroids[:, 0], centroids[:, 1], c='r')
 	plt.show()
 
-def createVornoiCells(points):
+def createVornoiCells(points, rMax, boundary):
 	vrnoi = scipy.spatial.Voronoi(points)
 	cells = []
 	allRidges = createRidgeDict(vrnoi)
 	for p1 in range(len(vrnoi.points)):
-		regionVertices = findRegionVertices(vrnoi, p1, allRidges[p1])
+		regionVertices = findRegionVertices(vrnoi, p1, allRidges[p1], rMax, boundary)
 		centroid = calculateCentroid(regionVertices)
 		cells.append(VoronoiCell(vrnoi.points[p1], regionVertices, centroid))
 	# printVoronoi(cells, voronoi)
@@ -66,21 +64,24 @@ def createVornoiCells(points):
 def targetVelocity(cell):
 	return - K_PROP * (cell.point - cell.centroid)
 
-def moveParticles(particles, t, boundary):
+def moveParticles(particles, t, boundary, params):
+	rMax = params['rMax']
 	xx = np.array(map(lambda p: p.x, particles))
-	cells = createVornoiCells(xx)
+	cells = createVornoiCells(xx, rMax, boundary)
 	velocities = map(targetVelocity, cells)
 	for i in range(len(particles)):
 		v = velocities[i]
 		x = particles[i].x + v * t
 		particles[i].v = la.boundPoint(v, S_MAX)
-		particles[i].x = la.boundPoint(x, particlesim.R_MAX)
+		particles[i].x = la.boundPoint(x, rMax)
 
 def main():
 	n, iterations = 50, 1000
+	rMax = 10.0
 	folder = 'data/voronoi n={} iter={}'.format(n, iterations)
-	data = particlesim.simulate(iterations, n, moveParticles, folder, BOUNDARY)
-	particlesim.motionAnimation(data, 15, BOUNDARY)
+	boundary = voronoiboundary.Circle(rMax)
+	data = particlesim.simulate(iterations, n, moveParticles, folder, boundary, {'rMax': rMax})
+	particlesim.motionAnimation(data, 15, boundary)
 
 if __name__=='__main__':
 	main()

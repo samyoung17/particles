@@ -2,9 +2,6 @@ import particlesim
 import electrostaticboundary
 import numpy as np
 
-# BOUNDARY = electrostaticboundary.CompactPolygon([(-10.0, -10.0), (-3.0, 2.0), (7.0, 4.0), (9.0, 0.0)])
-BOUNDARY = electrostaticboundary.Circle(particlesim.R_MAX)
-
 EPSILON = 0.00001
 
 K_E  = 1
@@ -21,7 +18,7 @@ def forceBetweenTwoPointChargesUnitConstants(r, qSquared):
 def forceDueToDragUnitConstants(v, m):
 	return - NU * v * m
 
-def moveParticles(particles, t, boundary):
+def moveParticles(particles, t, boundary, params):
 	q = 1.0 / len(particles)
 	for i, particle in enumerate(particles):
 		other_particles = particles[:i] + particles[i + 1:]
@@ -42,8 +39,9 @@ def moveParticles(particles, t, boundary):
 def main():
 	n, iterations = 50, 4000
 	folder = 'data/electrostatic n={} iter={}'.format(n, iterations)
-	data = particlesim.simulate(iterations, n, moveParticles, folder, BOUNDARY)
-	particlesim.motionAnimation(data, 20, BOUNDARY)
+	boundary = electrostaticboundary.Circle(10.0)
+	data = particlesim.simulate(iterations, n, moveParticles, folder, boundary)
+	particlesim.motionAnimation(data, 20, boundary)
 
 if __name__ == '__main__':
 	main()

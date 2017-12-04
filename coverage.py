@@ -2,7 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from multiprocessing import Pool
 import signal
-import os
 import pandas as pd
 import scipy.special
 
@@ -10,13 +9,11 @@ import particlesim
 import datamodel
 import coverageconfig
 
-ITERATIONS = 1000
-N = 100
-
 C = np.sqrt(8 * np.pi/ (3 * np.sqrt(3)))
-LOWER_BOUND = particlesim.R_MAX / np.sqrt(N)
-UPPER_BOUND = C * particlesim.R_MAX / np.sqrt(N / np.log(N))
-EXPECTED_DISTANCE = C * particlesim.R_MAX / np.sqrt(N / np.real(scipy.special.lambertw(N)))
+LOWER_BOUND = coverageconfig.R_MAX / np.sqrt(coverageconfig.N)
+UPPER_BOUND = C * coverageconfig.R_MAX / np.sqrt(coverageconfig.N / np.log(coverageconfig.N))
+EXPECTED_DISTANCE = C * coverageconfig.R_MAX / \
+						  np.sqrt(coverageconfig.N / np.real(scipy.special.lambertw(coverageconfig.N)))
 
 TIMEOUT = 99999999999999999
 
@@ -52,7 +49,10 @@ def loadDataFromFile(algorithmProperties):
 	return dataSet
 
 def runSimulations(algorithmProps):
-	data = particlesim.simulate(ITERATIONS, N, algorithmProps['moveFn'], algorithmProps['filePath'], algorithmProps['boundary'])
+	params = algorithmProps['params'] if algorithmProps.has_key('params') else {}
+	data = particlesim.simulate(coverageconfig.ITERATIONS, coverageconfig.N,
+										 algorithmProps['moveFn'], algorithmProps['filePath'],
+										 algorithmProps['boundary'], params)
 	dataSet = {
 		'name': algorithmProps['name'],
 		'data': data
@@ -77,7 +77,7 @@ def drawGraph(df, algoNames):
 	plt.ylabel('Coverage distance')
 	plt.gca().set_ylim(bottom=0)
 	plt.title('Maximum distance to from target to nearest particle')
-	plt.savefig('data/coverage graph N={} ITER={}.png'.format(N, ITERATIONS))
+	plt.savefig('data/coverage graph N={} ITER={}.png'.format(coverageconfig.N, coverageconfig.ITERATIONS))
 	plt.show()
 
 def createDataFrame(dataSets, distanceAndCoverage):
@@ -94,14 +94,15 @@ def createDataFrame(dataSets, distanceAndCoverage):
 def coverageComparison(dataSets, pool):
 	distanceAndCoverage = dict(pool.map_async(calculateCoverage, dataSets).get(TIMEOUT))
 	df = createDataFrame(dataSets, distanceAndCoverage)
-	df.to_csv('data/coverage N={} ITER={}.csv'.format(N, ITERATIONS))
+	df.to_csv('data/coverage N={} ITER={}.csv'.format(coverageconfig.N, coverageconfig.ITERATIONS))
 	names = map(lambda d: d['name'], dataSets)
 	drawGraph(df, names)
 
 def main():
-	config = coverageconfig.getConfig(N, ITERATIONS)
+	config = coverageconfig.SHAPE_COMPARISON
 	pool = Pool(len(config))
 	print('Running simulations...')
+	# dataSets = map(runSimulations, config)
 	dataSets = pool.map_async(runSimulations, config).get(TIMEOUT)
 	print('\nCalculating coverage distances...')
 	coverageComparison(dataSets, pool)

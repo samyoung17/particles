@@ -8,10 +8,8 @@ GAMMA = 0.1
 S = 0.2
 T = 2 * M * pow(S,2) / np.pi
 
-# BOUNDARY = hardboundary.CompactPolygon([(-10.0, -10.0), (-3.0, 2.0), (7.0, 4.0), (9.0, 0.0)])
-BOUNDARY = hardboundary.Circle(particlesim.R_MAX)
 
-def moveParticles(particles, t, boundary):
+def moveParticles(particles, t, boundary, params):
 	var = 2 * GAMMA * T * t
 	cov = [[var, 0], [0, var]]
 	mean = (0, 0)
@@ -27,8 +25,9 @@ def moveParticles(particles, t, boundary):
 def main():
 	n, iterations = 20, 1000
 	folder = 'data/langevin n={} iter={}'.format(n, iterations)
-	data = particlesim.simulate(iterations, n, moveParticles, folder, BOUNDARY)
-	particlesim.motionAnimation(data, 15, BOUNDARY)
+	boundary = hardboundary.Circle(10.0)
+	data = particlesim.simulate(iterations, n, moveParticles, folder, boundary)
+	particlesim.motionAnimation(data, 15, boundary)
 
 def averageTemp(data):
 	e = np.apply_along_axis(lambda v: 0.5 * M * pow(np.linalg.norm(v), 2), 2, data.v)
