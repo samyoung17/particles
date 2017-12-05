@@ -63,7 +63,7 @@ def logIteration(i, iterations):
 def simulate(iterations, n, moveFn, folder, boundary, params={}):
 	particles = initParticles(n, R_0)
 	targets = initTargets(float(R_0), FURTHEST_TARGET, boundary)
-	data = datamodel.Data(folder, 'w+', iterations, n, len(targets))
+	data = datamodel.Data(folder, 'w+', iterations, n, len(targets), boundary)
 	recordData(particles, targets, data, 0)
 	for i in range(1, iterations):
 		moveFn(particles, TIMESTEP, boundary, params)
@@ -103,7 +103,7 @@ def averageRadialDisplacement(data):
 
 def main(filePath, speedMultiplier):
 	data = datamodel.Data(filePath, 'r')
-	motionAnimation(data, speedMultiplier)
+	motionAnimation(data, speedMultiplier, data.boundary)
 
 if __name__ == '__main__':
 	if not len(sys.argv) == 3:

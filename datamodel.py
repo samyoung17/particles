@@ -1,6 +1,7 @@
 import os
 import shutil
 import numpy as np
+import pickle
 
 class Data(object):
 
@@ -11,14 +12,26 @@ class Data(object):
 			self.shape[2] = numTargets
 		return tuple(self.shape)
 
+	def initBoundary(self, folder, boundary):
+		if boundary is None:
+			f = open(folder + '/boundary.pickle', 'r')
+			self.boundary = pickle.load(f)
+			f.close()
+		else:
+			f = open(folder + '/boundary.pickle', 'w')
+			pickle.dump(boundary, f)
+			f.close()
+			self.boundary = boundary
+
 	def initFolder(self, folder, mode):
 		if mode == 'w+':
 			if os.path.isdir(folder):
 				shutil.rmtree(folder)
 			os.mkdir(folder)
 
-	def __init__(self, folder, mode, iterations=0, numpoints=0, numTargets=0):
+	def __init__(self, folder, mode, iterations=0, numpoints=0, numTargets=0, boundary=None):
 		self.initFolder(folder, mode)
+		self.initBoundary(folder, boundary)
 		self.shape = np.memmap(folder + '/shape.dat', dtype='int', mode=mode, shape=(3))
 		iterations, numpoints, numTargets = self.initShape(mode, iterations, numpoints, numTargets)
 		self.iterations = iterations
