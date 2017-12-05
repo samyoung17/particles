@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import shapely.geometry as geom
 
-
+BIG_R = 100.0
 
 def testPlot(v, x1, x2, endpoint, rMax):
 	axes = plt.gca()
@@ -57,9 +57,6 @@ def findIntersectionWithPolygon(v, midpoint, rMax, segments):
 			return np.array([intersection.x, intersection.y])
 	raise ValueError('No intersection found')
 
-def boundPointByPolygon(x, rMax, segments):
-	return findIntersectionWithPolygon(np.array([0,0]), x, rMax, segments)
-
 class Circle(object):
 
 	def __init__(self, rMax):
@@ -81,39 +78,40 @@ class Circle(object):
 	def contains(self, x):
 		return np.linalg.norm(x) < self.rMax
 
+	def boundPoint(self, x):
+		return la.boundPoint(x, self.rMax)
+
 	def plot(self, axes):
 		circle = plt.Circle((0,0), radius=self.rMax, color='g', fill=False)
 		axes.add_patch(circle)
 
 
-class Square(object):
+class CompactPolygon(object):
 
-	def __init__(self, l):
-		self.l = l
-		self.lineSegments = [
-				geom.LineString([(-l/2, -l/2), (-l/2, l/2)]),
-				geom.LineString([(-l/2, l/2), (l/2, l/2)]),
-				geom.LineString([(l/2, l/2), (l/2, -l/2)]),
-				geom.LineString([(l/2, -l/2), (-l/2, -l/2)])
-			]
-		self.polygon = geom.Polygon([(-l/2, -l/2), (-l/2, l/2), (l/2, l/2), (l/2, -l/2)])
+	def __init__(self, vertices):
+		self.lineSegments = [geom.LineString((vertices[i], vertices[(i+1) % len(vertices)])) for i in range(len(vertices))]
+		self.polygon = geom.Polygon(vertices)
 
 	def findBoundaryVertices(self, p1, ridges, voronoi):
 		semiInfiniteRidges = filter(lambda (p2, v1, v2): v1 == -1 or v2 == -1, ridges)
 		boundaryVertices = []
 		for ridge in semiInfiniteRidges:
 			p2, v1, v2 = ridge
-			vertex = voronoi.vertices[v1 if v1 >= 0 else v2]
-			if not self.contains(vertex):
-				vertex = boundPointByPolygon(vertex, self.l, self.lineSegments) * 0.95
+			vertex = self.boundPoint(voronoi.vertices[v1 if v1 >= 0 else v2])
 			midpoint = (voronoi.points[p1] + voronoi.points[p2]) / 2
-			endpoint = findIntersectionWithPolygon(vertex, midpoint, self.l, self.lineSegments)
+			endpoint = findIntersectionWithPolygon(vertex, midpoint, BIG_R, self.lineSegments)
 			boundaryVertices.append(endpoint)
 		return boundaryVertices
 
 	def contains(self, x):
 		return self.polygon.contains(geom.Point(x))
 
+	def boundPoint(self, x):
+		if not self.contains(x):
+			return findIntersectionWithPolygon(np.array([0,0]), x, BIG_R, self.lineSegments) * 0.95
+		else:
+			return x
+
 	def plot(self, axes):
-		rectangle = plt.Rectangle((-self.l/2,-self.l/2), self.l, self.l, color='g', fill=False)
-		axes.add_patch(rectangle)
+		w, z = self.polygon.exterior.xy
+		axes.plot(w, z, color='g')
