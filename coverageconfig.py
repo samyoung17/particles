@@ -104,23 +104,47 @@ SHAPE_COMPARISON = [
 ELECTROSTATIC_LANGEVIN_COMPARISON = [
 	{
 		'name': 'EL qTotal=1',
-		'filePath': 'data/EL qTotal=1'.format(N, ITERATIONS),
+		'filePath': 'data/EL qTotal=1 n={} iter={}'.format(N, ITERATIONS),
 		'moveFn': electrostaticlangevin.moveParticles,
 		'boundary': hardboundary.Circle(R_MAX),
-		'params': {'m': 1.0, 'gamma': 0.1, 's': 0.01, 'rNeighbour': 3.0, 'qTotal': 1.0}
+		'params': {'m': 1.0, 'gamma': 0.1, 's': 0.01, 'rNeighbour': 3.0, 'qTotal': 1.0, 'alpha': -2}
 	},
 	{
 		'name': 'EL qTotal=2',
-		'filePath': 'data/EL qTotal=2'.format(N, ITERATIONS),
+		'filePath': 'data/EL qTotal=2 n={} iter={}'.format(N, ITERATIONS),
 		'moveFn': electrostaticlangevin.moveParticles,
 		'boundary': hardboundary.Circle(R_MAX),
-		'params': {'m': 1.0, 'gamma': 0.1, 's': 0.01, 'rNeighbour': 3.0, 'qTotal': 2.0}
+		'params': {'m': 1.0, 'gamma': 0.1, 's': 0.01, 'rNeighbour': 3.0, 'qTotal': 2.0, 'alpha': -2}
 	},
 	{
 		'name': 'EL qTotal=3',
-		'filePath': 'data/EL qTotal=3'.format(N, ITERATIONS),
+		'filePath': 'data/EL qTotal=3 n={} iter={}'.format(N, ITERATIONS),
 		'moveFn': electrostaticlangevin.moveParticles,
 		'boundary': hardboundary.Circle(R_MAX),
-		'params': {'m': 1.0, 'gamma': 0.1, 's': 0.01, 'rNeighbour': 3.0, 'qTotal': 3.0}
+		'params': {'m': 1.0, 'gamma': 0.1, 's': 0.01, 'rNeighbour': 3.0, 'qTotal': 3.0, 'alpha': -2}
+	}
+]
+
+LINEAR_REPULSION = [
+	{
+		'name': 'LR rNeighbour=1',
+		'filePath': 'data/LR rNeighbour=1 n={} iter={}'.format(N, ITERATIONS),
+		'moveFn': electrostaticlangevin.moveParticles,
+		'boundary': hardboundary.Circle(R_MAX),
+		'params': {'m': 1.0, 'gamma': 0.1, 's': 0.01, 'rNeighbour': 1.0, 'qTotal': 10, 'alpha': 0}
+	},
+	{
+		'name': 'LR rNeighbour=2',
+		'filePath': 'data/LR rNeighbour=2 n={} iter={}'.format(N, ITERATIONS),
+		'moveFn': electrostaticlangevin.moveParticles,
+		'boundary': hardboundary.Circle(R_MAX),
+		'params': {'m': 1.0, 'gamma': 0.1, 's': 0.01, 'rNeighbour': 2.0, 'qTotal': 10, 'alpha': 0}
+	},
+	{
+		'name': 'LR rNeighbour=3',
+		'filePath': 'data/LR rNeighbour=3 n={} iter={}'.format(N, ITERATIONS),
+		'moveFn': electrostaticlangevin.moveParticles,
+		'boundary': hardboundary.Circle(R_MAX),
+		'params': {'m': 1.0, 'gamma': 0.1, 's': 0.01, 'rNeighbour': 3.0, 'qTotal': 10, 'alpha': 0}
 	}
 ]

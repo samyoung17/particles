@@ -6,8 +6,21 @@ import linalgutil
 def findNearbyParticleIndices(particles, distances, rNeighbour):
 	return filter(lambda j: distances[j] > 0 and distances[j] < rNeighbour, range(len(particles)))
 
+"""
+Parameters:
+	m:				The mass (inertia) of the particles
+	gamma:		The friction coefficient
+	s:				The average speed of the particles (not including electrostatic field)
+	rNeighbour:	Distance cut off of the electrostatic field
+	qTotal:		Total amount of charge
+	alpha:		Exponent of the electrostatic field
+						-2 in 3D Coulomb's law
+						-1 in 2D Coulomb's law
+						 0 for linear repulsion
+"""
 def moveParticles(particles, t, boundary, params):
-	m, gamma, s, rNeighbour, qTotal = params['m'], params['gamma'], params['s'], params['rNeighbour'], params['qTotal']
+	m, gamma, s, rNeighbour, qTotal, alpha \
+		= params['m'], params['gamma'], params['s'], params['rNeighbour'], params['qTotal'], params['alpha']
 	T = 2 * m * pow(s, 2) / np.pi
 	var = 2 * gamma * T * t
 	cov = [[var, 0], [0, var]]
@@ -17,7 +30,7 @@ def moveParticles(particles, t, boundary, params):
 	q = qTotal / len(particles)
 	for i, particle in enumerate(particles):
 		jj = findNearbyParticleIndices(particles, D[i], rNeighbour)
-		F = sum(map(lambda j: q**2 * (particles[i].x - particles[j].x)/D[i,j]**3, jj))
+		F = sum(map(lambda j: q**2 * (particles[i].x - particles[j].x)/D[i,j] * pow(D[i,j], alpha), jj))
 		x0, v0 = particle.x, particle.v
 		dv = - (gamma / m)*v0*t + (F/m)*t + (1/m)*b[i]
 		v = v0 + dv
@@ -26,10 +39,10 @@ def moveParticles(particles, t, boundary, params):
 		particle.x, particle.v = x, v
 
 def main():
-	n, iterations = 200, 2000
+	n, iterations = 400, 4000
 	folder = 'data/electrostatic langevin n={} iter={}'.format(n, iterations)
 	boundary = hardboundary.Circle(10.0)
-	params = {'m': 1.0, 'gamma': 0.1, 's': 0.01, 'rNeighbour': 3.0, 'qTotal': 3.0}
+	params = {'m': 1.0, 'gamma': 0.1, 's': 0.01, 'rNeighbour': 3.0, 'qTotal': 10.0, 'alpha':0}
 	data = particlesim.simulate(iterations, n, moveParticles, folder, boundary, params)
 	particlesim.motionAnimation(data, 15, boundary)
 

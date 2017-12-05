@@ -99,7 +99,7 @@ def coverageComparison(dataSets, pool):
 	drawGraph(df, names)
 
 def main():
-	config = coverageconfig.ELECTROSTATIC_LANGEVIN_COMPARISON
+	config = coverageconfig.LINEAR_REPULSION
 	pool = Pool(len(config))
 	print('Running simulations...')
 	# dataSets = map(runSimulations, config)
