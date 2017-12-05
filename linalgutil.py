@@ -17,13 +17,12 @@ def boundPoint(x, rMax):
 def angleBetweenTwoVectors(a, b):
 	return np.arccos(np.dot(a,b) / (np.linalg.norm(a,2) * np.linalg.norm(b,2)))
 
-def distanceMatrix(x):
-	distances = np.zeros((len(x), len(x)))
+def distanceMatrix(x, y):
+	distances = np.zeros((len(x), len(y)))
 	for i in range(len(x)):
-		for j in range(i + 1):
-			d_ij = np.linalg.norm(x[i] - x[j])
+		for j in range(len(y)):
+			d_ij = np.linalg.norm(x[i] - y[j])
 			distances[i,j] = d_ij
-			distances[j,i] = d_ij
 	return distances
 
 def expectedNormMultivariateGaussian(sigma):

@@ -57,6 +57,11 @@ def findIntersectionWithPolygon(v, midpoint, rMax, segments):
 			return np.array([intersection.x, intersection.y])
 	raise ValueError('No intersection found')
 
+def identifyCornerPoints(points, corners):
+	Dxy = la.distanceMatrix(points, corners)
+	ii = np.argmin(Dxy, axis=0)
+	return dict(zip(ii, corners))
+
 class Circle(object):
 
 	def __init__(self, rMax):
@@ -88,20 +93,30 @@ class Circle(object):
 
 class CompactPolygon(object):
 
-	def __init__(self, vertices):
-		self.lineSegments = [geom.LineString((vertices[i], vertices[(i+1) % len(vertices)])) for i in range(len(vertices))]
-		self.polygon = geom.Polygon(vertices)
+	def __init__(self, corners):
+		self.lineSegments = [geom.LineString((corners[i], corners[(i + 1) % len(corners)])) for i in range(len(corners))]
+		self.polygon = geom.Polygon(corners)
+		self.corners = corners
 
 	def findBoundaryVertices(self, p1, ridges, voronoi):
 		semiInfiniteRidges = filter(lambda (p2, v1, v2): v1 == -1 or v2 == -1, ridges)
 		boundaryVertices = []
-		for ridge in semiInfiniteRidges:
-			p2, v1, v2 = ridge
-			vertex = self.boundPoint(voronoi.vertices[v1 if v1 >= 0 else v2])
-			midpoint = (voronoi.points[p1] + voronoi.points[p2]) / 2
-			endpoint = findIntersectionWithPolygon(vertex, midpoint, BIG_R, self.lineSegments)
-			boundaryVertices.append(endpoint)
+		cornerPoints = identifyCornerPoints(voronoi.points, self.corners)
+		if len(semiInfiniteRidges) == 2:
+			edgeVertex1 = self.findBoundaryVertex(p1, semiInfiniteRidges[0], voronoi)
+			boundaryVertices.append(edgeVertex1)
+			if cornerPoints.has_key(p1):
+				boundaryVertices.append(cornerPoints[p1])
+			edgeVertex2 = self.findBoundaryVertex(p1, semiInfiniteRidges[1], voronoi)
+			boundaryVertices.append(edgeVertex2)
 		return boundaryVertices
+
+	def findBoundaryVertex(self, p1, ridge, voronoi):
+		p2, v1, v2 = ridge
+		vertex = self.boundPoint(voronoi.vertices[v1 if v1 >= 0 else v2])
+		midpoint = (voronoi.points[p1] + voronoi.points[p2]) / 2
+		endpoint = findIntersectionWithPolygon(vertex, midpoint, BIG_R, self.lineSegments)
+		return endpoint
 
 	def contains(self, x):
 		return self.polygon.contains(geom.Point(x))

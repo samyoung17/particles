@@ -20,7 +20,8 @@ def findNearbyParticles(particles, distances):
 	return map(lambda j: particles[j], indices)
 
 def moveParticles(particles, t, boundary, params):
-	D = linalgutil.distanceMatrix(map(lambda p: p.x, particles))
+	xx = map(lambda p: p.x, particles)
+	D = linalgutil.distanceMatrix(xx, xx)
 	for i, particle in enumerate(particles):
 		nearbyParticles = findNearbyParticles(particles, D[i,:])
 		x0, v0 = particle.x, particle.v
