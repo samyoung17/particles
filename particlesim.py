@@ -7,6 +7,7 @@ import datamodel
 
 R_0 = 1
 FURTHEST_TARGET = 10
+TARGET_SEPERATION = 0.5
 TIMESTEP = 0.5
 
 class Particle(object):
@@ -62,7 +63,7 @@ def logIteration(i, iterations):
 
 def simulate(iterations, n, moveFn, folder, boundary, params={}):
 	particles = initParticles(n, R_0)
-	targets = initTargets(float(R_0), FURTHEST_TARGET, boundary)
+	targets = initTargets(TARGET_SEPERATION, FURTHEST_TARGET, boundary)
 	data = datamodel.Data(folder, 'w+', iterations, n, len(targets), boundary)
 	recordData(particles, targets, data, 0)
 	for i in range(1, iterations):

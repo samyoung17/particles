@@ -13,7 +13,7 @@ RECTANGLE_VERTICES = [(-15.71, -3.93), (-15.71, 3.93), (15.71, 3.93), (15.71, -3
 SQUARE_VERTICES = [(-7.86, -7.86), (-7.86, 7.86), (7.86, 7.86), (7.86, -7.86)]
 R_MAX = 10.0
 
-ITERATIONS = 2000
+ITERATIONS = 4000
 N = 200
 
 SHAPE_COMPARISON = [
@@ -127,24 +127,38 @@ ELECTROSTATIC_LANGEVIN_COMPARISON = [
 
 LINEAR_REPULSION = [
 	{
+		'name': 'LR rNeighbour=0.25',
+		'filePath': 'data/LR rNeighbour=0_25 n={} iter={}'.format(N, ITERATIONS),
+		'moveFn': electrostaticlangevin.moveParticles,
+		'boundary': hardboundary.Circle(R_MAX),
+		'params': {'m': 1.0, 'gamma': 0.1, 's': 0.01, 'rNeighbour': 0.25, 'qTotal': 10.0, 'alpha': 0}
+	},
+	{
+		'name': 'LR rNeighbour=0.5',
+		'filePath': 'data/LR rNeighbour=0_5 n={} iter={}'.format(N, ITERATIONS),
+		'moveFn': electrostaticlangevin.moveParticles,
+		'boundary': hardboundary.Circle(R_MAX),
+		'params': {'m': 1.0, 'gamma': 0.1, 's': 0.01, 'rNeighbour': 0.5, 'qTotal': 10.0, 'alpha': 0}
+	},
+	{
 		'name': 'LR rNeighbour=1',
 		'filePath': 'data/LR rNeighbour=1 n={} iter={}'.format(N, ITERATIONS),
 		'moveFn': electrostaticlangevin.moveParticles,
 		'boundary': hardboundary.Circle(R_MAX),
-		'params': {'m': 1.0, 'gamma': 0.1, 's': 0.01, 'rNeighbour': 1.0, 'qTotal': 10, 'alpha': 0}
+		'params': {'m': 1.0, 'gamma': 0.1, 's': 0.01, 'rNeighbour': 1.0, 'qTotal': 10.0, 'alpha': 0}
 	},
 	{
 		'name': 'LR rNeighbour=2',
 		'filePath': 'data/LR rNeighbour=2 n={} iter={}'.format(N, ITERATIONS),
 		'moveFn': electrostaticlangevin.moveParticles,
 		'boundary': hardboundary.Circle(R_MAX),
-		'params': {'m': 1.0, 'gamma': 0.1, 's': 0.01, 'rNeighbour': 2.0, 'qTotal': 10, 'alpha': 0}
+		'params': {'m': 1.0, 'gamma': 0.1, 's': 0.01, 'rNeighbour': 2.0, 'qTotal': 10.0, 'alpha': 0}
 	},
 	{
 		'name': 'LR rNeighbour=3',
 		'filePath': 'data/LR rNeighbour=3 n={} iter={}'.format(N, ITERATIONS),
 		'moveFn': electrostaticlangevin.moveParticles,
 		'boundary': hardboundary.Circle(R_MAX),
-		'params': {'m': 1.0, 'gamma': 0.1, 's': 0.01, 'rNeighbour': 3.0, 'qTotal': 10, 'alpha': 0}
+		'params': {'m': 1.0, 'gamma': 0.1, 's': 0.01, 'rNeighbour': 3.0, 'qTotal': 10.0, 'alpha': 0}
 	}
 ]
