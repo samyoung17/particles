@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<svg id='img'></svg> 
+
+<script src="https://d3js.org/d3.v4.js"></script>
+<script>
+IMG_SIZE = [300,300]
+CIRCLE_CENTRE = [150,150]
+R = 100
+PSI = 1.2
+N = 50
+
+function coordinatesToSvg(x){
+	return [x[0]+CIRCLE_CENTRE[0], IMG_SIZE[1]-(x[1]+CIRCLE_CENTRE[1])];
+}
+
+function pointsToPath(points) {
+	var pointSvgCoords = points.map(coordinatesToSvg)
+	var firstPoint = pointSvgCoords.shift()
+	var startSegment = 'M ' + firstPoint[0] + ' ' + firstPoint[1];
+	var pathSegments = pointSvgCoords.map(function(d){return 'L ' + d[0] + ' ' + d[1];})
+	return startSegment + ' ' + pathSegments.join(' ')
+}
+
+function polarToCart(x) {
+	var r = x[0];
+	var theta = x[1];
+	return [r * Math.sin(theta), r * Math.cos(theta)]
+}
+
+function cartToPolar(x) {
+	var r = Math.sqrt((x[0] * x[0]) + (x[1] * x[1]));
+	var theta = Math.atan(x[0], x[1]);
+	return [r, theta]
+}
+
+function generatePoints(firstBounce, psi, n) {
+	var alpha = Math.PI - psi;
+	var alpha = cartToPolar(firstBounce)[1];
+	var points = [firstBounce];
+	var nextPoint;
+	for (i = 0; i < n; i++) { 
+		alpha += (2 * psi);
+		nextPoint = polarToCart([R, alpha])
+    	points.push(nextPoint);
+	}
+	return points;
+}
+
+var firstBounce = [0,100]
+var firstDistance = 50
+var startPoint = [firstBounce[0] - (50*Math.cos(PSI)), firstBounce[1] - (50*Math.sin(PSI))]
+
+var points = [startPoint].concat(generatePoints(firstBounce, PSI, N))
+
+
+var circleCentreSvg = coordinatesToSvg([0,0])
+var pathD = pointsToPath(points)
+
+
+img = document.getElementById('img')
+
+d3.select('#img')
+	.attr('width', IMG_SIZE[0])
+	.attr('height', IMG_SIZE[1])
+
+d3.select('#img')
+	.append('circle')
+	.style('stroke-width',2)
+	.style('stroke', 'black')
+	.style('fill', 'none')
+	.attr('cx', circleCentreSvg[0])
+	.attr('cy', circleCentreSvg[0])
+	.attr('r', R)
+
+d3.select('#img')
+	.append('path')
+	.style('stroke-width',1)
+	.style('stroke', 'black')
+	.style('fill', 'none')
+	.attr('d', pathD)
+
+</script>
+
+</body>
+</html>
