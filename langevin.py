@@ -3,30 +3,38 @@ import particlesim
 import hardboundary
 import matplotlib.pyplot as plt
 
-M = 1.0
-GAMMA = 0.1
-S = 0.2
-T = 2 * M * pow(S,2) / np.pi
 
-
+"""
+Parameters:
+	m:			The mass (inertia) of the particles
+	gamma:		The friction coefficient
+	s:			The average speed of the particles (not including electrostatic field)
+"""
 def moveParticles(particles, t, boundary, params):
-	var = 2 * GAMMA * T * t
+	m, gamma, s = params['m'], params['gamma'], params['s']
+	T = 2 * m * pow(s,2) / np.pi
+	var = 2 * gamma * T * t
 	cov = [[var, 0], [0, var]]
 	mean = (0, 0)
 	b = np.random.multivariate_normal(mean, cov, len(particles))
 	for i, particle in enumerate(particles):
 		x0, v0 = particle.x, particle.v
-		dv = - (GAMMA/M)*v0*t + (1/M)*b[i]
+		dv = - (gamma/m)*v0*t + (1/m)*b[i]
 		v = v0 + dv
 		x = x0 + v0 * t
 		x,v = boundary.bounceIfHits(x0, v0, x, v)
 		particle.x, particle.v = x, v
 
 def main():
+	params = {
+		'm': 1.0,
+		'gamma': 0.1,
+		's': 0.2
+	}
 	n, iterations = 100, 1000
 	folder = 'data/langevin n={} iter={}'.format(n, iterations)
 	boundary = hardboundary.Circle(10.0)
-	data = particlesim.simulate(iterations, n, moveParticles, folder, boundary)
+	data = particlesim.simulate(iterations, n, moveParticles, folder, boundary, params)
 	particlesim.motionAnimation(data, 15, boundary)
 
 def averageTemp(data):

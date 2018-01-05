@@ -39,13 +39,15 @@ SHAPE_COMPARISON = [
 		'name': 'Langevin Circle',
 		'filePath': 'data/langevin circle n={} iter={}'.format(N, ITERATIONS),
 		'moveFn': langevin.moveParticles,
-		'boundary': hardboundary.Circle(R_MAX)
+		'boundary': hardboundary.Circle(R_MAX),
+		'params': {'m': 1.0, 'gamma': 0.1, 's': 0.2}
 	},
 	{
 		'name': 'Langevin Rectangle',
 		'filePath': 'data/langevin Rectangle n={} iter={}'.format(N, ITERATIONS),
 		'moveFn': langevin.moveParticles,
-		'boundary': hardboundary.CompactPolygon(RECTANGLE_VERTICES)
+		'boundary': hardboundary.CompactPolygon(RECTANGLE_VERTICES),
+		'params': {'m': 1.0, 'gamma': 0.1, 's': 0.2}
 	},
 	# {
 	# 	'name': 'Langevin Quadrilateral',
@@ -100,6 +102,38 @@ SHAPE_COMPARISON = [
 	# 	'boundary': hardboundary.CompactPolygon(WIERD_QUADRILATERAL_VERTICES)
 	# }
 ]
+
+FRICTION_COMPARISON = [
+	{
+		'name': 'Friction comparison gamma=0',
+		'filePath': 'data/friction comparison gamma=0'.format(N, ITERATIONS),
+		'moveFn': langevin.moveParticles,
+		'boundary': hardboundary.Circle(R_MAX),
+		'params': {'m': 1.0, 'gamma': 0.0, 's': 0.2}
+	},
+	{
+		'name': 'Friction comparison gamma=0_2',
+		'filePath': 'data/friction comparison gamma=0_2'.format(N, ITERATIONS),
+		'moveFn': langevin.moveParticles,
+		'boundary': hardboundary.Circle(R_MAX),
+		'params': {'m': 1.0, 'gamma': 0.2, 's': 0.2}
+	},
+	{
+		'name': 'Friction comparison gamma=1',
+		'filePath': 'data/friction comparison gamma=1'.format(N, ITERATIONS),
+		'moveFn': langevin.moveParticles,
+		'boundary': hardboundary.Circle(R_MAX),
+		'params': {'m': 1.0, 'gamma': 1.0, 's': 0.2}
+	},
+	{
+		'name': 'Friction comparison gamma=5',
+		'filePath': 'data/friction comparison gamma=5'.format(N, ITERATIONS),
+		'moveFn': langevin.moveParticles,
+		'boundary': hardboundary.Circle(R_MAX),
+		'params': {'m': 1.0, 'gamma': 5.0, 's': 0.2}
+	},
+]
+
 
 ELECTROSTATIC_LANGEVIN_COMPARISON = [
 	{
