@@ -2,7 +2,9 @@
 <html>
 <body>
 
-<svg id='img'></svg> 
+<svg id='caustic'></svg>
+<svg id='labelled'></svg>
+<svg id='causticGeom'></svg>
 
 <script src="https://d3js.org/d3.v4.js"></script>
 <script>
@@ -49,38 +51,202 @@ function generatePoints(firstBounce, psi, n) {
 	return points;
 }
 
-var firstBounce = [0,100]
-var firstDistance = 50
-var startPoint = [firstBounce[0] - (50*Math.cos(PSI)), firstBounce[1] - (50*Math.sin(PSI))]
+function drawCausticImage() {
+	var firstBounce = [0,100]
+	var firstDistance = 50
+	var startPoint = [firstBounce[0] - (50*Math.cos(PSI)), firstBounce[1] - (50*Math.sin(PSI))]
 
-var points = [startPoint].concat(generatePoints(firstBounce, PSI, N))
-
-
-var circleCentreSvg = coordinatesToSvg([0,0])
-var pathD = pointsToPath(points)
+	var points = [startPoint].concat(generatePoints(firstBounce, PSI, N))
 
 
-img = document.getElementById('img')
+	var circleCentreSvg = coordinatesToSvg([0,0])
+	var pathD = pointsToPath(points)
 
-d3.select('#img')
-	.attr('width', IMG_SIZE[0])
-	.attr('height', IMG_SIZE[1])
 
-d3.select('#img')
-	.append('circle')
-	.style('stroke-width',2)
-	.style('stroke', 'black')
-	.style('fill', 'none')
-	.attr('cx', circleCentreSvg[0])
-	.attr('cy', circleCentreSvg[0])
-	.attr('r', R)
+	d3.select('#caustic')
+		.attr('width', IMG_SIZE[0])
+		.attr('height', IMG_SIZE[1])
 
-d3.select('#img')
-	.append('path')
-	.style('stroke-width',1)
-	.style('stroke', 'black')
-	.style('fill', 'none')
-	.attr('d', pathD)
+	d3.select('#caustic')
+		.append('circle')
+		.style('stroke-width',3)
+		.style('stroke', 'black')
+		.style('fill', 'none')
+		.attr('cx', circleCentreSvg[0])
+		.attr('cy', circleCentreSvg[0])
+		.attr('r', R)
+
+	d3.select('#caustic')
+		.append('path')
+		.style('stroke-width',1)
+		.style('stroke', 'black')
+		.style('fill', 'none')
+		.attr('d', pathD)
+
+}
+
+function curvePathD(startPoint, angleRadius, endPoint) {
+	return 'M ' + coordinatesToSvg(startPoint) + ' A ' + angleRadius + ' '+ angleRadius + ' 0 0 1' + coordinatesToSvg(endPoint);
+}
+
+function drawLabelledImage() {
+	var firstBounce = [0,100]
+	var firstDistance = 50
+	var startPoint = [firstBounce[0] - (50*Math.cos(PSI)), firstBounce[1] - (50*Math.sin(PSI))]
+
+	var points = [startPoint].concat(generatePoints(firstBounce, PSI, 2))
+
+
+	var circleCentreSvg = coordinatesToSvg([0,0])
+	var pathD = pointsToPath(points)
+	var tangentD = pointsToPath([[-70, R], [70, R]])
+
+	d3.select('#labelled')
+		.attr('width', IMG_SIZE[0])
+		.attr('height', IMG_SIZE[1])
+
+	d3.select('#labelled')
+		.append('circle')
+		.style('stroke-width',3)
+		.style('stroke', 'black')
+		.style('fill', 'none')
+		.attr('cx', circleCentreSvg[0])
+		.attr('cy', circleCentreSvg[0])
+		.attr('r', R)
+
+	d3.select('#labelled')
+		.append('path')
+		.style('stroke-width',1)
+		.style('stroke', 'black')
+		.style('fill', 'none')
+		.attr('d', pathD)
+
+	d3.select('#labelled')
+		.append('path')
+		.style('stroke-width',1)
+		.style('stroke', 'black')
+		.style('fill', 'none')
+		.attr('d', tangentD)
+
+	var angleRadius = 15;
+	var angleDattribute = curvePathD([angleRadius, R], angleRadius, [angleRadius*Math.cos(PSI), R-(angleRadius*Math.sin(PSI))]);
+
+	d3.select('#labelled')
+		.append('path')
+		.style('stroke-width',1)
+		.style('stroke', 'black')
+		.style('fill', 'none')
+		.attr('d', angleDattribute)
+
+	var psiLabelLocation = coordinatesToSvg([20, 80])
+	d3.select('#labelled')
+		.append('text')
+		.attr('font-size', 15)
+		.attr('color', 'black')
+		.attr('font-family', 'Times')
+		.attr('x', psiLabelLocation[0])
+		.attr('y', psiLabelLocation[1])
+		.text('\u03C8')
+
+}
+
+function drawCausticGeom() {
+	var firstBounce = [0,100]
+	var firstDistance = 150
+	var startPoint = [firstBounce[0] - (firstDistance*Math.cos(PSI)), firstBounce[1] - (firstDistance*Math.sin(PSI))]
+
+	var points = [startPoint].concat(generatePoints(firstBounce, PSI, 1))
+
+
+	var circleCentreSvg = coordinatesToSvg([0,0])
+	var pathD = pointsToPath(points)
+	var tangentD = pointsToPath([[-70, R], [70, R]])
+
+	d3.select('#causticGeom')
+		.attr('width', IMG_SIZE[0])
+		.attr('height', IMG_SIZE[1])
+
+	d3.select('#causticGeom')
+		.append('circle')
+		.style('stroke-width',3)
+		.style('stroke', 'black')
+		.style('fill', 'none')
+		.attr('cx', circleCentreSvg[0])
+		.attr('cy', circleCentreSvg[0])
+		.attr('r', R)
+
+	d3.select('#causticGeom')
+		.append('path')
+		.style('stroke-width',1)
+		.style('stroke', 'black')
+		.style('fill', 'none')
+		.attr('d', pathD)
+
+	d3.select('#causticGeom')
+		.append('path')
+		.style('stroke-width',1)
+		.style('stroke', 'black')
+		.style('fill', 'none')
+		.attr('d', tangentD)
+
+	var angleRadius = 15;
+	var angleDattribute = curvePathD([angleRadius, R], angleRadius, [angleRadius*Math.cos(PSI), R-(angleRadius*Math.sin(PSI))]);
+
+	d3.select('#causticGeom')
+		.append('path')
+		.style('stroke-width',1)
+		.style('stroke', 'black')
+		.style('fill', 'none')
+		.attr('d', angleDattribute)
+
+	var psiLabelLocation = coordinatesToSvg([20, 80])
+	d3.select('#causticGeom')
+		.append('text')
+		.attr('font-size', 15)
+		.attr('color', 'black')
+		.attr('font-family', 'Times')
+		.attr('x', psiLabelLocation[0])
+		.attr('y', psiLabelLocation[1])
+		.text('\u03C8')
+
+	var rCaustic = R * Math.sin(Math.PI/2 - PSI);
+
+	d3.select('#causticGeom')
+		.append('circle')
+		.style('stroke-width',1)
+		.style('stroke', 'black')
+		.style('fill', 'none')
+		.attr('cx', circleCentreSvg[0])
+		.attr('cy', circleCentreSvg[0])
+		.attr('r', rCaustic)
+
+	var perpD = pointsToPath([[0,0],[0,R]]);
+	d3.select('#causticGeom')
+		.append('path')
+		.style('stroke-width',1)
+		.style('stroke', 'black')
+		.style('fill', 'none')
+		.attr('stroke-dasharray', '5,5')
+		.attr('d', perpD);
+
+	var theta = Math.PI / 2 - PSI;
+	var causticRadiusD = pointsToPath([[0,0],[rCaustic*Math.cos(theta),rCaustic*Math.sin(theta)]]);
+	
+	d3.select('#causticGeom')
+		.append('path')
+		.style('stroke-width',1)
+		.style('stroke', 'black')
+		.style('fill', 'none')
+		.attr('stroke-dasharray', '5,5')
+		.attr('d', causticRadiusD);
+
+}
+
+
+drawCausticImage();
+drawLabelledImage();
+drawCausticGeom();
+
 
 </script>
 
