@@ -99,7 +99,7 @@ def coverageComparison(dataSets, pool):
 	drawGraph(df, names)
 
 def main():
-	config = coverageconfig.FRICTION_COMPARISON
+	config = coverageconfig.INERTIA_COMPARISON
 	pool = Pool(len(config))
 	print('Running simulations...')
 	# dataSets = map(runSimulations, config)

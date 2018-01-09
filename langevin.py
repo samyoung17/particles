@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 """
 Parameters:
 	m:			The mass (inertia) of the particles
-	gamma:		The friction coefficient
+	gamma:	The friction coefficient
 	s:			The average speed of the particles (not including electrostatic field)
 """
 def moveParticles(particles, t, boundary, params):
@@ -27,18 +27,24 @@ def moveParticles(particles, t, boundary, params):
 
 def main():
 	params = {
-		'm': 1.0,
-		'gamma': 0.1,
-		's': 0.2
+		'm': 100.0,
+		'gamma': 0.5,
+		's': 1.0
 	}
-	n, iterations = 100, 1000
+	n, iterations = 200, 4000
 	folder = 'data/langevin n={} iter={}'.format(n, iterations)
 	boundary = hardboundary.Circle(10.0)
 	data = particlesim.simulate(iterations, n, moveParticles, folder, boundary, params)
-	particlesim.motionAnimation(data, 15, boundary)
+	particlesim.motionAnimation(data, 20, boundary)
 
-def averageTemp(data):
-	e = np.apply_along_axis(lambda v: 0.5 * M * pow(np.linalg.norm(v), 2), 2, data.v)
+def averageTemp(data, m):
+	e = np.apply_along_axis(lambda v: 0.5 * m * pow(np.linalg.norm(v), 2), 2, data.v)
+	ebar = e.mean(axis=1)
+	plt.plot(ebar)
+	plt.show()
+
+def averageSpeed(data):
+	e = np.apply_along_axis(np.linalg.norm, 2, data.v)
 	ebar = e.mean(axis=1)
 	plt.plot(ebar)
 	plt.show()

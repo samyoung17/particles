@@ -103,34 +103,34 @@ SHAPE_COMPARISON = [
 	# }
 ]
 
-FRICTION_COMPARISON = [
+INERTIA_COMPARISON = [
 	{
-		'name': 'Friction comparison gamma=0',
-		'filePath': 'data/friction comparison gamma=0'.format(N, ITERATIONS),
+		'name': 'Inertia comparison m=0_1',
+		'filePath': 'data/inertia comparison m=0_1'.format(N, ITERATIONS),
 		'moveFn': langevin.moveParticles,
 		'boundary': hardboundary.Circle(R_MAX),
-		'params': {'m': 1.0, 'gamma': 0.0, 's': 0.2}
+		'params': {'m': 0.1, 'gamma': 0.5, 's': 1.0}
 	},
 	{
-		'name': 'Friction comparison gamma=0_2',
-		'filePath': 'data/friction comparison gamma=0_2'.format(N, ITERATIONS),
+		'name': 'Inertia comparison m=1',
+		'filePath': 'data/inertia comparison m=1'.format(N, ITERATIONS),
 		'moveFn': langevin.moveParticles,
 		'boundary': hardboundary.Circle(R_MAX),
-		'params': {'m': 1.0, 'gamma': 0.2, 's': 0.2}
+		'params': {'m': 1.0, 'gamma': 0.5, 's': 1.0}
 	},
 	{
-		'name': 'Friction comparison gamma=1',
-		'filePath': 'data/friction comparison gamma=1'.format(N, ITERATIONS),
+		'name': 'Inertia comparison m=10',
+		'filePath': 'data/inertia comparison m=10'.format(N, ITERATIONS),
 		'moveFn': langevin.moveParticles,
 		'boundary': hardboundary.Circle(R_MAX),
-		'params': {'m': 1.0, 'gamma': 1.0, 's': 0.2}
+		'params': {'m': 10.0, 'gamma': 0.5, 's': 1.0}
 	},
 	{
-		'name': 'Friction comparison gamma=5',
-		'filePath': 'data/friction comparison gamma=5'.format(N, ITERATIONS),
+		'name': 'Inertia comparison m=100',
+		'filePath': 'data/inertia comparison m=100'.format(N, ITERATIONS),
 		'moveFn': langevin.moveParticles,
 		'boundary': hardboundary.Circle(R_MAX),
-		'params': {'m': 1.0, 'gamma': 5.0, 's': 0.2}
+		'params': {'m': 100.0, 'gamma': 0.5, 's': 1.0}
 	},
 ]
 
