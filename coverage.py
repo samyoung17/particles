@@ -80,25 +80,27 @@ def drawGraph(df, algoNames):
 	plt.savefig('data/coverage graph N={} ITER={}.png'.format(coverageconfig.N, coverageconfig.ITERATIONS))
 	plt.show()
 
-def createDataFrame(dataSets, distanceAndCoverage):
+def createDataFrame(t, distanceAndCoverage):
 	df = pd.DataFrame()
-	df['time'] = dataSets[0]['data'].t
-	for dataSet in dataSets:
-		distance, coverage = distanceAndCoverage[dataSet['name']]
-		distanceColName = dataSet['name'] + '.distance'
-		coverageColName = dataSet['name'] + '.coverage'
+	names = distanceAndCoverage.keys()
+	df['time'] = t
+	for name in names:
+		distance, coverage = distanceAndCoverage[name]
+		distanceColName = name + '.distance'
+		coverageColName = name + '.coverage'
 		df[distanceColName] = distance
 		df[coverageColName] = coverage
 	return df
 
 def coverageComparison(dataSets, pool):
 	distanceAndCoverage = dict(pool.map_async(calculateCoverage, dataSets).get(TIMEOUT))
-	df = createDataFrame(dataSets, distanceAndCoverage)
+	t = dataSets.itervalues().next()['data'].t
+	df = createDataFrame(t, distanceAndCoverage)
 	df.to_csv('data/coverage N={} ITER={}.csv'.format(coverageconfig.N, coverageconfig.ITERATIONS))
 	names = map(lambda d: d['name'], dataSets)
 	drawGraph(df, names)
 
-def main():
+def singleTrial():
 	config = coverageconfig.INERTIA_COMPARISON
 	pool = Pool(len(config))
 	print('Running simulations...')
@@ -108,5 +110,31 @@ def main():
 	coverageComparison(dataSets, pool)
 	print('\n')
 
+def multipleTrials():
+	config = coverageconfig.INERTIA_COMPARISON
+	names = map(lambda d: d['name'], config)
+	pool = Pool(len(config))
+	coverageData = np.ndarray((coverageconfig.TRIALS, len(config), coverageconfig.ITERATIONS))
+	distanceData = np.ndarray((coverageconfig.TRIALS, len(config), coverageconfig.ITERATIONS))
+	for i in range(coverageconfig.TRIALS):
+		print('Trial ' + str(i + 1) + '/' + str(coverageconfig.TRIALS))
+		print('Running simulations...')
+		dataSets = pool.map_async(runSimulations, config).get(TIMEOUT)
+		print('\nCalculating coverage distances...')
+		distanceAndCoverage = dict(pool.map_async(calculateCoverage, dataSets).get(TIMEOUT))
+		for j, name in enumerate(names):
+			distanceData[i, j] = distanceAndCoverage[name][0]
+			coverageData[i,j] = distanceAndCoverage[name][1]
+		print('\n')
+	meanCoverageData = np.mean(coverageData, axis=0)
+	meanDistanceData = np.mean(distanceData, axis=0)
+	meanDistanceAndCoverage = dict([(name, (meanDistanceData[j], meanCoverageData[j])) for j,name in enumerate(names)])
+	t = np.arange(0, coverageconfig.ITERATIONS * particlesim.TIMESTEP, particlesim.TIMESTEP)
+	df = createDataFrame(t, meanDistanceAndCoverage)
+	df.to_csv('data/mean coverage N={} ITER={} TRIALS={}.csv'
+				 .format(coverageconfig.N, coverageconfig.ITERATIONS, coverageconfig.TRIALS))
+	drawGraph(df, names)
+
 if __name__=='__main__':
-	main()
+	# singleTrial()
+	multipleTrials()
