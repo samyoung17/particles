@@ -123,7 +123,7 @@ def multipleTrials():
 		print('\nCalculating coverage distances...')
 		distanceAndCoverage = dict(pool.map_async(calculateCoverage, dataSets).get(TIMEOUT))
 		for j, name in enumerate(names):
-			distanceData[i, j] = distanceAndCoverage[name][0]
+			distanceData[i,j] = distanceAndCoverage[name][0]
 			coverageData[i,j] = distanceAndCoverage[name][1]
 		print('\n')
 	meanCoverageData = np.mean(coverageData, axis=0)

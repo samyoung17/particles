@@ -7,7 +7,7 @@ import datamodel
 
 R_0 = 1
 FURTHEST_TARGET = 10
-TARGET_SEPERATION = 0.5
+TARGET_SEPERATION = 0.7
 TIMESTEP = 0.2
 
 class Particle(object):
