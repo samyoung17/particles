@@ -135,6 +135,43 @@ INERTIA_COMPARISON = [
 	},
 ]
 
+RUN_TUMBLE_RATE_COMPARISON = [
+	{
+		'name': 'RT rate=1',
+		'filePath': 'data/run tumble rate=1 n={} iter={}'.format(N, ITERATIONS),
+		'moveFn': runtumble.moveParticles,
+		'boundary': hardboundary.Circle(R_MAX),
+		'params': {'rate': 1.0, 's': 0.2}
+	},
+	{
+		'name': 'RT rate=0_5',
+		'filePath': 'data/run tumble rate=0_5 n={} iter={}'.format(N, ITERATIONS),
+		'moveFn': runtumble.moveParticles,
+		'boundary': hardboundary.Circle(R_MAX),
+		'params': {'rate': 0.5, 's': 0.2}
+	},
+	{
+		'name': 'RT rate=0_25',
+		'filePath': 'data/run tumble rate=0_25 n={} iter={}'.format(N, ITERATIONS),
+		'moveFn': runtumble.moveParticles,
+		'boundary': hardboundary.Circle(R_MAX),
+		'params': {'rate': 0.25, 's': 0.2}
+	},
+	{
+		'name': 'RT rate=0_1',
+		'filePath': 'data/run tumble rate=0_1 n={} iter={}'.format(N, ITERATIONS),
+		'moveFn': runtumble.moveParticles,
+		'boundary': hardboundary.Circle(R_MAX),
+		'params': {'rate': 0.1, 's': 0.2}
+	},
+	{
+		'name': 'RT rate=0_01',
+		'filePath': 'data/run tumble rate=0_01 n={} iter={}'.format(N, ITERATIONS),
+		'moveFn': runtumble.moveParticles,
+		'boundary': hardboundary.Circle(R_MAX),
+		'params': {'rate': 0.01, 's': 0.2}
+	}
+]
 
 ELECTROSTATIC_LANGEVIN_COMPARISON = [
 	{

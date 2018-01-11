@@ -111,7 +111,7 @@ def singleTrial():
 	print('\n')
 
 def multipleTrials():
-	config = coverageconfig.INERTIA_COMPARISON
+	config = coverageconfig.RUN_TUMBLE_RATE_COMPARISON
 	names = map(lambda d: d['name'], config)
 	pool = Pool(len(config))
 	coverageData = np.ndarray((coverageconfig.TRIALS, len(config), coverageconfig.ITERATIONS))
