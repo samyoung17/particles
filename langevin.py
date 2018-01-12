@@ -27,15 +27,16 @@ def moveParticles(particles, t, boundary, params):
 
 def main():
 	params = {
-		'm': 100.0,
-		'gamma': 0.5,
-		's': 1.0
+		'm': 0.1,
+		'gamma': 0.2,
+		's': 0.5
 	}
 	n, iterations = 150, 3000
 	folder = 'data/langevin n={} iter={}'.format(n, iterations)
 	boundary = hardboundary.Circle(10.0)
 	data = particlesim.simulate(iterations, n, moveParticles, folder, boundary, params)
-	particlesim.motionAnimation(data, 20, boundary)
+	# averageSpeed(data)
+	particlesim.motionAnimation(data, 100, boundary)
 
 def averageTemp(data, m):
 	e = np.apply_along_axis(lambda v: 0.5 * m * pow(np.linalg.norm(v), 2), 2, data.v)

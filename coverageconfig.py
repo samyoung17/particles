@@ -85,28 +85,28 @@ INERTIA_COMPARISON = [
 		'filePath': 'data/inertia comparison m=0_1',
 		'moveFn': langevin.moveParticles,
 		'boundary': hardboundary.Circle(R_MAX),
-		'params': {'m': 0.1, 'gamma': 0.5, 's': 1.0}
+		'params': {'m': 0.1, 'gamma': 0.2, 's': 0.5}
 	},
 	{
 		'name': 'Inertia comparison m=1',
 		'filePath': 'data/inertia comparison m=1',
 		'moveFn': langevin.moveParticles,
 		'boundary': hardboundary.Circle(R_MAX),
-		'params': {'m': 1.0, 'gamma': 0.5, 's': 1.0}
+		'params': {'m': 1.0, 'gamma': 0.2, 's': 0.5}
 	},
 	{
 		'name': 'Inertia comparison m=10',
 		'filePath': 'data/inertia comparison m=10',
 		'moveFn': langevin.moveParticles,
 		'boundary': hardboundary.Circle(R_MAX),
-		'params': {'m': 10.0, 'gamma': 0.5, 's': 1.0}
+		'params': {'m': 10.0, 'gamma': 0.2, 's': 0.5}
 	},
 	{
 		'name': 'Inertia comparison m=100',
 		'filePath': 'data/inertia comparison m=100',
 		'moveFn': langevin.moveParticles,
 		'boundary': hardboundary.Circle(R_MAX),
-		'params': {'m': 100.0, 'gamma': 0.5, 's': 1.0}
+		'params': {'m': 100.0, 'gamma': 0.2, 's': 0.5}
 	},
 ]
 
@@ -116,35 +116,28 @@ RUN_TUMBLE_RATE_COMPARISON = [
 		'filePath': 'data/run tumble rate=1',
 		'moveFn': runtumble.moveParticles,
 		'boundary': hardboundary.Circle(R_MAX),
-		'params': {'rate': 1.0, 's': 0.2}
-	},
-	{
-		'name': 'RT rate=0_5',
-		'filePath': 'data/run tumble rate=0_5',
-		'moveFn': runtumble.moveParticles,
-		'boundary': hardboundary.Circle(R_MAX),
-		'params': {'rate': 0.5, 's': 0.2}
+		'params': {'rate': 1.0, 's': 0.5}
 	},
 	{
 		'name': 'RT rate=0_25',
 		'filePath': 'data/run tumble rate=0_25',
 		'moveFn': runtumble.moveParticles,
 		'boundary': hardboundary.Circle(R_MAX),
-		'params': {'rate': 0.25, 's': 0.2}
+		'params': {'rate': 0.25, 's': 0.5}
 	},
 	{
 		'name': 'RT rate=0_1',
 		'filePath': 'data/run tumble rate=0_1',
 		'moveFn': runtumble.moveParticles,
 		'boundary': hardboundary.Circle(R_MAX),
-		'params': {'rate': 0.1, 's': 0.2}
+		'params': {'rate': 0.1, 's': 0.5}
 	},
 	{
 		'name': 'RT rate=0_01',
 		'filePath': 'data/run tumble rate=0_01',
 		'moveFn': runtumble.moveParticles,
 		'boundary': hardboundary.Circle(R_MAX),
-		'params': {'rate': 0.01, 's': 0.2}
+		'params': {'rate': 0.01, 's': 0.5}
 	}
 ]
 
@@ -154,21 +147,21 @@ ELECTROSTATIC_LANGEVIN_COMPARISON = [
 		'filePath': 'data/EL qTotal=1',
 		'moveFn': electrostaticlangevin.moveParticles,
 		'boundary': hardboundary.Circle(R_MAX),
-		'params': {'m': 1.0, 'gamma': 0.1, 's': 0.01, 'rNeighbour': 3.0, 'qTotal': 1.0, 'alpha': -2}
+		'params': {'m': 1.0, 'gamma': 0.1, 's': 0.5, 'rNeighbour': 3.0, 'qTotal': 1.0, 'alpha': -2}
 	},
 	{
 		'name': 'EL qTotal=2',
 		'filePath': 'data/EL qTotal=2',
 		'moveFn': electrostaticlangevin.moveParticles,
 		'boundary': hardboundary.Circle(R_MAX),
-		'params': {'m': 1.0, 'gamma': 0.1, 's': 0.01, 'rNeighbour': 3.0, 'qTotal': 2.0, 'alpha': -2}
+		'params': {'m': 1.0, 'gamma': 0.1, 's': 0.5, 'rNeighbour': 3.0, 'qTotal': 2.0, 'alpha': -2}
 	},
 	{
 		'name': 'EL qTotal=3',
 		'filePath': 'data/EL qTotal=3',
 		'moveFn': electrostaticlangevin.moveParticles,
 		'boundary': hardboundary.Circle(R_MAX),
-		'params': {'m': 1.0, 'gamma': 0.1, 's': 0.01, 'rNeighbour': 3.0, 'qTotal': 3.0, 'alpha': -2}
+		'params': {'m': 1.0, 'gamma': 0.1, 's': 0.5, 'rNeighbour': 3.0, 'qTotal': 3.0, 'alpha': -2}
 	}
 ]
 

@@ -8,7 +8,7 @@ import datamodel
 R_0 = 1
 FURTHEST_TARGET = 10
 TARGET_SEPERATION = 0.7
-TIMESTEP = 0.2
+TIMESTEP = 0.25
 
 class Particle(object):
 	def __init__(self, x, v):

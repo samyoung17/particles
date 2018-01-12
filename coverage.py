@@ -148,5 +148,5 @@ def multipleTrials(config):
 	saveResults(folder, config, meanDistanceAndCoverage)
 
 if __name__=='__main__':
-	# singleTrial(coverageconfig.RUN_TUMBLE_RATE_COMPARISON)
+	# singleTrial(coverageconfig.INERTIA_COMPARISON)
 	multipleTrials(coverageconfig.INERTIA_COMPARISON)
