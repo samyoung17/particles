@@ -6,6 +6,7 @@ import pandas as pd
 import scipy.special
 import datetime
 import pprint
+import os
 
 import particlesim
 import datamodel
@@ -66,9 +67,9 @@ def calculateCoverage(dataSet):
 	distanceTravelled = meanDistanceTravelled(dataSet['data'])
 	return (dataSet['name'], (distanceTravelled, covarageDistance))
 
-def drawGraph(df, algoNames, now):
+def drawGraph(df, names, filename):
 	plots = []
-	for name in algoNames:
+	for name in names:
 		plot, = plt.plot(df['time'], df[name + '.coverage'], label=name)
 		plots.append(plot)
 	plt.axhline(y=LOWER_BOUND, color='k')
@@ -79,8 +80,7 @@ def drawGraph(df, algoNames, now):
 	plt.ylabel('Coverage distance')
 	plt.gca().set_ylim(bottom=0)
 	plt.title('Maximum distance to from target to nearest particle')
-	plt.savefig('results/coverage_comparison_' + now + '.jpg'.format(coverageconfig.N, coverageconfig.ITERATIONS))
-	plt.show()
+	plt.savefig(filename)
 
 def createDataFrame(t, distanceAndCoverage):
 	df = pd.DataFrame()
@@ -94,18 +94,22 @@ def createDataFrame(t, distanceAndCoverage):
 		df[coverageColName] = coverage
 	return df
 
-def saveResults(config, meanDistanceAndCoverage):
+def saveResults(folder, config, meanDistanceAndCoverage):
 	names = map(lambda d: d['name'], config)
 	t = np.arange(0, coverageconfig.ITERATIONS * particlesim.TIMESTEP, particlesim.TIMESTEP)
 	df = createDataFrame(t, meanDistanceAndCoverage)
-	now = str(datetime.datetime.now())[:19]
-	df.to_csv('results/coverage_comparison_' + now + '.csv')
-	out = open('results/coverage_comparison_' + now + '.cfg', 'w')
+	df.to_csv(folder + '/mean_coverage_distance.csv')
+	out = open(folder + '/config.txt', 'w')
 	out.write('TRIALS={} ITERATIONS={} N={}\n'
 				 .format(coverageconfig.TRIALS, coverageconfig.ITERATIONS, coverageconfig.N))
 	out.write(pprint.pformat(config))
 	out.close()
-	drawGraph(df, names, now)
+	drawGraph(df, names, folder + '/mean_coverage_distance.jpg')
+
+def saveTrialResults(folder, distanceAndCoverage, trialNumber):
+	t = np.arange(0, coverageconfig.ITERATIONS * particlesim.TIMESTEP, particlesim.TIMESTEP)
+	df = createDataFrame(t, distanceAndCoverage)
+	df.to_csv(folder + '/trial' + str(trialNumber+1) + '.csv')
 
 def singleTrial(config):
 	pool = Pool(len(config))
@@ -114,7 +118,9 @@ def singleTrial(config):
 	dataSets = pool.map_async(runSimulations, config).get(TIMEOUT)
 	print('\nCalculating coverage distances...')
 	distanceAndCoverage = dict(pool.map_async(calculateCoverage, dataSets).get(TIMEOUT))
-	saveResults(config, distanceAndCoverage)
+	folder = 'results/coverage_comparison_' + str(datetime.datetime.now())[:19]
+	os.mkdir(folder)
+	saveResults(folder, config, distanceAndCoverage)
 	print('\n')
 
 def multipleTrials(config):
@@ -122,12 +128,15 @@ def multipleTrials(config):
 	pool = Pool(len(config))
 	coverageData = np.ndarray((coverageconfig.TRIALS, len(config), coverageconfig.ITERATIONS))
 	distanceData = np.ndarray((coverageconfig.TRIALS, len(config), coverageconfig.ITERATIONS))
+	folder = 'results/coverage_comparison_' + str(datetime.datetime.now())[:19]
+	os.mkdir(folder)
 	for i in range(coverageconfig.TRIALS):
 		print('Trial ' + str(i + 1) + '/' + str(coverageconfig.TRIALS))
 		print('Running simulations...')
 		dataSets = pool.map_async(runSimulations, config).get(TIMEOUT)
 		print('\nCalculating coverage distances...')
 		distanceAndCoverage = dict(pool.map_async(calculateCoverage, dataSets).get(TIMEOUT))
+		saveTrialResults(folder, distanceAndCoverage, i)
 		for j, name in enumerate(names):
 			distanceData[i,j] = distanceAndCoverage[name][0]
 			coverageData[i,j] = distanceAndCoverage[name][1]
@@ -135,8 +144,8 @@ def multipleTrials(config):
 	meanCoverageData = np.mean(coverageData, axis=0)
 	meanDistanceData = np.mean(distanceData, axis=0)
 	meanDistanceAndCoverage = dict([(name, (meanDistanceData[j], meanCoverageData[j])) for j,name in enumerate(names)])
-	saveResults(config, meanDistanceAndCoverage)
+	saveResults(folder, config, meanDistanceAndCoverage)
 
 if __name__=='__main__':
 	# singleTrial(coverageconfig.RUN_TUMBLE_RATE_COMPARISON)
-	multipleTrials(coverageconfig.RUN_TUMBLE_RATE_COMPARISON)
+	multipleTrials(coverageconfig.INERTIA_COMPARISON)
