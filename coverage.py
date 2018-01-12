@@ -81,6 +81,7 @@ def drawGraph(df, names, filename):
 	plt.gca().set_ylim(bottom=0)
 	plt.title('Maximum distance to from target to nearest particle')
 	plt.savefig(filename)
+	plt.show()
 
 def createDataFrame(t, distanceAndCoverage):
 	df = pd.DataFrame()
