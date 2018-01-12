@@ -4,6 +4,8 @@ from multiprocessing import Pool
 import signal
 import pandas as pd
 import scipy.special
+import datetime
+import pprint
 
 import particlesim
 import datamodel
@@ -64,7 +66,7 @@ def calculateCoverage(dataSet):
 	distanceTravelled = meanDistanceTravelled(dataSet['data'])
 	return (dataSet['name'], (distanceTravelled, covarageDistance))
 
-def drawGraph(df, algoNames):
+def drawGraph(df, algoNames, now):
 	plots = []
 	for name in algoNames:
 		plot, = plt.plot(df['time'], df[name + '.coverage'], label=name)
@@ -77,7 +79,7 @@ def drawGraph(df, algoNames):
 	plt.ylabel('Coverage distance')
 	plt.gca().set_ylim(bottom=0)
 	plt.title('Maximum distance to from target to nearest particle')
-	plt.savefig('data/coverage graph N={} ITER={}.png'.format(coverageconfig.N, coverageconfig.ITERATIONS))
+	plt.savefig('results/coverage_comparison_' + now + '.jpg'.format(coverageconfig.N, coverageconfig.ITERATIONS))
 	plt.show()
 
 def createDataFrame(t, distanceAndCoverage):
@@ -92,26 +94,30 @@ def createDataFrame(t, distanceAndCoverage):
 		df[coverageColName] = coverage
 	return df
 
-def coverageComparison(dataSets, pool):
-	distanceAndCoverage = dict(pool.map_async(calculateCoverage, dataSets).get(TIMEOUT))
-	t = dataSets.itervalues().next()['data'].t
-	df = createDataFrame(t, distanceAndCoverage)
-	df.to_csv('data/coverage N={} ITER={}.csv'.format(coverageconfig.N, coverageconfig.ITERATIONS))
-	names = map(lambda d: d['name'], dataSets)
-	drawGraph(df, names)
+def saveResults(config, meanDistanceAndCoverage):
+	names = map(lambda d: d['name'], config)
+	t = np.arange(0, coverageconfig.ITERATIONS * particlesim.TIMESTEP, particlesim.TIMESTEP)
+	df = createDataFrame(t, meanDistanceAndCoverage)
+	now = str(datetime.datetime.now())[:19]
+	df.to_csv('results/coverage_comparison_' + now + '.csv')
+	out = open('results/coverage_comparison_' + now + '.cfg', 'w')
+	out.write('TRIALS={} ITERATIONS={} N={}\n'
+				 .format(coverageconfig.TRIALS, coverageconfig.ITERATIONS, coverageconfig.N))
+	out.write(pprint.pformat(config))
+	out.close()
+	drawGraph(df, names, now)
 
-def singleTrial():
-	config = coverageconfig.INERTIA_COMPARISON
+def singleTrial(config):
 	pool = Pool(len(config))
 	print('Running simulations...')
 	# dataSets = map(runSimulations, config)
 	dataSets = pool.map_async(runSimulations, config).get(TIMEOUT)
 	print('\nCalculating coverage distances...')
-	coverageComparison(dataSets, pool)
+	distanceAndCoverage = dict(pool.map_async(calculateCoverage, dataSets).get(TIMEOUT))
+	saveResults(config, distanceAndCoverage)
 	print('\n')
 
-def multipleTrials():
-	config = coverageconfig.RUN_TUMBLE_RATE_COMPARISON
+def multipleTrials(config):
 	names = map(lambda d: d['name'], config)
 	pool = Pool(len(config))
 	coverageData = np.ndarray((coverageconfig.TRIALS, len(config), coverageconfig.ITERATIONS))
@@ -129,12 +135,8 @@ def multipleTrials():
 	meanCoverageData = np.mean(coverageData, axis=0)
 	meanDistanceData = np.mean(distanceData, axis=0)
 	meanDistanceAndCoverage = dict([(name, (meanDistanceData[j], meanCoverageData[j])) for j,name in enumerate(names)])
-	t = np.arange(0, coverageconfig.ITERATIONS * particlesim.TIMESTEP, particlesim.TIMESTEP)
-	df = createDataFrame(t, meanDistanceAndCoverage)
-	df.to_csv('data/mean coverage N={} ITER={} TRIALS={}.csv'
-				 .format(coverageconfig.N, coverageconfig.ITERATIONS, coverageconfig.TRIALS))
-	drawGraph(df, names)
+	saveResults(config, meanDistanceAndCoverage)
 
 if __name__=='__main__':
-	# singleTrial()
-	multipleTrials()
+	# singleTrial(coverageconfig.RUN_TUMBLE_RATE_COMPARISON)
+	multipleTrials(coverageconfig.RUN_TUMBLE_RATE_COMPARISON)
