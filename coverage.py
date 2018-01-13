@@ -149,4 +149,4 @@ def multipleTrials(config):
 
 if __name__=='__main__':
 	# singleTrial(coverageconfig.INERTIA_COMPARISON)
-	multipleTrials(coverageconfig.INERTIA_COMPARISON)
+	multipleTrials(coverageconfig.RUN_TUMBLE_RATE_COMPARISON)
