@@ -1,8 +1,12 @@
+import hardboundary
 import numpy as np
 import linalgutil as la
 import shapely.geometry as geom
 import matplotlib.pyplot as plt
 import scipy.special
+
+
+EPSILON = 0.01
 
 def perpendicularDistanceToLine(y1, y2, x):
 	a = np.linalg.norm(x - y2)
@@ -41,6 +45,7 @@ class Circle(object):
 	def __init__(self, r):
 		self.rMax = float(r)
 		self.circle = geom.Point(0,0).buffer(float(r)).boundary
+		self.hardedge = hardboundary.Circle(r)
 
 	def force(self, x, q):
 		r, theta = la.cartToPolar(x)
@@ -54,6 +59,9 @@ class Circle(object):
 	def plot(self, axes):
 		circle = plt.Circle((0,0), radius=self.rMax, color='g', fill=False)
 		axes.add_patch(circle)
+
+	def bounceIfHits(self, x0, v0, x, v):
+		return self.hardedge.bounceIfHits(x0, v0, x, v)
 
 
 class CompactPolygon(object):

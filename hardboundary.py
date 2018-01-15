@@ -3,7 +3,7 @@ import linalgutil as la
 import shapely.geometry as geom
 import matplotlib.pyplot as plt
 
-EPSILON = 0.00000000000000001
+EPSILON = 0.01
 
 def bounceIfHitsSegment(lineSegments, polygon, x0, v0, x, v):
 	if not polygon.contains(geom.Point(x0)):
@@ -22,7 +22,7 @@ def bounceIfHitsSegment(lineSegments, polygon, x0, v0, x, v):
 			if not polygon.contains(geom.Point(xPrime)):
 				# Use recursion in case of multiple bounces
 				# Move the intersection point slightly closer to the origin, to ensure that its inside the shape
-				xPrime, vPrime = bounceIfHitsSegment(lineSegments, polygon, a * 0.999999, v0, xPrime, vPrime)
+				xPrime, vPrime = bounceIfHitsSegment(lineSegments, polygon, a * (1-EPSILON), v0, xPrime, vPrime)
 	return xPrime,vPrime
 
 

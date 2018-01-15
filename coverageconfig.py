@@ -143,25 +143,32 @@ RUN_TUMBLE_RATE_COMPARISON = [
 
 ELECTROSTATIC_LANGEVIN_COMPARISON = [
 	{
-		'name': 'EL qTotal=1',
-		'filePath': 'data/EL qTotal=1',
+		'name': 'EL qTotal=0_1',
+		'filePath': 'data/EL qTotal=0_1',
 		'moveFn': electrostaticlangevin.moveParticles,
 		'boundary': hardboundary.Circle(R_MAX),
-		'params': {'m': 1.0, 'gamma': 0.1, 's': 0.5, 'rNeighbour': 3.0, 'qTotal': 1.0, 'alpha': -2}
+		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.1, 'rNeighbour': 20.0, 'qTotal': 0.1, 'alpha':-2}
 	},
 	{
-		'name': 'EL qTotal=2',
-		'filePath': 'data/EL qTotal=2',
+		'name': 'EL qTotal=0_5',
+		'filePath': 'data/EL qTotal=0_5',
 		'moveFn': electrostaticlangevin.moveParticles,
 		'boundary': hardboundary.Circle(R_MAX),
-		'params': {'m': 1.0, 'gamma': 0.1, 's': 0.5, 'rNeighbour': 3.0, 'qTotal': 2.0, 'alpha': -2}
+		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.1, 'rNeighbour': 20.0, 'qTotal': 0.5, 'alpha':-2}
 	},
 	{
-		'name': 'EL qTotal=3',
-		'filePath': 'data/EL qTotal=3',
+		'name': 'EL qTotal=2_5',
+		'filePath': 'data/EL qTotal=2_5',
 		'moveFn': electrostaticlangevin.moveParticles,
 		'boundary': hardboundary.Circle(R_MAX),
-		'params': {'m': 1.0, 'gamma': 0.1, 's': 0.5, 'rNeighbour': 3.0, 'qTotal': 3.0, 'alpha': -2}
+		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.1, 'rNeighbour': 20.0, 'qTotal': 2.5, 'alpha':-2}
+	},
+	{
+		'name': 'EL qTotal=10',
+		'filePath': 'data/EL qTotal=10',
+		'moveFn': electrostaticlangevin.moveParticles,
+		'boundary': hardboundary.Circle(R_MAX),
+		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.1, 'rNeighbour': 20.0, 'qTotal': 10.0, 'alpha':-2}
 	}
 ]
 

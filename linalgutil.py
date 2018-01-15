@@ -14,6 +14,10 @@ def boundPoint(x, rMax):
 	r, theta = cartToPolar(x)
 	return polarToCart((np.min([r, rMax]), theta))
 
+def boundPointBelow(x, rMin):
+	r, theta = cartToPolar(x)
+	return polarToCart((np.max([r, rMin]), theta))
+
 def angleBetweenTwoVectors(a, b):
 	return np.arccos(np.dot(a,b) / (np.linalg.norm(a,2) * np.linalg.norm(b,2)))
 

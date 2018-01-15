@@ -1,10 +1,16 @@
 import numpy as np
 import particlesim
-import hardboundary
+import electrostaticboundary
 import linalgutil
+
 
 def findNearbyParticleIndices(particles, distances, rNeighbour):
 	return filter(lambda j: distances[j] > 0 and distances[j] < rNeighbour, range(len(particles)))
+
+def forceBetweenTwoParticles(r, q, alpha):
+	# Bound the distance between two particles below by EPSILON to bodge distretisation errors
+	r = max(r, electrostaticboundary.EPSILON)
+	return q**2 * pow(r, alpha)
 
 """
 Parameters:
@@ -31,21 +37,22 @@ def moveParticles(particles, t, boundary, params):
 	q = qTotal / len(particles)
 	for i, particle in enumerate(particles):
 		jj = findNearbyParticleIndices(particles, D[i], rNeighbour)
-		F = sum(map(lambda j: q**2 * (particles[i].x - particles[j].x)/D[i,j] * pow(D[i,j], alpha), jj))
+		F = sum(map(lambda j: (particles[i].x - particles[j].x)/D[i,j] * forceBetweenTwoParticles(D[i,j], q, alpha), jj))
 		x0, v0 = particle.x, particle.v
-		dv = - (gamma / m)*v0*t + (F/m)*t + (1/m)*b[i]
+		Fb = boundary.force(x0, q) * qTotal
+		dv = - (gamma / m)*v0*t + (Fb + F)/m*t + (1/m)*b[i]
 		v = v0 + dv
 		x = x0 + v0 * t
 		x,v = boundary.bounceIfHits(x0, v0, x, v)
 		particle.x, particle.v = x, v
 
 def main():
-	n, iterations = 400, 4000
+	n, iterations = 50, 3000
 	folder = 'data/electrostatic langevin n={} iter={}'.format(n, iterations)
-	boundary = hardboundary.Circle(10.0)
-	params = {'m': 1.0, 'gamma': 0.1, 's': 0.01, 'rNeighbour': 3.0, 'qTotal': 10.0, 'alpha':0}
+	boundary = electrostaticboundary.Circle(10.0)
+	params = {'m': 0.1, 'gamma': 0.1, 's': 0.2, 'rNeighbour': 20.0, 'qTotal': 0.1, 'alpha':-2}
 	data = particlesim.simulate(iterations, n, moveParticles, folder, boundary, params)
-	particlesim.motionAnimation(data, 15, boundary)
+	particlesim.motionAnimation(data, 20, boundary)
 
 if __name__=='__main__':
 	main()

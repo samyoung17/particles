@@ -1,18 +1,18 @@
 import particlesim
 import electrostaticboundary
 import numpy as np
-
-EPSILON = 0.00001
+import linalgutil
 
 K_E  = 1
-NU = 0.02
-M = 1
+NU = 0.1
+M = 0.1
 
 def forceBetweenTwoPointCharges(q1, q2, r):
 	return - K_E * q1 * q2 * r / pow(np.linalg.norm(r),3)
 
 def forceBetweenTwoPointChargesUnitConstants(r, qSquared):
 	# This function is called iter * N^2 times, so optimise for speed
+	r = linalgutil.boundPointBelow(r, electrostaticboundary.EPSILON)
 	return - r * qSquared / pow(r[0] ** 2 + r[1] ** 2, 1.5)
 
 def forceDueToDragUnitConstants(v, m):
@@ -32,12 +32,11 @@ def moveParticles(particles, t, boundary, params):
 		v = a * t + v0
 		x = x0 + (v + v0) * t / 2
 		# Prevent the particles from jumping across the boundary in between timesteps
-		if not boundary.contains(x * (1 + EPSILON)):
-			x = x0
+		x, v = boundary.bounceIfHits(x0, v0, x, v)
 		particle.x, particle.v, particle.F, particle.Fd = x, v, F, Fd
 
 def main():
-	n, iterations = 50, 4000
+	n, iterations = 50, 3000
 	folder = 'data/electrostatic n={} iter={}'.format(n, iterations)
 	boundary = electrostaticboundary.Circle(10.0)
 	data = particlesim.simulate(iterations, n, moveParticles, folder, boundary)
