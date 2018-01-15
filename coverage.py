@@ -12,11 +12,17 @@ import particlesim
 import datamodel
 import coverageconfig
 
-C = np.sqrt(8 * np.pi/ (3 * np.sqrt(3)))
-LOWER_BOUND = coverageconfig.R_MAX / np.sqrt(coverageconfig.N)
-UPPER_BOUND = C * coverageconfig.R_MAX / np.sqrt(coverageconfig.N / np.log(coverageconfig.N))
-EXPECTED_DISTANCE = C * coverageconfig.R_MAX / \
-						  np.sqrt(coverageconfig.N / np.real(scipy.special.lambertw(coverageconfig.N)))
+EULER_GAMMA = 0.577215664901532
+
+def maxNumberOfCouponsApprox(n):
+	return n / np.real(scipy.special.lambertw(n))
+
+def maxNumberOfCoupons(n):
+	return (n - 0.5) / np.real(scipy.special.lambertw(np.exp(EULER_GAMMA) * (n - 0.5)))
+
+H = 2 * np.pi / (3 * np.sqrt(3))
+LOWER_BOUND = coverageconfig.R_MAX / np.sqrt(coverageconfig.N * H)
+INDEPENDENT_LB = coverageconfig.R_MAX / np.sqrt(maxNumberOfCoupons(coverageconfig.N) * H)
 
 TIMEOUT = 99999999999999999
 
@@ -73,8 +79,7 @@ def drawGraph(df, names, filename):
 		plot, = plt.plot(df['time'], df[name + '.coverage'], label=name)
 		plots.append(plot)
 	plt.axhline(y=LOWER_BOUND, color='k')
-	plt.axhline(y=UPPER_BOUND, color='k')
-	plt.axhline(y=EXPECTED_DISTANCE, color='k')
+	plt.axhline(y=INDEPENDENT_LB, color='k')
 	plt.legend(plots)
 	plt.xlabel('Time')
 	plt.ylabel('Coverage distance')
