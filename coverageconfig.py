@@ -147,28 +147,28 @@ ELECTROSTATIC_LANGEVIN_COMPARISON = [
 		'filePath': 'data/EL qTotal=0_1',
 		'moveFn': electrostaticlangevin.moveParticles,
 		'boundary': electrostaticboundary.Circle(R_MAX),
-		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.1, 'rNeighbour': 20.0, 'qTotal': 0.1, 'alpha':-2}
+		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.2, 'rNeighbour': 20.0, 'qTotal': 0.1, 'alpha':-2}
 	},
 	{
 		'name': 'EL qTotal=0_5',
 		'filePath': 'data/EL qTotal=0_5',
 		'moveFn': electrostaticlangevin.moveParticles,
 		'boundary': electrostaticboundary.Circle(R_MAX),
-		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.1, 'rNeighbour': 20.0, 'qTotal': 0.5, 'alpha':-2}
+		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.2, 'rNeighbour': 20.0, 'qTotal': 0.5, 'alpha':-2}
 	},
 	{
 		'name': 'EL qTotal=2_5',
 		'filePath': 'data/EL qTotal=2_5',
 		'moveFn': electrostaticlangevin.moveParticles,
 		'boundary': electrostaticboundary.Circle(R_MAX),
-		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.1, 'rNeighbour': 20.0, 'qTotal': 2.5, 'alpha':-2}
+		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.2, 'rNeighbour': 20.0, 'qTotal': 2.5, 'alpha':-2}
 	},
 	{
 		'name': 'EL qTotal=10',
 		'filePath': 'data/EL qTotal=10',
 		'moveFn': electrostaticlangevin.moveParticles,
 		'boundary': electrostaticboundary.Circle(R_MAX),
-		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.1, 'rNeighbour': 20.0, 'qTotal': 10.0, 'alpha':-2}
+		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.2, 'rNeighbour': 20.0, 'qTotal': 10.0, 'alpha':-2}
 	}
 ]
 
