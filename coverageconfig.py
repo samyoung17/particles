@@ -143,32 +143,32 @@ RUN_TUMBLE_RATE_COMPARISON = [
 
 ELECTROSTATIC_LANGEVIN_COMPARISON = [
 	{
-		'name': 'EL qTotal=0_1',
-		'filePath': 'data/EL qTotal=0_1',
+		'name': 'EL s=0',
+		'filePath': 'data/EL s=0',
 		'moveFn': electrostaticlangevin.moveParticles,
 		'boundary': electrostaticboundary.Circle(R_MAX),
-		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.2, 'rNeighbour': 20.0, 'qTotal': 0.1, 'alpha':-2}
+		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.0, 'rNeighbour': 20.0, 'qTotal': 3.0, 'qRing': 1.5, 'alpha':-2}
 	},
 	{
-		'name': 'EL qTotal=0_5',
-		'filePath': 'data/EL qTotal=0_5',
+		'name': 'EL s=0_02',
+		'filePath': 'data/EL s=0_02',
 		'moveFn': electrostaticlangevin.moveParticles,
 		'boundary': electrostaticboundary.Circle(R_MAX),
-		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.2, 'rNeighbour': 20.0, 'qTotal': 0.5, 'alpha':-2}
+		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.02, 'rNeighbour': 20.0, 'qTotal': 3.0, 'qRing': 1.5, 'alpha':-2}
 	},
 	{
-		'name': 'EL qTotal=2_5',
-		'filePath': 'data/EL qTotal=2_5',
+		'name': 'EL s=0_1',
+		'filePath': 'data/EL s=0_1',
 		'moveFn': electrostaticlangevin.moveParticles,
 		'boundary': electrostaticboundary.Circle(R_MAX),
-		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.2, 'rNeighbour': 20.0, 'qTotal': 2.5, 'alpha':-2}
+		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.1, 'rNeighbour': 20.0, 'qTotal': 3.0, 'qRing': 1.5, 'alpha':-2}
 	},
 	{
-		'name': 'EL qTotal=10',
-		'filePath': 'data/EL qTotal=10',
+		'name': 'EL s=0_5',
+		'filePath': 'data/EL s=0_5',
 		'moveFn': electrostaticlangevin.moveParticles,
 		'boundary': electrostaticboundary.Circle(R_MAX),
-		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.2, 'rNeighbour': 20.0, 'qTotal': 10.0, 'alpha':-2}
+		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.5, 'rNeighbour': 20.0, 'qTotal': 3.0, 'qRing': 1.5, 'alpha':-2}
 	}
 ]
 
@@ -207,5 +207,14 @@ LINEAR_REPULSION = [
 		'moveFn': electrostaticlangevin.moveParticles,
 		'boundary': hardboundary.Circle(R_MAX),
 		'params': {'m': 1.0, 'gamma': 0.1, 's': 0.01, 'rNeighbour': 3.0, 'qTotal': 10.0, 'alpha': 0}
+	}
+]
+
+ELECTROSTATIC_COMPARISON = [
+	{
+		'name': 'Electrostatic circle',
+		'filePath': 'data/electrostatic circle',
+		'moveFn': electrostaticforce.moveParticles,
+		'boundary': electrostaticboundary.Circle(R_MAX)
 	}
 ]

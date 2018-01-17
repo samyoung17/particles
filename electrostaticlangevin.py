@@ -25,8 +25,8 @@ Parameters:
 						 0 for linear repulsion
 """
 def moveParticles(particles, t, boundary, params):
-	m, gamma, s, rNeighbour, qTotal, alpha \
-		= params['m'], params['gamma'], params['s'], params['rNeighbour'], params['qTotal'], params['alpha']
+	m, gamma, s, rNeighbour, qTotal, qRing, alpha \
+		= params['m'], params['gamma'], params['s'], params['rNeighbour'], params['qTotal'], params['qRing'], params['alpha']
 	T = 2 * m * pow(s, 2) / np.pi
 	var = 2 * gamma * T * t
 	cov = [[var, 0], [0, var]]
@@ -39,7 +39,7 @@ def moveParticles(particles, t, boundary, params):
 		jj = findNearbyParticleIndices(particles, D[i], rNeighbour)
 		F = sum(map(lambda j: (particles[i].x - particles[j].x)/D[i,j] * forceBetweenTwoParticles(D[i,j], q, alpha), jj))
 		x0, v0 = particle.x, particle.v
-		Fb = boundary.force(x0, q) * qTotal
+		Fb = boundary.force(x0, q) * qRing
 		dv = - (gamma / m)*v0*t + (Fb + F)/m*t + (1/m)*b[i]
 		v = v0 + dv
 		x = x0 + v0 * t
@@ -50,7 +50,7 @@ def main():
 	n, iterations = 50, 3000
 	folder = 'data/electrostatic langevin n={} iter={}'.format(n, iterations)
 	boundary = electrostaticboundary.Circle(10.0)
-	params = {'m': 0.1, 'gamma': 0.1, 's': 0.2, 'rNeighbour': 20.0, 'qTotal': 0.1, 'alpha':-2}
+	params = {'m': 0.1, 'gamma': 0.1, 's': 0.01, 'rNeighbour': 20.0, 'qTotal': 3.0, 'qRing': 1.5, 'alpha':-2}
 	data = particlesim.simulate(iterations, n, moveParticles, folder, boundary, params)
 	particlesim.motionAnimation(data, 20, boundary)
 
