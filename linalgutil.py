@@ -19,7 +19,7 @@ def boundPointBelow(x, rMin):
 	return polarToCart((np.max([r, rMin]), theta))
 
 def angleBetweenTwoVectors(a, b):
-	return np.arccos(np.dot(a,b) / (np.linalg.norm(a,2) * np.linalg.norm(b,2)))
+	return np.arccos(max(min(np.dot(a,b) / (np.linalg.norm(a,2) * np.linalg.norm(b,2)),1),-1))
 
 def distanceMatrix(x, y):
 	distances = np.zeros((len(x), len(y)))

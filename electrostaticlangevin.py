@@ -50,7 +50,7 @@ def main():
 	n, iterations = 50, 3000
 	folder = 'data/electrostatic langevin n={} iter={}'.format(n, iterations)
 	boundary = electrostaticboundary.Circle(10.0)
-	params = {'m': 0.1, 'gamma': 0.1, 's': 0.01, 'rNeighbour': 20.0, 'qTotal': 3.0, 'qRing': 1.5, 'alpha':-2}
+	params = {'m': 0.1, 'gamma': 0.1, 's': 0.02, 'rNeighbour': 2.0, 'qTotal': 3.0, 'qRing': 1.0, 'alpha':-2}
 	data = particlesim.simulate(iterations, n, moveParticles, folder, boundary, params)
 	particlesim.motionAnimation(data, 20, boundary)
 

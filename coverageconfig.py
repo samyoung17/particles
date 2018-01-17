@@ -172,6 +172,38 @@ ELECTROSTATIC_LANGEVIN_COMPARISON = [
 	}
 ]
 
+INFLUENCE_COMPARISON = [
+	{
+		'name': 'r=inf',
+		'filePath': 'data/influence r=inf',
+		'moveFn': electrostaticlangevin.moveParticles,
+		'boundary': electrostaticboundary.Circle(R_MAX),
+		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.02, 'rNeighbour': 20.0, 'qTotal': 3.0, 'qRing': 1.5, 'alpha':-2}
+	},
+	{
+		'name': 'r=6',
+		'filePath': 'data/influence r=6',
+		'moveFn': electrostaticlangevin.moveParticles,
+		'boundary': electrostaticboundary.Circle(R_MAX),
+		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.02, 'rNeighbour': 5.0, 'qTotal': 3.0, 'qRing': 1.5, 'alpha':-2}
+	},
+	{
+		'name': 'r=4',
+		'filePath': 'data/influence r=4',
+		'moveFn': electrostaticlangevin.moveParticles,
+		'boundary': electrostaticboundary.Circle(R_MAX),
+		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.1, 'rNeighbour': 3.0, 'qTotal': 3.0, 'qRing': 1.5, 'alpha':-2}
+	},
+	{
+		'name': 'r=2',
+		'filePath': 'data/influence r=2',
+		'moveFn': electrostaticlangevin.moveParticles,
+		'boundary': electrostaticboundary.Circle(R_MAX),
+		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.5, 'rNeighbour': 1.0, 'qTotal': 3.0, 'qRing': 1.5, 'alpha':-2}
+	}
+]
+
+
 LINEAR_REPULSION = [
 	{
 		'name': 'LR rNeighbour=0.25',
