@@ -143,28 +143,28 @@ RUN_TUMBLE_RATE_COMPARISON = [
 
 ELECTROSTATIC_LANGEVIN_COMPARISON = [
 	{
-		'name': 'EL s=0',
+		'name': 's=0',
 		'filePath': 'data/EL s=0',
 		'moveFn': electrostaticlangevin.moveParticles,
 		'boundary': electrostaticboundary.Circle(R_MAX),
 		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.0, 'rNeighbour': 20.0, 'qTotal': 3.0, 'qRing': 1.5, 'alpha':-2}
 	},
 	{
-		'name': 'EL s=0_02',
+		'name': 's=0_02',
 		'filePath': 'data/EL s=0_02',
 		'moveFn': electrostaticlangevin.moveParticles,
 		'boundary': electrostaticboundary.Circle(R_MAX),
 		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.02, 'rNeighbour': 20.0, 'qTotal': 3.0, 'qRing': 1.5, 'alpha':-2}
 	},
 	{
-		'name': 'EL s=0_1',
+		'name': 's=0_1',
 		'filePath': 'data/EL s=0_1',
 		'moveFn': electrostaticlangevin.moveParticles,
 		'boundary': electrostaticboundary.Circle(R_MAX),
 		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.1, 'rNeighbour': 20.0, 'qTotal': 3.0, 'qRing': 1.5, 'alpha':-2}
 	},
 	{
-		'name': 'EL s=0_5',
+		'name': 's=0_5',
 		'filePath': 'data/EL s=0_5',
 		'moveFn': electrostaticlangevin.moveParticles,
 		'boundary': electrostaticboundary.Circle(R_MAX),
