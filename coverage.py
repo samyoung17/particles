@@ -80,13 +80,19 @@ def drawGraph(df, names, filename):
 		plots.append(plot)
 	plt.axhline(y=LOWER_BOUND, color='k')
 	plt.axhline(y=INDEPENDENT_LB, color='k')
-	plt.legend(plots)
-	plt.xlabel('Time')
-	plt.ylabel('Coverage distance')
+	plt.legend()
+	plt.xlabel('Time (s)')
+	plt.ylabel('Coverage distance (m)')
 	plt.gca().set_ylim(bottom=0)
-	plt.title('Maximum distance to from target to nearest particle')
+	plt.title('Maximum distance to the nearest agent')
 	plt.savefig(filename)
 	plt.show()
+
+def drawGraphFromCsv(folder, cfg):
+	df = pd.read_csv(folder + '/mean_coverage_distance.csv')
+	names = map(lambda i: i['name'], cfg)
+	outfilename = folder + '/test.jpg'
+	drawGraph(df, names, outfilename)
 
 def createDataFrame(t, distanceAndCoverage):
 	df = pd.DataFrame()
