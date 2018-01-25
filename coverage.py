@@ -160,4 +160,4 @@ def multipleTrials(config):
 
 if __name__=='__main__':
 	# singleTrial(coverageconfig.ELECTROSTATIC_LANGEVIN_COMPARISON)
-	multipleTrials(coverageconfig.ELECTROSTATIC_LANGEVIN_COMPARISON)
+	multipleTrials(coverageconfig.INFLUENCE_COMPARISON)

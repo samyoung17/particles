@@ -7,7 +7,7 @@ import linalgutil
 def findNearbyParticleIndices(particles, distances, rNeighbour):
 	return filter(lambda j: distances[j] > 0 and distances[j] < rNeighbour, range(len(particles)))
 
-def forceBetweenTwoParticles(r, q, alpha):
+def electrostaticForce(r, q, alpha):
 	# Bound the distance between two particles below by EPSILON to bodge distretisation errors
 	r = max(r, electrostaticboundary.EPSILON)
 	return q**2 * pow(r, alpha)
@@ -26,7 +26,8 @@ Parameters:
 """
 def moveParticles(particles, t, boundary, params):
 	m, gamma, s, rNeighbour, qTotal, qRing, alpha \
-		= params['m'], params['gamma'], params['s'], params['rNeighbour'], params['qTotal'], params['qRing'], params['alpha']
+		= params['m'], params['gamma'], params['s'], params['rNeighbour'], \
+		  params['qTotal'], params['qRing'], params['alpha']
 	T = 2 * m * pow(s, 2) / np.pi
 	var = 2 * gamma * T * t
 	cov = [[var, 0], [0, var]]
@@ -37,7 +38,7 @@ def moveParticles(particles, t, boundary, params):
 	q = qTotal / len(particles)
 	for i, particle in enumerate(particles):
 		jj = findNearbyParticleIndices(particles, D[i], rNeighbour)
-		F = sum(map(lambda j: (particles[i].x - particles[j].x)/D[i,j] * forceBetweenTwoParticles(D[i,j], q, alpha), jj))
+		F = sum(map(lambda j: (particles[i].x - particles[j].x)/D[i,j] * electrostaticForce(D[i,j], q, alpha), jj))
 		x0, v0 = particle.x, particle.v
 		Fb = boundary.force(x0, q) * qRing
 		dv = - (gamma / m)*v0*t + (Fb + F)/m*t + (1/m)*b[i]
@@ -47,10 +48,10 @@ def moveParticles(particles, t, boundary, params):
 		particle.x, particle.v = x, v
 
 def main():
-	n, iterations = 50, 3000
+	n, iterations = 150, 3000
 	folder = 'data/electrostatic langevin n={} iter={}'.format(n, iterations)
 	boundary = electrostaticboundary.Circle(10.0)
-	params = {'m': 0.1, 'gamma': 0.1, 's': 0.02, 'rNeighbour': 2.0, 'qTotal': 3.0, 'qRing': 1.0, 'alpha':-2}
+	params = {'m': 0.1, 'gamma': 0.1, 's': 0.02, 'rNeighbour': 1.0, 'qTotal': 64.0, 'qRing': 1.0, 'alpha': 0}
 	data = particlesim.simulate(iterations, n, moveParticles, folder, boundary, params)
 	particlesim.motionAnimation(data, 20, boundary)
 
