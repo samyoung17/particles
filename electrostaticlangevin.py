@@ -14,9 +14,9 @@ def electrostaticForce(r, q, alpha):
 
 """
 Parameters:
-	m:				The mass (inertia) of the particles
+	m:			The mass (inertia) of the particles
 	gamma:		The friction coefficient
-	s:				The average speed of the particles (not including electrostatic field)
+	s:			The average speed of the particles (not including electrostatic field)
 	rNeighbour:	Distance cut off of the electrostatic field
 	qTotal:		Total amount of charge
 	alpha:		Exponent of the electrostatic field
@@ -40,7 +40,10 @@ def moveParticles(particles, t, boundary, params):
 		jj = findNearbyParticleIndices(particles, D[i], rNeighbour)
 		F = sum(map(lambda j: (particles[i].x - particles[j].x)/D[i,j] * electrostaticForce(D[i,j], q, alpha), jj))
 		x0, v0 = particle.x, particle.v
-		Fb = boundary.force(x0, q) * qRing
+		if (boundary.rMax - np.linalg.norm(x0)) < rNeighbour:
+			Fb = boundary.force(x0, q) * qRing
+		else:
+			Fb = 0.0
 		dv = - (gamma / m)*v0*t + (Fb + F)/m*t + (1/m)*b[i]
 		v = v0 + dv
 		x = x0 + v0 * t
@@ -48,10 +51,10 @@ def moveParticles(particles, t, boundary, params):
 		particle.x, particle.v = x, v
 
 def main():
-	n, iterations = 150, 3000
+	n, iterations = 150, 6000
 	folder = 'data/electrostatic langevin n={} iter={}'.format(n, iterations)
 	boundary = electrostaticboundary.Circle(10.0)
-	params = {'m': 0.1, 'gamma': 0.1, 's': 0.02, 'rNeighbour': 1.0, 'qTotal': 64.0, 'qRing': 1.0, 'alpha': 0}
+	params = {'m': 0.1, 'gamma': 0.1, 's': 0.1, 'rNeighbour': 0.375, 'qTotal': 20.0, 'qRing': 3.0, 'alpha': 0}
 	data = particlesim.simulate(iterations, n, moveParticles, folder, boundary, params)
 	particlesim.motionAnimation(data, 20, boundary)
 

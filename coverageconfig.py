@@ -174,64 +174,65 @@ ELECTROSTATIC_LANGEVIN_COMPARISON = [
 
 INFLUENCE_COMPARISON = [
 	{
-		'name': 'r=8',
-		'filePath': 'data/influence r=8',
+		'name': 'r=inf',
+		'filePath': 'data/influence r=inf',
 		'moveFn': electrostaticlangevin.moveParticles,
 		'boundary': electrostaticboundary.Circle(R_MAX),
-		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.02, 'rNeighbour': 8.0, 'qTotal': 3.0, 'qRing': 1.5, 'alpha':-2}
+		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.02, 'rNeighbour': 20.0, 'qTotal': 3.0, 'qRing': 1.5, 'alpha':-2}
 	},
 	{
-		'name': 'r=4',
-		'filePath': 'data/influence r=4',
+		'name': 'r=6',
+		'filePath': 'data/influence r=6',
 		'moveFn': electrostaticlangevin.moveParticles,
 		'boundary': electrostaticboundary.Circle(R_MAX),
-		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.02, 'rNeighbour': 4.0, 'qTotal': 3.0, 'qRing': 1.5, 'alpha':-2}
+		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.02, 'rNeighbour': 6.0, 'qTotal': 3.0, 'qRing': 1.5, 'alpha':-2}
 	},
 	{
-		'name': 'r=2',
-		'filePath': 'data/influence r=2',
+		'name': 'r=3',
+		'filePath': 'data/influence r=3',
 		'moveFn': electrostaticlangevin.moveParticles,
 		'boundary': electrostaticboundary.Circle(R_MAX),
-		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.02, 'rNeighbour': 2.0, 'qTotal': 3.0, 'qRing': 1.5, 'alpha':-2}
+		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.02, 'rNeighbour': 3.0, 'qTotal': 3.0, 'qRing': 1.5, 'alpha':-2}
 	},
 	{
-		'name': 'r=1',
-		'filePath': 'data/influence r=1',
+		'name': 'r=1_5',
+		'filePath': 'data/influence r=1_5',
 		'moveFn': electrostaticlangevin.moveParticles,
 		'boundary': electrostaticboundary.Circle(R_MAX),
-		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.02, 'rNeighbour': 1.0, 'qTotal': 3.0, 'qRing': 1.5, 'alpha':-2}
+		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.02, 'rNeighbour': 1.5, 'qTotal': 3.0, 'qRing': 1.5, 'alpha':-2}
 	}
 ]
 
 INFLUENCE_COMPARISON_LR = [
 	{
-		'name': 'r=8',
-		'filePath': 'data/influence LR r=8',
+		'name': 'r=3',
+		'filePath': 'data/influence LR r=3',
 		'moveFn': electrostaticlangevin.moveParticles,
 		'boundary': electrostaticboundary.Circle(R_MAX),
-		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.02, 'rNeighbour': 8.0, 'qTotal': 1.0, 'qRing': 1.5, 'alpha':0}
+		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.2, 'rNeighbour': 3.0, 'qTotal': 15.0, 'qRing': 3.0, 'alpha':0}
 	},
 	{
-		'name': 'r=4',
-		'filePath': 'data/influence LR r=4',
+		'name': 'r=1.5',
+		'filePath': 'data/influence LR r=1_5',
 		'moveFn': electrostaticlangevin.moveParticles,
 		'boundary': electrostaticboundary.Circle(R_MAX),
-		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.02, 'rNeighbour': 4.0, 'qTotal': 8.0, 'qRing': 1.5, 'alpha':0}
+		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.2, 'rNeighbour': 1.5, 'qTotal': 15.0, 'qRing': 3.0, 'alpha':0}
 	},
 	{
-		'name': 'r=2',
-		'filePath': 'data/influence LR r=2',
+		'name': 'r=0.75',
+		'filePath': 'data/influence LR r=0_75',
 		'moveFn': electrostaticlangevin.moveParticles,
 		'boundary': electrostaticboundary.Circle(R_MAX),
-		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.02, 'rNeighbour': 2.0, 'qTotal': 16.0, 'qRing': 1.5, 'alpha':0}
+		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.2, 'rNeighbour': 0.75, 'qTotal': 15.0, 'qRing': 3.0, 'alpha': 0}
 	},
 	{
-		'name': 'r=1',
-		'filePath': 'data/influence LR r=1',
+		'name': 'r=0.375',
+		'filePath': 'data/influence LR r=0_375',
 		'moveFn': electrostaticlangevin.moveParticles,
 		'boundary': electrostaticboundary.Circle(R_MAX),
-		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.02, 'rNeighbour': 1.0, 'qTotal': 64.0, 'qRing': 1.5, 'alpha':0}
+		'params': {'m': 0.1, 'gamma': 0.1, 's': 0.2, 'rNeighbour': 0.375, 'qTotal': 15.0, 'qRing': 3.0, 'alpha': 0}
 	}
+
 ]
 
 ELECTROSTATIC_COMPARISON = [

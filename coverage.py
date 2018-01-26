@@ -159,5 +159,5 @@ def multipleTrials(config):
 	saveResults(folder, config, meanDistanceAndCoverage)
 
 if __name__=='__main__':
-	# singleTrial(coverageconfig.ELECTROSTATIC_LANGEVIN_COMPARISON)
+	# singleTrial(coverageconfig.INFLUENCE_COMPARISON)
 	multipleTrials(coverageconfig.INFLUENCE_COMPARISON)
