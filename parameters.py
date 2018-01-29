@@ -209,28 +209,28 @@ CONFIG = {
 			'filePath': 'data/influence LR r=3',
 			'moveFn': electrostaticlangevin.moveParticles,
 			'boundary': electrostaticboundary.Circle(R_MAX),
-			'params': {'m': 0.1, 'gamma': 0.1, 's': 0.05, 'rNeighbour': 3.0, 'qTotal': 15.0, 'qRing': 3.0, 'alpha':0}
+			'params': {'m': 0.1, 'gamma': 0.1, 's': 0.05, 'rNeighbour': 3.0, 'qTotal': 15.0, 'qRing': 1.5, 'alpha':0}
 		},
 		{
 			'name': 'r=1.5',
 			'filePath': 'data/influence LR r=1_5',
 			'moveFn': electrostaticlangevin.moveParticles,
 			'boundary': electrostaticboundary.Circle(R_MAX),
-			'params': {'m': 0.1, 'gamma': 0.1, 's': 0.05, 'rNeighbour': 1.5, 'qTotal': 15.0, 'qRing': 3.0, 'alpha':0}
+			'params': {'m': 0.1, 'gamma': 0.1, 's': 0.05, 'rNeighbour': 1.5, 'qTotal': 15.0, 'qRing': 1.5, 'alpha':0}
 		},
 		{
 			'name': 'r=0.75',
 			'filePath': 'data/influence LR r=0_75',
 			'moveFn': electrostaticlangevin.moveParticles,
 			'boundary': electrostaticboundary.Circle(R_MAX),
-			'params': {'m': 0.1, 'gamma': 0.1, 's': 0.05, 'rNeighbour': 0.75, 'qTotal': 15.0, 'qRing': 3.0, 'alpha': 0}
+			'params': {'m': 0.1, 'gamma': 0.1, 's': 0.05, 'rNeighbour': 0.75, 'qTotal': 15.0, 'qRing': 1.5, 'alpha': 0}
 		},
 		{
 			'name': 'r=0.375',
 			'filePath': 'data/influence LR r=0_375',
 			'moveFn': electrostaticlangevin.moveParticles,
 			'boundary': electrostaticboundary.Circle(R_MAX),
-			'params': {'m': 0.1, 'gamma': 0.1, 's': 0.05, 'rNeighbour': 0.375, 'qTotal': 15.0, 'qRing': 3.0, 'alpha': 0}
+			'params': {'m': 0.1, 'gamma': 0.1, 's': 0.05, 'rNeighbour': 0.375, 'qTotal': 15.0, 'qRing': 1.5, 'alpha': 0}
 		}
 
 	],
