@@ -114,7 +114,7 @@ def saveResults(folder, config, meanDistanceAndCoverage):
 	df.to_csv(folder + '/mean_coverage_distance.csv')
 	out = open(folder + '/config.txt', 'w')
 	out.write('ITERATIONS={} N={}\n'
-			  .format(parameters.TRIALS, parameters.ITERATIONS, parameters.N))
+			  .format(parameters.ITERATIONS, parameters.N))
 	out.write(pprint.pformat(config))
 	out.close()
 	drawGraph(df, names, folder + '/mean_coverage_distance.jpg')
