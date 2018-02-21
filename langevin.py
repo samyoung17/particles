@@ -28,7 +28,7 @@ def moveParticles(particles, t, boundary, params):
 def main():
 	params = {
 		'm': 0.1,
-		'gamma': 0.2,
+		'gamma': 0.02,
 		's': 0.5
 	}
 	n, iterations = 150, 3000

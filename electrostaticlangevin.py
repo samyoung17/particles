@@ -51,10 +51,10 @@ def moveParticles(particles, t, boundary, params):
 		particle.x, particle.v = x, v
 
 def main():
-	n, iterations = 150, 6000
+	n, iterations = 300, 1000
 	folder = 'data/electrostatic langevin n={} iter={}'.format(n, iterations)
 	boundary = electrostaticboundary.Circle(10.0)
-	params = {'m': 0.1, 'gamma': 0.1, 's': 0.1, 'rNeighbour': 0.375, 'qTotal': 20.0, 'qRing': 3.0, 'alpha': 0}
+	params = {'m': 0.1, 'gamma': 0.02, 's': 0.02, 'rNeighbour': 0.9, 'qTotal': 10.0, 'qRing': 0.5, 'alpha':0}
 	data = particlesim.simulate(iterations, n, moveParticles, folder, boundary, params)
 	particlesim.motionAnimation(data, 20, boundary)
 

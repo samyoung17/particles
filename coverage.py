@@ -21,9 +21,11 @@ def maxNumberOfCouponsApprox(n):
 def maxNumberOfCoupons(n):
 	return (n - 0.5) / np.real(scipy.special.lambertw(np.exp(EULER_GAMMA) * (n - 0.5)))
 
-H = 2 * np.pi / (3 * np.sqrt(3))
-LOWER_BOUND = parameters.R_MAX / np.sqrt(parameters.N * H)
-INDEPENDENT_LB = parameters.R_MAX / np.sqrt(maxNumberOfCoupons(parameters.N) * H)
+H = np.sqrt(2 * np.pi / (3 * np.sqrt(3)))
+LOWER_BOUND = parameters.R_MAX * H / np.sqrt(parameters.N)
+INDEPENDENT_LB = parameters.R_MAX * H / np.sqrt(maxNumberOfCoupons(parameters.N))
+
+D_OPTIMAL_AGENTS = LOWER_BOUND * np.sqrt(2)
 
 TIMEOUT = 99999999999999999
 
