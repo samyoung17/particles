@@ -11,7 +11,7 @@ import sys
 
 import particlesim
 import datamodel
-import config
+import coverageconfig
 
 EULER_GAMMA = 0.577215664901532
 
@@ -22,8 +22,8 @@ def maxNumberOfCoupons(n):
 	return (n - 0.5) / np.real(scipy.special.lambertw(np.exp(EULER_GAMMA) * (n - 0.5)))
 
 H = np.sqrt(2 * np.pi / (3 * np.sqrt(3)))
-LOWER_BOUND = config.R_MAX * H / np.sqrt(config.N)
-INDEPENDENT_LB = config.R_MAX * H / np.sqrt(maxNumberOfCoupons(config.N))
+LOWER_BOUND = coverageconfig.R_MAX * H / np.sqrt(coverageconfig.N)
+INDEPENDENT_LB = coverageconfig.R_MAX * H / np.sqrt(maxNumberOfCoupons(coverageconfig.N))
 
 D_OPTIMAL_AGENTS = LOWER_BOUND * np.sqrt(2)
 
@@ -62,7 +62,7 @@ def loadDataFromFile(algorithmProperties):
 
 def runSimulations(algorithmProps):
 	params = algorithmProps['params'] if algorithmProps.has_key('params') else {}
-	data = particlesim.simulate(config.ITERATIONS, config.N,
+	data = particlesim.simulate(coverageconfig.ITERATIONS, coverageconfig.N,
 								algorithmProps['moveFn'], algorithmProps['filePath'],
 								algorithmProps['boundary'], params)
 	dataSet = {
@@ -122,15 +122,15 @@ def saveResults(folder, config, meanDistanceAndCoverage):
 	drawGraph(df, names, folder + '/mean_coverage_distance.jpg')
 
 def saveTrialResults(folder, distanceAndCoverage, trialNumber):
-	t = np.arange(0, config.ITERATIONS * particlesim.TIMESTEP, particlesim.TIMESTEP)
+	t = np.arange(0, coverageconfig.ITERATIONS * particlesim.TIMESTEP, particlesim.TIMESTEP)
 	df = createDataFrame(t, distanceAndCoverage)
 	df.to_csv(folder + '/trial' + str(trialNumber+1) + '.csv')
 
 def multipleTrials(config, numberOfTrials):
 	names = map(lambda d: d['name'], config)
 	pool = Pool(len(config))
-	coverageData = np.ndarray((numberOfTrials, len(config), config.ITERATIONS))
-	distanceData = np.ndarray((numberOfTrials, len(config), config.ITERATIONS))
+	coverageData = np.ndarray((numberOfTrials, len(config), coverageconfig.ITERATIONS))
+	distanceData = np.ndarray((numberOfTrials, len(config), coverageconfig.ITERATIONS))
 	folder = 'results/coverage_comparison_' + str(datetime.datetime.now())[:19]
 	os.mkdir(folder)
 	for i in range(numberOfTrials):
@@ -153,4 +153,4 @@ if __name__=='__main__':
 	if not len(sys.argv) == 3:
 		raise ValueError('Arguments should be <config>, <number_of_trials>')
 	python, configName, numberOfTrials = sys.argv
-	multipleTrials(config.CONFIG[configName], int(numberOfTrials))
+	multipleTrials(coverageconfig.CONFIG[configName], int(numberOfTrials))
