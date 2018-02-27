@@ -11,8 +11,8 @@
 IMG_SIZE = [300,300]
 CIRCLE_CENTRE = [150,150]
 R = 100
-PSI = 1.2
-N = 50
+PSI = 1.29
+N = 56
 
 function coordinatesToSvg(x){
 	return [x[0]+CIRCLE_CENTRE[0], IMG_SIZE[1]-(x[1]+CIRCLE_CENTRE[1])];
@@ -43,7 +43,7 @@ function generatePoints(firstBounce, psi, n) {
 	var alpha = cartToPolar(firstBounce)[1];
 	var points = [firstBounce];
 	var nextPoint;
-	for (i = 0; i < n; i++) { 
+	for (i = 0; i < n; i++) {
 		alpha += (2 * psi);
 		nextPoint = polarToCart([R, alpha])
     	points.push(nextPoint);
@@ -141,7 +141,7 @@ function drawLabelledImage() {
 	var psiLabelLocation = coordinatesToSvg([20, 80])
 	d3.select('#labelled')
 		.append('text')
-		.attr('font-size', 15)
+		.attr('font-size', 12)
 		.attr('color', 'black')
 		.attr('font-family', 'Times')
 		.attr('font-style', 'italic')
@@ -153,7 +153,8 @@ function drawLabelledImage() {
 
 function drawCausticGeom() {
 	var firstBounce = [0,100]
-	var firstDistance = 150
+	var firstDistance = R
+	var startCircleRadius = 34
 	var startPoint = [firstBounce[0] - (firstDistance*Math.cos(PSI)), firstBounce[1] - (firstDistance*Math.sin(PSI))]
 
 	var points = [startPoint].concat(generatePoints(firstBounce, PSI, 1))
@@ -203,7 +204,7 @@ function drawCausticGeom() {
 	var psiLabelLocation = coordinatesToSvg([20, 80])
 	d3.select('#causticGeom')
 		.append('text')
-		.attr('font-size', 15)
+		.attr('font-size', 12)
 		.attr('color', 'black')
 		.attr('font-family', 'Times')
 		.attr('font-style', 'italic')
@@ -222,15 +223,6 @@ function drawCausticGeom() {
 		.attr('cy', circleCentreSvg[0])
 		.attr('r', rCaustic)
 
-	var perpD = pointsToPath([[0,0],[0,R]]);
-	d3.select('#causticGeom')
-		.append('path')
-		.style('stroke-width',1)
-		.style('stroke', 'black')
-		.style('fill', 'none')
-		.attr('stroke-dasharray', '5,5')
-		.attr('d', perpD);
-
 	var theta = Math.PI / 2 - PSI;
 	var causticRadiusD = pointsToPath([[0,0],[rCaustic*Math.cos(theta),rCaustic*Math.sin(theta)]]);
 
@@ -239,19 +231,49 @@ function drawCausticGeom() {
 		.style('stroke-width',1)
 		.style('stroke', 'black')
 		.style('fill', 'none')
-		.attr('stroke-dasharray', '5,5')
+		.attr('stroke-dasharray', '3,3')
 		.attr('d', causticRadiusD);
 
-	var causticRadiusLabelLocation = coordinatesToSvg([18, -5]);
+	var causticRadiusLabelLocation = coordinatesToSvg([6, 7]);
 	d3.select('#causticGeom')
 		.append('text')
-		.attr('font-size', 15)
+		.attr('font-size', 12)
 		.attr('color', 'black')
 		.attr('font-family', 'Times')
 		.attr('font-style', 'italic')
 		.attr('x', causticRadiusLabelLocation[0])
 		.attr('y', causticRadiusLabelLocation[1])
-		.text('a');
+		.text('R');
+
+    var startRadiusD = pointsToPath([[0,0],[startCircleRadius,0]]);
+
+	d3.select('#causticGeom')
+		.append('circle')
+		.style('stroke-width',1)
+		.style('stroke', 'black')
+		.style('fill', 'none')
+		.attr('cx', circleCentreSvg[0])
+		.attr('cy', circleCentreSvg[0])
+		.attr('r', startCircleRadius)
+
+	d3.select('#causticGeom')
+		.append('path')
+		.style('stroke-width',1)
+		.style('stroke', 'black')
+		.style('fill', 'none')
+		.attr('stroke-dasharray', '3,3')
+		.attr('d', startRadiusD);
+
+	var causticRadiusLabelLocation = coordinatesToSvg([12, -12]);
+	d3.select('#causticGeom')
+		.append('text')
+		.attr('font-size', 12)
+		.attr('color', 'black')
+		.attr('font-family', 'Times')
+		.attr('font-style', 'italic')
+		.attr('x', causticRadiusLabelLocation[0])
+		.attr('y', causticRadiusLabelLocation[1])
+		.text('R');
 }
 
 
