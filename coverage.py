@@ -11,7 +11,7 @@ import sys
 
 import particlesim
 import datamodel
-import parameters
+import config
 
 EULER_GAMMA = 0.577215664901532
 
@@ -22,8 +22,8 @@ def maxNumberOfCoupons(n):
 	return (n - 0.5) / np.real(scipy.special.lambertw(np.exp(EULER_GAMMA) * (n - 0.5)))
 
 H = np.sqrt(2 * np.pi / (3 * np.sqrt(3)))
-LOWER_BOUND = parameters.R_MAX * H / np.sqrt(parameters.N)
-INDEPENDENT_LB = parameters.R_MAX * H / np.sqrt(maxNumberOfCoupons(parameters.N))
+LOWER_BOUND = config.R_MAX * H / np.sqrt(config.N)
+INDEPENDENT_LB = config.R_MAX * H / np.sqrt(maxNumberOfCoupons(config.N))
 
 D_OPTIMAL_AGENTS = LOWER_BOUND * np.sqrt(2)
 
@@ -62,7 +62,7 @@ def loadDataFromFile(algorithmProperties):
 
 def runSimulations(algorithmProps):
 	params = algorithmProps['params'] if algorithmProps.has_key('params') else {}
-	data = particlesim.simulate(parameters.ITERATIONS, parameters.N,
+	data = particlesim.simulate(config.ITERATIONS, config.N,
 								algorithmProps['moveFn'], algorithmProps['filePath'],
 								algorithmProps['boundary'], params)
 	dataSet = {
@@ -111,26 +111,26 @@ def createDataFrame(t, distanceAndCoverage):
 
 def saveResults(folder, config, meanDistanceAndCoverage):
 	names = map(lambda d: d['name'], config)
-	t = np.arange(0, parameters.ITERATIONS * particlesim.TIMESTEP, particlesim.TIMESTEP)
+	t = np.arange(0, config.ITERATIONS * particlesim.TIMESTEP, particlesim.TIMESTEP)
 	df = createDataFrame(t, meanDistanceAndCoverage)
 	df.to_csv(folder + '/mean_coverage_distance.csv')
 	out = open(folder + '/config.txt', 'w')
 	out.write('ITERATIONS={} N={}\n'
-			  .format(parameters.ITERATIONS, parameters.N))
+			  .format(config.ITERATIONS, config.N))
 	out.write(pprint.pformat(config))
 	out.close()
 	drawGraph(df, names, folder + '/mean_coverage_distance.jpg')
 
 def saveTrialResults(folder, distanceAndCoverage, trialNumber):
-	t = np.arange(0, parameters.ITERATIONS * particlesim.TIMESTEP, particlesim.TIMESTEP)
+	t = np.arange(0, config.ITERATIONS * particlesim.TIMESTEP, particlesim.TIMESTEP)
 	df = createDataFrame(t, distanceAndCoverage)
 	df.to_csv(folder + '/trial' + str(trialNumber+1) + '.csv')
 
 def multipleTrials(config, numberOfTrials):
 	names = map(lambda d: d['name'], config)
 	pool = Pool(len(config))
-	coverageData = np.ndarray((numberOfTrials, len(config), parameters.ITERATIONS))
-	distanceData = np.ndarray((numberOfTrials, len(config), parameters.ITERATIONS))
+	coverageData = np.ndarray((numberOfTrials, len(config), config.ITERATIONS))
+	distanceData = np.ndarray((numberOfTrials, len(config), config.ITERATIONS))
 	folder = 'results/coverage_comparison_' + str(datetime.datetime.now())[:19]
 	os.mkdir(folder)
 	for i in range(numberOfTrials):
@@ -153,4 +153,4 @@ if __name__=='__main__':
 	if not len(sys.argv) == 3:
 		raise ValueError('Arguments should be <config>, <number_of_trials>')
 	python, configName, numberOfTrials = sys.argv
-	multipleTrials(parameters.CONFIG[configName], int(numberOfTrials))
+	multipleTrials(config.CONFIG[configName], int(numberOfTrials))

@@ -1,6 +1,7 @@
 import numpy as np
 import particlesim
 import electrostaticboundary
+import repulsiveboundary
 import linalgutil
 
 
@@ -51,10 +52,10 @@ def moveParticles(particles, t, boundary, params):
 		particle.x, particle.v = x, v
 
 def main():
-	n, iterations = 300, 1000
+	n, iterations = 300, 3000
 	folder = 'data/electrostatic langevin n={} iter={}'.format(n, iterations)
-	boundary = electrostaticboundary.Circle(10.0)
-	params = {'m': 0.1, 'gamma': 0.02, 's': 0.02, 'rNeighbour': 0.9, 'qTotal': 10.0, 'qRing': 0.5, 'alpha':0}
+	boundary = repulsiveboundary.Circle(10.0)
+	params = {'m': 0.1, 'gamma': 0.05, 's': 0.02, 'rNeighbour': 0.9, 'qTotal': 30.0, 'qRing': 3.0, 'alpha': 0}
 	data = particlesim.simulate(iterations, n, moveParticles, folder, boundary, params)
 	particlesim.motionAnimation(data, 20, boundary)
 
