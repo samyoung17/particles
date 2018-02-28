@@ -179,28 +179,28 @@ CONFIG = {
 			'filePath': 'data/linear repulsion s=0',
 			'moveFn': electrostaticlangevin.moveParticles,
 			'boundary': repulsiveboundary.Circle(R_MAX),
-			'params': {'m': 0.1, 'gamma': 0.02, 's': 0.0, 'rNeighbour': 0.9, 'qTotal': 30.0, 'qRing': 0.3, 'alpha':0}
+			'params': {'m': 0.1, 'gamma': 0.05, 's': 0.0, 'rNeighbour': 0.9, 'qTotal': 30.0, 'qRing': 1.5, 'alpha':0}
 		},
 		{
 			'name': 's=0.02',
 			'filePath': 'data/linear repulsion s=0_02',
 			'moveFn': electrostaticlangevin.moveParticles,
 			'boundary': repulsiveboundary.Circle(R_MAX),
-			'params': {'m': 0.1, 'gamma': 0.02, 's': 0.02, 'rNeighbour': 0.9, 'qTotal': 30.0, 'qRing': 0.3, 'alpha':0}
+			'params': {'m': 0.1, 'gamma': 0.05, 's': 0.02, 'rNeighbour': 0.9, 'qTotal': 30.0, 'qRing': 1.5, 'alpha':0}
 		},
 		{
 			'name': 's=0.1',
 			'filePath': 'data/linear repulsion s=0_1',
 			'moveFn': electrostaticlangevin.moveParticles,
 			'boundary': repulsiveboundary.Circle(R_MAX),
-			'params': {'m': 0.1, 'gamma': 0.02, 's': 0.1, 'rNeighbour': 0.9, 'qTotal': 30.0, 'qRing': 0.3, 'alpha':0}
+			'params': {'m': 0.1, 'gamma': 0.05, 's': 0.1, 'rNeighbour': 0.9, 'qTotal': 30.0, 'qRing': 1.5, 'alpha':0}
 		},
 		{
 			'name': 's=0.5',
 			'filePath': 'data/linear repulsion s=0_5',
 			'moveFn': electrostaticlangevin.moveParticles,
 			'boundary': repulsiveboundary.Circle(R_MAX),
-			'params': {'m': 0.1, 'gamma': 0.02, 's': 0.5, 'rNeighbour': 0.9, 'qTotal': 30.0, 'qRing': 0.3, 'alpha':0}
+			'params': {'m': 0.1, 'gamma': 0.05, 's': 0.5, 'rNeighbour': 0.9, 'qTotal': 30.0, 'qRing': 1.5, 'alpha':0}
 		}
 	],
 
