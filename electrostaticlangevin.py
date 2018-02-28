@@ -41,7 +41,7 @@ def moveParticles(particles, t, boundary, params):
 		jj = findNearbyParticleIndices(particles, D[i], rNeighbour)
 		F = sum(map(lambda j: (particles[i].x - particles[j].x)/D[i,j] * electrostaticForce(D[i,j], q, alpha), jj))
 		x0, v0 = particle.x, particle.v
-		if (boundary.rMax - np.linalg.norm(x0)) < rNeighbour:
+		if (boundary.rMax - np.linalg.norm(x0)) < rNeighbour/np.sqrt(2):
 			Fb = boundary.force(x0, q) * qRing
 		else:
 			Fb = 0.0

@@ -15,7 +15,7 @@ class Circle(object):
 	def force(self, x, q):
 		r, theta = la.cartToPolar(x)
 		xUnit = la.polarToCart((q, theta))
-		return xUnit * q
+		return - xUnit * q
 
 	def contains(self, x):
 		return np.linalg.norm(x) < self.rMax

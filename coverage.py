@@ -111,12 +111,12 @@ def createDataFrame(t, distanceAndCoverage):
 
 def saveResults(folder, config, meanDistanceAndCoverage):
 	names = map(lambda d: d['name'], config)
-	t = np.arange(0, config.ITERATIONS * particlesim.TIMESTEP, particlesim.TIMESTEP)
+	t = np.arange(0, coverageconfig.ITERATIONS * particlesim.TIMESTEP, particlesim.TIMESTEP)
 	df = createDataFrame(t, meanDistanceAndCoverage)
 	df.to_csv(folder + '/mean_coverage_distance.csv')
 	out = open(folder + '/config.txt', 'w')
 	out.write('ITERATIONS={} N={}\n'
-			  .format(config.ITERATIONS, config.N))
+			  .format(coverageconfig.ITERATIONS, coverageconfig.N))
 	out.write(pprint.pformat(config))
 	out.close()
 	drawGraph(df, names, folder + '/mean_coverage_distance.jpg')
