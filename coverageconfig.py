@@ -1,6 +1,7 @@
 import hardboundary
 import langevin
 import runtumble
+import runtumblenoise
 import linearrepulsion
 import repulsiveboundary
 import voronoi
@@ -86,28 +87,28 @@ CONFIG = {
 			'filePath': 'data/inertia comparison m=0_1',
 			'moveFn': langevin.moveParticles,
 			'boundary': hardboundary.Circle(R_MAX),
-			'params': {'m': 0.1, 'gamma': 0.2, 's': 0.5}
+			'params': {'m': 0.1, 'gamma': 0.05, 's': 0.5}
 		},
 		{
 			'name': 'Inertia comparison m=1',
 			'filePath': 'data/inertia comparison m=1',
 			'moveFn': langevin.moveParticles,
 			'boundary': hardboundary.Circle(R_MAX),
-			'params': {'m': 1.0, 'gamma': 0.2, 's': 0.5}
+			'params': {'m': 1.0, 'gamma': 0.05, 's': 0.5}
 		},
 		{
 			'name': 'Inertia comparison m=10',
 			'filePath': 'data/inertia comparison m=10',
 			'moveFn': langevin.moveParticles,
 			'boundary': hardboundary.Circle(R_MAX),
-			'params': {'m': 10.0, 'gamma': 0.2, 's': 0.5}
+			'params': {'m': 10.0, 'gamma': 0.05, 's': 0.5}
 		},
 		{
 			'name': 'Inertia comparison m=100',
 			'filePath': 'data/inertia comparison m=100',
 			'moveFn': langevin.moveParticles,
 			'boundary': hardboundary.Circle(R_MAX),
-			'params': {'m': 100.0, 'gamma': 0.2, 's': 0.5}
+			'params': {'m': 100.0, 'gamma': 0.05, 's': 0.5}
 		},
 	],
 
@@ -232,6 +233,68 @@ CONFIG = {
 			'moveFn': electrostaticlangevin.moveParticles,
 			'boundary': repulsiveboundary.Circle(R_MAX),
 			'params': {'m': 0.1, 'gamma': 0.05, 's': 0.02, 'rNeighbour': 1.3, 'qTotal': 30.0, 'qRing': 3.0, 'alpha': 0}
+		}
+	],
+
+	'LOW_NOISE_COMPARISON': [
+		{
+			'name': 'Linear Repulsion',
+			'filePath': 'data/low noise linear repulsion',
+			'moveFn': electrostaticlangevin.moveParticles,
+			'boundary': repulsiveboundary.Circle(R_MAX),
+			'params': {'m': 0.1, 'gamma': 0.05, 's': 0.025, 'rNeighbour': 0.9, 'qTotal': 30.0, 'qRing': 3.0, 'alpha': 0}
+		},
+		{
+			'name': 'Electrostatic Repulsion',
+			'filePath': 'data/low noise electrostatic repulsion',
+			'moveFn': electrostaticlangevin.moveParticles,
+			'boundary': electrostaticboundary.Circle(R_MAX),
+			'params': {'m': 0.1, 'gamma': 0.01, 's': 0.025, 'rNeighbour': 20.0, 'qTotal': 1.0, 'qRing': 0.5, 'alpha':-2}
+		},
+		{
+			'name': 'Langevin Dynamics',
+			'filePath': 'data/low noise langevin dynamics',
+			'moveFn': langevin.moveParticles,
+			'boundary': hardboundary.Circle(R_MAX),
+			'params': {'m': 0.1, 'gamma': 0.2, 's': 0.275}
+		},
+		{
+			'name': 'Run and Tumble',
+			'filePath': 'data/low noise langevin dynamics',
+			'moveFn': runtumblenoise.moveParticles,
+			'boundary': hardboundary.Circle(R_MAX),
+			'params': {'m': 0.1, 'gamma': 0.2, 'sNoise': 0.025, 's': 0.25, 'rate': 0.25}
+		}
+	],
+
+	'HIGH_NOISE_COMPARISON': [
+		{
+			'name': 'Linear Repulsion',
+			'filePath': 'data/high noise linear repulsion',
+			'moveFn': electrostaticlangevin.moveParticles,
+			'boundary': repulsiveboundary.Circle(R_MAX),
+			'params': {'m': 0.1, 'gamma': 0.05, 's': 0.25, 'rNeighbour': 0.9, 'qTotal': 30.0, 'qRing': 3.0, 'alpha': 0}
+		},
+		{
+			'name': 'Electrostatic Repulsion',
+			'filePath': 'data/high noise electrostatic repulsion',
+			'moveFn': electrostaticlangevin.moveParticles,
+			'boundary': electrostaticboundary.Circle(R_MAX),
+			'params': {'m': 0.1, 'gamma': 0.01, 's': 0.25, 'rNeighbour': 20.0, 'qTotal': 1.0, 'qRing': 0.5, 'alpha': -2}
+		},
+		{
+			'name': 'Langevin Dynamics',
+			'filePath': 'data/high noise langevin dynamics',
+			'moveFn': langevin.moveParticles,
+			'boundary': hardboundary.Circle(R_MAX),
+			'params': {'m': 0.1, 'gamma': 0.2, 's': 0.5}
+		},
+		{
+			'name': 'Run and Tumble',
+			'filePath': 'data/high noise langevin dynamics',
+			'moveFn': runtumblenoise.moveParticles,
+			'boundary': hardboundary.Circle(R_MAX),
+			'params': {'m': 0.1, 'gamma': 0.2, 'sNoise': 0.25, 's': 0.25, 'rate': 0.25}
 		}
 	]
 }
