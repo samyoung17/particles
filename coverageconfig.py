@@ -260,7 +260,7 @@ CONFIG = {
 		},
 		{
 			'name': 'Run and Tumble',
-			'filePath': 'data/low noise langevin dynamics',
+			'filePath': 'data/low noise run and tumble',
 			'moveFn': runtumblenoise.moveParticles,
 			'boundary': hardboundary.Circle(R_MAX),
 			'params': {'m': 0.1, 'gamma': 0.2, 'sNoise': 0.025, 's': 0.25, 'rate': 0.25}
