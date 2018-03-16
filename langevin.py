@@ -29,9 +29,9 @@ def main():
 	params = {
 		'm': 0.1,
 		'gamma': 0.02,
-		's': 0.5
+		's': 0.35
 	}
-	n, iterations = 150, 3000
+	n, iterations = 300, 1000
 	folder = 'data/langevin n={} iter={}'.format(n, iterations)
 	boundary = hardboundary.Circle(10.0)
 	data = particlesim.simulate(iterations, n, moveParticles, folder, boundary, params)

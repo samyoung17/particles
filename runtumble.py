@@ -23,7 +23,7 @@ def moveParticles(particles, t, boundary, params):
 		particle.x, particle.v = x, v
 
 def main():
-	n, iterations = 150, 3000
+	n, iterations = 300, 1000
 	params = {'rate': 0.01, 's': 0.5}
 	folder = 'data/run tumble n={} iter={}'.format(n, iterations)
 	boundary = hardboundary.Circle(10.0)
