@@ -32,7 +32,7 @@ def moveParticles(particles, t, boundary, params):
 
 def main():
 	n, iterations = 50, 3000
-	params = {'rate': 0.25, 's': 0.5, 'sNoise': 0.5, 'm': 0.1, 'gamma': 0.05}
+	params = {'rate': 0.1, 's': 0.25, 'sNoise': 0.02, 'm': 0.1, 'gamma': 0.05}
 	folder = 'data/run tumble n={} iter={}'.format(n, iterations)
 	boundary = hardboundary.Circle(10.0)
 	data = particlesim.simulate(iterations, n, moveParticles, folder, boundary, params)

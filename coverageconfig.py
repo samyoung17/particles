@@ -15,7 +15,7 @@ RECTANGLE_VERTICES = [(-15.71, -3.93), (-15.71, 3.93), (15.71, 3.93), (15.71, -3
 SQUARE_VERTICES = [(-7.86, -7.86), (-7.86, 7.86), (7.86, 7.86), (7.86, -7.86)]
 R_MAX = 10.0
 
-ITERATIONS = 2000
+ITERATIONS = 3000
 N = 300
 
 CONFIG = {
@@ -83,32 +83,32 @@ CONFIG = {
 
 	'INERTIA_COMPARISON': [
 		{
-			'name': 'Inertia comparison m=0_1',
+			'name': 'm=0.1',
 			'filePath': 'data/inertia comparison m=0_1',
 			'moveFn': langevin.moveParticles,
 			'boundary': hardboundary.Circle(R_MAX),
-			'params': {'m': 0.1, 'gamma': 0.05, 's': 0.5}
+			'params': {'m': 0.1, 'gamma': 0.05, 's': 0.35}
 		},
 		{
-			'name': 'Inertia comparison m=1',
+			'name': 'm=1',
 			'filePath': 'data/inertia comparison m=1',
 			'moveFn': langevin.moveParticles,
 			'boundary': hardboundary.Circle(R_MAX),
-			'params': {'m': 1.0, 'gamma': 0.05, 's': 0.5}
+			'params': {'m': 1.0, 'gamma': 0.05, 's': 0.35}
 		},
 		{
-			'name': 'Inertia comparison m=10',
+			'name': 'm=10',
 			'filePath': 'data/inertia comparison m=10',
 			'moveFn': langevin.moveParticles,
 			'boundary': hardboundary.Circle(R_MAX),
-			'params': {'m': 10.0, 'gamma': 0.05, 's': 0.5}
+			'params': {'m': 10.0, 'gamma': 0.05, 's': 0.35}
 		},
 		{
-			'name': 'Inertia comparison m=100',
+			'name': 'm=100',
 			'filePath': 'data/inertia comparison m=100',
 			'moveFn': langevin.moveParticles,
 			'boundary': hardboundary.Circle(R_MAX),
-			'params': {'m': 100.0, 'gamma': 0.05, 's': 0.5}
+			'params': {'m': 100.0, 'gamma': 0.05, 's': 0.35}
 		},
 	],
 
@@ -256,14 +256,14 @@ CONFIG = {
 			'filePath': 'data/low noise langevin dynamics',
 			'moveFn': langevin.moveParticles,
 			'boundary': hardboundary.Circle(R_MAX),
-			'params': {'m': 0.1, 'gamma': 0.2, 's': 0.275}
+			'params': {'m': 0.1, 'gamma': 0.05, 's': 0.35}
 		},
 		{
 			'name': 'Run and Tumble',
 			'filePath': 'data/low noise run and tumble',
-			'moveFn': runtumblenoise.moveParticles,
+			'moveFn': runtumble.moveParticles,
 			'boundary': hardboundary.Circle(R_MAX),
-			'params': {'m': 0.1, 'gamma': 0.2, 'sNoise': 0.025, 's': 0.25, 'rate': 0.25}
+			'params': {'s': 0.35, 'rate': 0.1}
 		}
 	],
 
