@@ -33,10 +33,10 @@ def init_worker():
 	signal.signal(signal.SIGINT, signal.SIG_IGN)
 
 def distanceToNearestTarget(y, particles):
-	return np.min(map(lambda x: np.linalg.norm(x - y), particles))
+	return np.min(list(map(lambda x: np.linalg.norm(x - y), particles)))
 
 def supMinDistance(particles, targets):
-	distances = map(lambda y: distanceToNearestTarget(y, particles), targets)
+	distances = list(map(lambda y: distanceToNearestTarget(y, particles), targets))
 	return np.max(distances)
 
 def supMinDistanceOverTime(data):
@@ -61,7 +61,7 @@ def loadDataFromFile(algorithmProperties):
 	return dataSet
 
 def runSimulations(algorithmProps):
-	params = algorithmProps['params'] if algorithmProps.has_key('params') else {}
+	params = algorithmProps['params'] if 'params' in algorithmProps else {}
 	data = particlesim.simulate(coverageconfig.ITERATIONS, coverageconfig.N,
 								algorithmProps['moveFn'], algorithmProps['filePath'],
 								algorithmProps['boundary'], params)
@@ -94,7 +94,7 @@ def drawGraph(df, names, filename):
 def drawGraphFromCsv(folder, cfg):
 	df = pd.read_csv(folder + '/mean_coverage_distance.csv')
 	names = map(lambda i: i['name'], cfg)
-	outfilename = folder + '/test.jpg'
+	outfilename = folder + '/test.png'
 	drawGraph(df, names, outfilename)
 
 def createDataFrame(t, distanceAndCoverage):
@@ -110,7 +110,7 @@ def createDataFrame(t, distanceAndCoverage):
 	return df
 
 def saveResults(folder, config, meanDistanceAndCoverage):
-	names = map(lambda d: d['name'], config)
+	names = list(map(lambda d: d['name'], config))
 	t = np.arange(0, coverageconfig.ITERATIONS * particlesim.TIMESTEP, particlesim.TIMESTEP)
 	df = createDataFrame(t, meanDistanceAndCoverage)
 	df.to_csv(folder + '/mean_coverage_distance.csv')
@@ -119,7 +119,7 @@ def saveResults(folder, config, meanDistanceAndCoverage):
 			  .format(coverageconfig.ITERATIONS, coverageconfig.N))
 	out.write(pprint.pformat(config))
 	out.close()
-	drawGraph(df, names, folder + '/mean_coverage_distance.jpg')
+	drawGraph(df, names, folder + '/mean_coverage_distance.png')
 
 def saveTrialResults(folder, distanceAndCoverage, trialNumber):
 	t = np.arange(0, coverageconfig.ITERATIONS * particlesim.TIMESTEP, particlesim.TIMESTEP)
@@ -127,7 +127,7 @@ def saveTrialResults(folder, distanceAndCoverage, trialNumber):
 	df.to_csv(folder + '/trial' + str(trialNumber+1) + '.csv')
 
 def multipleTrials(config, numberOfTrials):
-	names = map(lambda d: d['name'], config)
+	names = list(map(lambda d: d['name'], config))
 	pool = Pool(len(config))
 	coverageData = np.ndarray((numberOfTrials, len(config), coverageconfig.ITERATIONS))
 	distanceData = np.ndarray((numberOfTrials, len(config), coverageconfig.ITERATIONS))
@@ -136,9 +136,9 @@ def multipleTrials(config, numberOfTrials):
 	for i in range(numberOfTrials):
 		print('Trial ' + str(i + 1) + '/' + str(numberOfTrials))
 		print('Running simulations...')
-		dataSets = pool.map_async(runSimulations, config).get(TIMEOUT)
+		dataSets = pool.map(runSimulations, config)
 		print('\nCalculating coverage distances...')
-		distanceAndCoverage = dict(pool.map_async(calculateCoverage, dataSets).get(TIMEOUT))
+		distanceAndCoverage = dict(pool.map(calculateCoverage, dataSets))
 		saveTrialResults(folder, distanceAndCoverage, i)
 		for j, name in enumerate(names):
 			distanceData[i,j] = distanceAndCoverage[name][0]
@@ -153,4 +153,8 @@ if __name__=='__main__':
 	if not len(sys.argv) == 3:
 		raise ValueError('Arguments should be <config>, <number_of_trials>')
 	python, configName, numberOfTrials = sys.argv
+	if not os.path.isdir('results'):
+		os.mkdir('results')
+	if not os.path.isdir('data'):
+		os.mkdir('data')
 	multipleTrials(coverageconfig.CONFIG[configName], int(numberOfTrials))

@@ -49,12 +49,12 @@ def initTargets(d, rMax, boundary):
 	return targets
 
 def recordData(particles, targets, data, i):
-	data.x[i] = map(lambda p: p.x, particles)
-	data.v[i] = map(lambda p: p.v, particles)
-	data.F[i] = map(lambda p: p.F, particles)
-	data.Fd[i] = map(lambda p: p.Fd, particles)
+	data.x[i] = tuple(map(lambda p: p.x, particles))
+	data.v[i] = tuple(map(lambda p: p.v, particles))
+	data.F[i] = tuple(map(lambda p: p.F, particles))
+	data.Fd[i] = tuple(map(lambda p: p.Fd, particles))
 	data.t[i] = i * TIMESTEP
-	data.y[i] = map(lambda tgt: tgt.y, targets)
+	data.y[i] = tuple(map(lambda tgt: tgt.y, targets))
 
 def logIteration(i, iterations):
 	perc = (i+1) * 100.0 / iterations
@@ -87,7 +87,7 @@ def motionAnimation(data, speedMultiplier, boundary):
 	boundary.plot(axes)
 	scat = axes.scatter(data.x[0,:,0], data.x[0,:,1])
 	interval = TIMESTEP * 1000 / speedMultiplier
-	ani = animation.FuncAnimation(fig, draw, interval=interval, frames = xrange(data.iterations), fargs=(scat, data), repeat=False)
+	ani = animation.FuncAnimation(fig, draw, interval=interval, frames = range(data.iterations), fargs=(scat, data), repeat=False)
 	plt.show()
 
 def averageSpeed(data):

@@ -14,11 +14,11 @@ class Data(object):
 
 	def initBoundary(self, folder, boundary):
 		if boundary is None:
-			f = open(folder + '/boundary.pickle', 'r')
+			f = open(folder + '/boundary.pickle', 'rb')
 			self.boundary = pickle.load(f)
 			f.close()
 		else:
-			f = open(folder + '/boundary.pickle', 'w')
+			f = open(folder + '/boundary.pickle', 'wb')
 			pickle.dump(boundary, f)
 			f.close()
 			self.boundary = boundary

@@ -4,3 +4,5 @@ data/
 *.asv
 .idea/
 results/
+venv/
+env/

@@ -69,7 +69,7 @@ class Circle(object):
 		self.circle = geom.Point(0,0).buffer(float(rMax)).boundary
 
 	def findBoundaryVertices(self, p1, ridges, voronoi):
-		semiInfiniteRidges = filter(lambda (p2, v1, v2): v1 == -1 or v2 == -1, ridges)
+		semiInfiniteRidges = filter(lambda p2, v1, v2: v1 == -1 or v2 == -1, ridges)
 		boundaryVertices = []
 		for ridge in semiInfiniteRidges:
 			p2, v1, v2 = ridge
@@ -99,7 +99,7 @@ class CompactPolygon(object):
 		self.corners = corners
 
 	def findBoundaryVertices(self, p1, ridges, voronoi):
-		semiInfiniteRidges = filter(lambda (p2, v1, v2): v1 == -1 or v2 == -1, ridges)
+		semiInfiniteRidges = filter(lambda p2, v1, v2: v1 == -1 or v2 == -1, ridges)
 		boundaryVertices = []
 		cornerPoints = identifyCornerPoints(voronoi.points, self.corners)
 		if len(semiInfiniteRidges) == 2:
