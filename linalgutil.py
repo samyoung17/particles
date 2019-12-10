@@ -22,11 +22,10 @@ def angleBetweenTwoVectors(a, b):
 	return np.arccos(max(min(np.dot(a,b) / (np.linalg.norm(a,2) * np.linalg.norm(b,2)),1),-1))
 
 def distanceMatrix(x, y):
-	distances = np.zeros((len(x), len(y)))
-	for i in range(len(x)):
-		for j in range(len(y)):
-			d_ij = np.linalg.norm(x[i] - y[j])
-			distances[i,j] = d_ij
+	# Arrays in (x, y, space) dimension order
+	x_rep = np.repeat(x[:, :, np.newaxis], len(y), axis=2).transpose(0, 2, 1)
+	y_rep = np.repeat(y[:, :, np.newaxis], len(x), axis=2).transpose(2, 0, 1)
+	distances = np.linalg.norm(x_rep - y_rep, axis=2)
 	return distances
 
 def expectedNormMultivariateGaussian(sigma):

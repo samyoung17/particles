@@ -8,10 +8,12 @@ import datetime
 import pprint
 import os
 import sys
+import time
 
 import particlesim
 import datamodel
 import coverageconfig
+import linalgutil
 
 EULER_GAMMA = 0.577215664901532
 
@@ -32,12 +34,11 @@ TIMEOUT = 99999999999999999
 def init_worker():
 	signal.signal(signal.SIGINT, signal.SIG_IGN)
 
-def distanceToNearestTarget(y, particles):
-	return np.min(list(map(lambda x: np.linalg.norm(x - y), particles)))
 
 def supMinDistance(particles, targets):
-	distances = list(map(lambda y: distanceToNearestTarget(y, particles), targets))
-	return np.max(distances)
+	distances = linalgutil.distanceMatrix(particles, targets)
+	# Take minimum of distance along 0, the particle dimension, then maximum along target dimension
+	return np.max(np.min(distances, axis=0))
 
 def supMinDistanceOverTime(data):
 	d = np.zeros((data.iterations))
@@ -136,9 +137,13 @@ def multipleTrials(config, numberOfTrials):
 	for i in range(numberOfTrials):
 		print('Trial ' + str(i + 1) + '/' + str(numberOfTrials))
 		print('Running simulations...')
+		sim_start = time.time()
 		dataSets = pool.map(runSimulations, config)
+		sim_end = time.time()
 		print('\nCalculating coverage distances...')
 		distanceAndCoverage = dict(pool.map(calculateCoverage, dataSets))
+		coverage_end = time.time()
+		print(f'Sim_time: {sim_end - sim_start:.2f}s, coverage_calc_time: {coverage_end - sim_end:.2f}s')
 		saveTrialResults(folder, distanceAndCoverage, i)
 		for j, name in enumerate(names):
 			distanceData[i,j] = distanceAndCoverage[name][0]

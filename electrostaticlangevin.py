@@ -34,7 +34,7 @@ def moveParticles(particles, t, boundary, params):
 	cov = [[var, 0], [0, var]]
 	mean = (0, 0)
 	b = np.random.multivariate_normal(mean, cov, len(particles))
-	xx = tuple(map(lambda p: p.x, particles))
+	xx = np.array(list(map(lambda p: p.x, particles)))
 	D = linalgutil.distanceMatrix(xx, xx)
 	q = qTotal / len(particles)
 	for i, particle in enumerate(particles):
