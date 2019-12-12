@@ -9,14 +9,15 @@ import voronoiboundary
 import electrostaticforce
 import electrostaticboundary
 import electrostaticlangevin
+import numpy as np
 
 WIERD_QUADRILATERAL_VERTICES = [(-10.0, -10.0), (-3.0, 2.0), (7.0, 4.0), (9.0, 0.0)]
 RECTANGLE_VERTICES = [(-15.71, -3.93), (-15.71, 3.93), (15.71, 3.93), (15.71, -3.93)]
 SQUARE_VERTICES = [(-7.86, -7.86), (-7.86, 7.86), (7.86, 7.86), (7.86, -7.86)]
 R_MAX = 10.0
 
-ITERATIONS = 1000
-N = 300
+ITERATIONS = 2000
+N = 200
 
 CONFIG = {
 	'SHAPE_COMPARISON': [
@@ -234,6 +235,17 @@ CONFIG = {
 			'boundary': repulsiveboundary.Circle(R_MAX),
 			'params': {'m': 0.1, 'gamma': 0.05, 's': 0.02, 'rNeighbour': 1.3, 'qTotal': 30.0, 'qRing': 3.0, 'alpha': 0}
 		}
+	],
+
+	'LR_INFLUENCE_10': [
+		{
+			'name': f'eta=f{eta:.1f}',
+			'filePath': f'data/linear repulsion eta={eta:.1f}',
+			'moveFn': electrostaticlangevin.moveParticles,
+			'boundary': repulsiveboundary.Circle(R_MAX),
+			'params': {'m': 0.1, 'gamma': 0.05, 's': 0.05, 'rNeighbour': eta * R_MAX / np.sqrt(N),
+					   'qTotal': 0.2 * N / eta, 'qRing': 3.0, 'alpha': 0}
+		} for eta in np.arange(1, 3.1, 0.1)
 	],
 
 	'LOW_NOISE_COMPARISON': [
