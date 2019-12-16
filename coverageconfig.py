@@ -239,7 +239,7 @@ CONFIG = {
 
 	'LR_INFLUENCE_10': [
 		{
-			'name': f'eta=f{eta:.1f}',
+			'name': f'eta={eta:.1f}',
 			'filePath': f'data/linear repulsion eta={eta:.1f}',
 			'moveFn': electrostaticlangevin.moveParticles,
 			'boundary': repulsiveboundary.Circle(R_MAX),
