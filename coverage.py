@@ -143,7 +143,7 @@ def multipleTrials(config, numberOfTrials):
 		print('\nCalculating coverage distances...')
 		distanceAndCoverage = dict(pool.map(calculateCoverage, dataSets))
 		coverage_end = time.time()
-		print(f'Sim_time: {sim_end - sim_start:.2f}s, coverage_calc_time: {coverage_end - sim_end:.2f}s')
+		print(f'\nSim_time: {sim_end - sim_start:.2f}s, coverage_calc_time: {coverage_end - sim_end:.2f}s')
 		saveTrialResults(folder, distanceAndCoverage, i)
 		for j, name in enumerate(names):
 			distanceData[i,j] = distanceAndCoverage[name][0]

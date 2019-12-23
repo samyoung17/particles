@@ -15,8 +15,9 @@ WIERD_QUADRILATERAL_VERTICES = [(-10.0, -10.0), (-3.0, 2.0), (7.0, 4.0), (9.0, 0
 RECTANGLE_VERTICES = [(-15.71, -3.93), (-15.71, 3.93), (15.71, 3.93), (15.71, -3.93)]
 SQUARE_VERTICES = [(-7.86, -7.86), (-7.86, 7.86), (7.86, 7.86), (7.86, -7.86)]
 R_MAX = 10.0
+H = np.sqrt(2 * np.pi / (3 * np.sqrt(3)))
 
-ITERATIONS = 2000
+ITERATIONS = 400
 N = 200
 
 CONFIG = {
@@ -237,15 +238,58 @@ CONFIG = {
 		}
 	],
 
-	'LR_INFLUENCE_10': [
+	'LR_INFLUENCE': [
 		{
 			'name': f'eta={eta:.1f}',
 			'filePath': f'data/linear repulsion eta={eta:.1f}',
 			'moveFn': electrostaticlangevin.moveParticles,
 			'boundary': repulsiveboundary.Circle(R_MAX),
-			'params': {'m': 0.1, 'gamma': 0.05, 's': 0.05, 'rNeighbour': eta * R_MAX / np.sqrt(N),
-					   'qTotal': 0.2 * N / eta, 'qRing': 3.0, 'alpha': 0}
-		} for eta in np.arange(1, 3.1, 0.1)
+			'params': {
+				'm': 1,
+				'gamma': 0.5,
+				's': 0.05,
+				'rNeighbour': eta * R_MAX / np.sqrt(N),
+				'q': 2.0 / eta,
+				'qRing': 3.0,
+				'alpha': 0
+			}
+		} for eta in np.arange(1.0, 4.1, 0.5)
+	],
+
+    'LR_INTERACTION': [
+		{
+			'name': f'phi={phi:.1f}',
+			'filePath': f'data/linear repulsion phi={phi:.1f}',
+			'moveFn': electrostaticlangevin.moveParticles,
+			'boundary': repulsiveboundary.Circle(R_MAX),
+			'params': {
+				'm': 1,
+				'gamma': 0.5,
+				's': 1 - phi,
+				'rNeighbour': H * np.sqrt(3) * R_MAX / np.sqrt(N),
+				'q': phi / (pow(H, 2) * 3),
+				'qRing': 3.0,
+				'alpha': 0
+			}
+		} for phi in np.arange(0.1, 1.1, 0.1)
+	],
+
+	'LANGEVIN_GAMMA': [
+		{
+			'name': f'gamma={gamma:.1f}',
+			'filePath': f'data/langevin gamma={gamma:.1f}',
+			'moveFn': electrostaticlangevin.moveParticles,
+			'boundary': repulsiveboundary.Circle(R_MAX),
+			'params': {
+				'm': 1.0,
+				'gamma': gamma,
+				's': 0.5,
+				'rNeighbour': 0.0,
+				'q': 0.0,
+				'qRing': 3.0,
+				'alpha': 0
+			}
+		} for gamma in np.arange(0, 0.6, 0.1)
 	],
 
 	'LOW_NOISE_COMPARISON': [
