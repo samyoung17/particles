@@ -145,98 +145,6 @@ CONFIG = {
 		}
 	],
 
-	'ELECTROSTATIC_LANGEVIN_COMPARISON': [
-		{
-			'name': 's=0',
-			'filePath': 'data/Electrostatic Langeivn s=0',
-			'moveFn': electrostaticlangevin.moveParticles,
-			'boundary': electrostaticboundary.Circle(R_MAX),
-			'params': {'m': 0.1, 'gamma': 0.02, 's': 0.0, 'rNeighbour': 20.0, 'qTotal': 3.0, 'qRing': 1.5, 'alpha':-2}
-		},
-		{
-			'name': 's=0.02',
-			'filePath': 'data/Electrostatic Langeivn s=0_02',
-			'moveFn': electrostaticlangevin.moveParticles,
-			'boundary': electrostaticboundary.Circle(R_MAX),
-			'params': {'m': 0.1, 'gamma': 0.02, 's': 0.02, 'rNeighbour': 20.0, 'qTotal': 3.0, 'qRing': 1.5, 'alpha':-2}
-		},
-		{
-			'name': 's=0.1',
-			'filePath': 'data/EL s=0.1',
-			'moveFn': electrostaticlangevin.moveParticles,
-			'boundary': electrostaticboundary.Circle(R_MAX),
-			'params': {'m': 0.1, 'gamma': 0.02, 's': 0.1, 'rNeighbour': 20.0, 'qTotal': 3.0, 'qRing': 1.5, 'alpha':-2}
-		},
-		{
-			'name': 's=0.5',
-			'filePath': 'data/EL s=0.5',
-			'moveFn': electrostaticlangevin.moveParticles,
-			'boundary': electrostaticboundary.Circle(R_MAX),
-			'params': {'m': 0.1, 'gamma': 0.02, 's': 0.5, 'rNeighbour': 20.0, 'qTotal': 3.0, 'qRing': 1.5, 'alpha':-2}
-		}
-	],
-
-	'LINEAR_REPULSION_COMPARISON': [
-		{
-			'name': 's=0',
-			'filePath': 'data/linear repulsion s=0',
-			'moveFn': electrostaticlangevin.moveParticles,
-			'boundary': repulsiveboundary.Circle(R_MAX),
-			'params': {'m': 0.1, 'gamma': 0.05, 's': 0.0, 'rNeighbour': 0.9, 'qTotal': 30.0, 'qRing': 1.5, 'alpha':0}
-		},
-		{
-			'name': 's=0.02',
-			'filePath': 'data/linear repulsion s=0_02',
-			'moveFn': electrostaticlangevin.moveParticles,
-			'boundary': repulsiveboundary.Circle(R_MAX),
-			'params': {'m': 0.1, 'gamma': 0.05, 's': 0.02, 'rNeighbour': 0.9, 'qTotal': 30.0, 'qRing': 1.5, 'alpha':0}
-		},
-		{
-			'name': 's=0.1',
-			'filePath': 'data/linear repulsion s=0_1',
-			'moveFn': electrostaticlangevin.moveParticles,
-			'boundary': repulsiveboundary.Circle(R_MAX),
-			'params': {'m': 0.1, 'gamma': 0.05, 's': 0.1, 'rNeighbour': 0.9, 'qTotal': 30.0, 'qRing': 1.5, 'alpha':0}
-		},
-		{
-			'name': 's=0.5',
-			'filePath': 'data/linear repulsion s=0_5',
-			'moveFn': electrostaticlangevin.moveParticles,
-			'boundary': repulsiveboundary.Circle(R_MAX),
-			'params': {'m': 0.1, 'gamma': 0.05, 's': 0.5, 'rNeighbour': 0.9, 'qTotal': 30.0, 'qRing': 1.5, 'alpha':0}
-		}
-	],
-
-	'LR_INFLUENCE_COMPARISON': [
-		{
-			'name': 'r=0.7',
-			'filePath': 'data/linear repulsion r=0_7',
-			'moveFn': electrostaticlangevin.moveParticles,
-			'boundary': repulsiveboundary.Circle(R_MAX),
-			'params': {'m': 0.1, 'gamma': 0.05, 's': 0.02, 'rNeighbour': 0.7, 'qTotal': 30.0, 'qRing': 3.0, 'alpha': 0}
-		},
-		{
-			'name': 'r=0.9',
-			'filePath': 'data/linear repulsion r=0_9',
-			'moveFn': electrostaticlangevin.moveParticles,
-			'boundary': repulsiveboundary.Circle(R_MAX),
-			'params': {'m': 0.1, 'gamma': 0.05, 's': 0.02, 'rNeighbour': 0.9, 'qTotal': 30.0, 'qRing': 3.0, 'alpha': 0}
-		},
-		{
-			'name': 'r=1.1',
-			'filePath': 'data/linear repulsion r=1_1',
-			'moveFn': electrostaticlangevin.moveParticles,
-			'boundary': repulsiveboundary.Circle(R_MAX),
-			'params': {'m': 0.1, 'gamma': 0.05, 's': 0.02, 'rNeighbour': 1.1, 'qTotal': 30.0, 'qRing': 3.0, 'alpha': 0}
-		},
-		{
-			'name': 'r=1.3',
-			'filePath': 'data/linear repulsion r=1_3',
-			'moveFn': electrostaticlangevin.moveParticles,
-			'boundary': repulsiveboundary.Circle(R_MAX),
-			'params': {'m': 0.1, 'gamma': 0.05, 's': 0.02, 'rNeighbour': 1.3, 'qTotal': 30.0, 'qRing': 3.0, 'alpha': 0}
-		}
-	],
 
 	'LR_INFLUENCE': [
 		{
@@ -258,38 +166,38 @@ CONFIG = {
 
     'LR_INTERACTION': [
 		{
-			'name': f'phi={phi:.1f}',
-			'filePath': f'data/linear repulsion phi={phi:.1f}',
+			'name': f'phi={phi:.2f}',
+			'filePath': f'data/linear repulsion phi={phi:.2f}',
 			'moveFn': electrostaticlangevin.moveParticles,
 			'boundary': repulsiveboundary.Circle(R_MAX),
 			'params': {
 				'm': 1,
 				'gamma': 0.5,
-				's': 1 - phi,
+				'd': pow(.5-phi, 2) * 0.5 * 2 / np.pi,
 				'rNeighbour': H * np.sqrt(3) * R_MAX / np.sqrt(N),
-				'q': phi / (pow(H, 2) * 3),
+				'q': np.sqrt(phi * np.sqrt(0.5) / (pow(H,2) * 3)),
 				'qRing': 3.0,
 				'alpha': 0
 			}
-		} for phi in np.arange(0.1, 1.1, 0.1)
+		} for phi in np.arange(0, 0.55, 0.05)
 	],
 
 	'LANGEVIN_GAMMA': [
 		{
-			'name': f'gamma={gamma:.1f}',
-			'filePath': f'data/langevin gamma={gamma:.1f}',
+			'name': f'gamma={gamma:.2f}',
+			'filePath': f'data/langevin gamma={gamma:.2f}',
 			'moveFn': electrostaticlangevin.moveParticles,
 			'boundary': repulsiveboundary.Circle(R_MAX),
 			'params': {
 				'm': 1.0,
 				'gamma': gamma,
-				's': 0.5,
+				'd': pow(0.5, 2) * gamma * 2 / np.pi,
 				'rNeighbour': 0.0,
 				'q': 0.0,
 				'qRing': 3.0,
 				'alpha': 0
 			}
-		} for gamma in np.arange(0, 0.6, 0.1)
+		} for gamma in np.arange(.1, 0.5, 0.1)
 	],
 
 	'LOW_NOISE_COMPARISON': [

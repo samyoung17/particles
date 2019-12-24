@@ -26,11 +26,10 @@ Parameters:
 						 0 for linear repulsion
 """
 def moveParticles(particles, t, boundary, params):
-	m, gamma, s, rNeighbour, q, qRing, alpha \
-		= params['m'], params['gamma'], params['s'], params['rNeighbour'], \
+	m, gamma, d, rNeighbour, q, qRing, alpha \
+		= params['m'], params['gamma'], params['d'], params['rNeighbour'], \
 		  params['q'], params['qRing'], params['alpha']
-	T = 2 * m * pow(s, 2) / np.pi
-	var = 2 * gamma * T * t
+	var = 2 * d * t
 	cov = [[var, 0], [0, var]]
 	mean = (0, 0)
 	b = np.random.multivariate_normal(mean, cov, len(particles))
