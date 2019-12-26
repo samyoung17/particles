@@ -197,7 +197,7 @@ CONFIG = {
 				'qRing': 3.0,
 				'alpha': 0
 			}
-		} for gamma in np.arange(.1, 0.5, 0.1)
+		} for gamma in np.arange(0.05, 0.55, 0.05)
 	],
 
 	'LOW_NOISE_COMPARISON': [
