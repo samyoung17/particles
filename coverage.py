@@ -72,10 +72,22 @@ def runSimulations(algorithmProps):
 	}
 	return dataSet
 
-def calculateCoverage(dataSet):
+def calculateRadialDistance(data):
+	r = np.linalg.norm(data.x, axis=2)
+	rbar = r.mean(axis=1)
+	return rbar
+
+def calculateAverageSpeed(data):
+	s = np.linalg.norm(data.v, axis=2)
+	sbar = s.mean(axis=1)
+	return sbar
+
+def calculateSummaryStatistics(dataSet):
 	covarageDistance = supMinDistanceOverTime(dataSet['data'])
+	speed = calculateAverageSpeed(dataSet['data'])
 	distanceTravelled = meanDistanceTravelled(dataSet['data'])
-	return (dataSet['name'], (distanceTravelled, covarageDistance))
+	radialDistance = calculateRadialDistance(dataSet['data'])
+	return dataSet['name'], (distanceTravelled, covarageDistance, speed, radialDistance)
 
 def drawGraph(df, names, filename):
 	plots = []
@@ -98,22 +110,21 @@ def drawGraphFromCsv(folder, cfg):
 	outfilename = folder + '/test.png'
 	drawGraph(df, names, outfilename)
 
-def createDataFrame(t, distanceAndCoverage):
+def createDataFrame(t, summaryStatistics):
 	df = pd.DataFrame()
-	names = distanceAndCoverage.keys()
+	configuration_names = summaryStatistics.keys()
 	df['time'] = t
-	for name in names:
-		distance, coverage = distanceAndCoverage[name]
-		distanceColName = name + '.distance'
-		coverageColName = name + '.coverage'
-		df[distanceColName] = distance
-		df[coverageColName] = coverage
+	for name in configuration_names:
+		distance, coverage, speed, radialDistance = summaryStatistics[name]
+		df[(name + '.distance')] = distance
+		df[(name + '.coverage')] = coverage
+		df[(name + '.radialDistance')] = radialDistance
+		df[(name + '.speed')] = speed
 	return df
 
-def saveResults(folder, config, meanDistanceAndCoverage):
+def saveResults(folder, config, all_trials_df):
 	names = list(map(lambda d: d['name'], config))
-	t = np.arange(0, coverageconfig.ITERATIONS * particlesim.TIMESTEP, particlesim.TIMESTEP)
-	df = createDataFrame(t, meanDistanceAndCoverage)
+	df = all_trials_df.groupby(['time']).mean().reset_index()
 	df.to_csv(folder + '/mean_coverage_distance.csv')
 	out = open(folder + '/config.txt', 'w')
 	out.write('ITERATIONS={} N={}\n'
@@ -122,18 +133,12 @@ def saveResults(folder, config, meanDistanceAndCoverage):
 	out.close()
 	drawGraph(df, names, folder + '/mean_coverage_distance.png')
 
-def saveTrialResults(folder, distanceAndCoverage, trialNumber):
-	t = np.arange(0, coverageconfig.ITERATIONS * particlesim.TIMESTEP, particlesim.TIMESTEP)
-	df = createDataFrame(t, distanceAndCoverage)
-	df.to_csv(folder + '/trial' + str(trialNumber+1) + '.csv')
 
 def multipleTrials(config, numberOfTrials):
-	names = list(map(lambda d: d['name'], config))
 	pool = Pool(len(config))
-	coverageData = np.ndarray((numberOfTrials, len(config), coverageconfig.ITERATIONS))
-	distanceData = np.ndarray((numberOfTrials, len(config), coverageconfig.ITERATIONS))
 	folder = 'results/coverage_comparison_' + str(datetime.datetime.now())[:19]
 	os.mkdir(folder)
+	trial_summary_dfs = []
 	for i in range(numberOfTrials):
 		print('Trial ' + str(i + 1) + '/' + str(numberOfTrials))
 		print('Running simulations...')
@@ -141,18 +146,17 @@ def multipleTrials(config, numberOfTrials):
 		dataSets = pool.map(runSimulations, config)
 		sim_end = time.time()
 		print('\nCalculating coverage distances...')
-		distanceAndCoverage = dict(pool.map(calculateCoverage, dataSets))
+		summaryStatistics = dict(pool.map(calculateSummaryStatistics, dataSets))
 		coverage_end = time.time()
 		print(f'\nSim_time: {sim_end - sim_start:.2f}s, coverage_calc_time: {coverage_end - sim_end:.2f}s')
-		saveTrialResults(folder, distanceAndCoverage, i)
-		for j, name in enumerate(names):
-			distanceData[i,j] = distanceAndCoverage[name][0]
-			coverageData[i,j] = distanceAndCoverage[name][1]
+		t = np.arange(0, coverageconfig.ITERATIONS * particlesim.TIMESTEP, particlesim.TIMESTEP)
+		df = createDataFrame(t, summaryStatistics)
+		df['trialNumber'] = i + 1
+		trial_summary_dfs.append(df)
+		df.to_csv(folder + '/trial' + str(i + 1) + '.csv')
 		print('\n')
-	meanCoverageData = np.mean(coverageData, axis=0)
-	meanDistanceData = np.mean(distanceData, axis=0)
-	meanDistanceAndCoverage = dict([(name, (meanDistanceData[j], meanCoverageData[j])) for j,name in enumerate(names)])
-	saveResults(folder, config, meanDistanceAndCoverage)
+	all_trials_df = pd.concat(trial_summary_dfs)
+	saveResults(folder, config, all_trials_df)
 
 if __name__=='__main__':
 	if not len(sys.argv) == 3:

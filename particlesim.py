@@ -90,18 +90,6 @@ def motionAnimation(data, speedMultiplier, boundary):
 	ani = animation.FuncAnimation(fig, draw, interval=interval, frames = range(data.iterations), fargs=(scat, data), repeat=False)
 	plt.show()
 
-def averageSpeed(data):
-	s = np.linalg.norm(data.v, axis=2)
-	sbar = s.mean(axis=1)
-	plt.plot(data.t, sbar)
-	plt.show()
-
-def averageRadialDisplacement(data):
-	r = np.linalg.norm(data.x, axis=2)
-	rbar = r.mean(axis=1)
-	plt.plot(data.t, rbar)
-	plt.show()
-
 def main(filePath, speedMultiplier):
 	data = datamodel.Data(filePath, 'r')
 	motionAnimation(data, speedMultiplier, data.boundary)
