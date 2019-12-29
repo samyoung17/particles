@@ -83,55 +83,26 @@ def calculateAverageSpeed(data):
 	return sbar
 
 def calculateSummaryStatistics(dataSet):
-	covarageDistance = supMinDistanceOverTime(dataSet['data'])
-	speed = calculateAverageSpeed(dataSet['data'])
-	distanceTravelled = meanDistanceTravelled(dataSet['data'])
-	radialDistance = calculateRadialDistance(dataSet['data'])
-	return dataSet['name'], (distanceTravelled, covarageDistance, speed, radialDistance)
-
-def drawGraph(df, names, filename):
-	plots = []
-	for name in names:
-		plot, = plt.plot(df['time'], df[name + '.coverage'], label=name)
-		plots.append(plot)
-	plt.axhline(y=LOWER_BOUND, color='k')
-	plt.axhline(y=INDEPENDENT_LB, color='k')
-	plt.legend()
-	plt.xlabel('Time (s)')
-	plt.ylabel('Coverage distance (m)')
-	plt.gca().set_ylim(bottom=0)
-	plt.title('Maximum distance to the nearest agent')
-	plt.savefig(filename)
-	plt.show()
-
-def drawGraphFromCsv(folder, cfg):
-	df = pd.read_csv(folder + '/mean_coverage_distance.csv')
-	names = map(lambda i: i['name'], cfg)
-	outfilename = folder + '/test.png'
-	drawGraph(df, names, outfilename)
-
-def createDataFrame(t, summaryStatistics):
-	df = pd.DataFrame()
-	configuration_names = summaryStatistics.keys()
-	df['time'] = t
-	for name in configuration_names:
-		distance, coverage, speed, radialDistance = summaryStatistics[name]
-		df[(name + '.distance')] = distance
-		df[(name + '.coverage')] = coverage
-		df[(name + '.radialDistance')] = radialDistance
-		df[(name + '.speed')] = speed
+	df = pd.DataFrame({
+		'time': np.arange(0, coverageconfig.ITERATIONS * particlesim.TIMESTEP, particlesim.TIMESTEP),
+		'coverage': supMinDistanceOverTime(dataSet['data']),
+		'speed': calculateAverageSpeed(dataSet['data']),
+		'distance': meanDistanceTravelled(dataSet['data']),
+		'radialDistance': calculateRadialDistance(dataSet['data'])
+	})
+	df['name'] = dataSet['name']
 	return df
 
+
 def saveResults(folder, config, all_trials_df):
-	names = list(map(lambda d: d['name'], config))
-	df = all_trials_df.groupby(['time']).mean().reset_index()
+	df = all_trials_df.groupby(['name', 'time']).mean().reset_index()
 	df.to_csv(folder + '/mean_coverage_distance.csv')
 	out = open(folder + '/config.txt', 'w')
 	out.write('ITERATIONS={} N={}\n'
 			  .format(coverageconfig.ITERATIONS, coverageconfig.N))
 	out.write(pprint.pformat(config))
 	out.close()
-	drawGraph(df, names, folder + '/mean_coverage_distance.png')
+	print(f'Results saved to {folder}')
 
 
 def multipleTrials(config, numberOfTrials):
@@ -146,14 +117,12 @@ def multipleTrials(config, numberOfTrials):
 		dataSets = pool.map(runSimulations, config)
 		sim_end = time.time()
 		print('\nCalculating coverage distances...')
-		summaryStatistics = dict(pool.map(calculateSummaryStatistics, dataSets))
+		summaryStatistics = pd.concat(pool.map(calculateSummaryStatistics, dataSets))
 		coverage_end = time.time()
 		print(f'\nSim_time: {sim_end - sim_start:.2f}s, coverage_calc_time: {coverage_end - sim_end:.2f}s')
-		t = np.arange(0, coverageconfig.ITERATIONS * particlesim.TIMESTEP, particlesim.TIMESTEP)
-		df = createDataFrame(t, summaryStatistics)
-		df['trialNumber'] = i + 1
-		trial_summary_dfs.append(df)
-		df.to_csv(folder + '/trial' + str(i + 1) + '.csv')
+		summaryStatistics['trialNumber'] = i + 1
+		trial_summary_dfs.append(summaryStatistics)
+		summaryStatistics.to_csv(folder + '/trial' + str(i + 1) + '.csv')
 		print('\n')
 	all_trials_df = pd.concat(trial_summary_dfs)
 	saveResults(folder, config, all_trials_df)

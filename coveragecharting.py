@@ -20,51 +20,25 @@ def plot_eta_chart(output_folder):
     plt.show()
 
 
-def plot_dynamics(x_axis_label, output_folder, max_time=ITERATIONS * 0.25):
+def plot_coverage_dynamics(output_folder, label_var, max_time=ITERATIONS * 0.25):
     mcd = pd.read_csv(output_folder + '/mean_coverage_distance.csv')
-    distance = mcd[list(filter(lambda c: 'distance' in c, mcd.columns)) + ['time']]
-    distance_stack = distance.set_index('time').stack().reset_index()
-    distance_stack.columns = ['time', 'name', 'distance']
-    distance_stack[x_axis_label] = distance_stack['name'].apply(lambda name: float(re.compile(f'{x_axis_label}=(.*)\.distance').findall(name)[0]))
-    distance_stack['speed'] = distance_stack.groupby(['name', x_axis_label])\
-        .apply(lambda x: (x.distance - x.distance.shift(1)) / (x.time - x.time.shift(1)))\
-        .reset_index(name='speed').set_index('level_2')['speed']
-    distance_stack[distance_stack.time < max_time].pivot_table(values='speed', index='time', columns=x_axis_label).plot()
+    mcd[label_var] = mcd['name'].apply(lambda name: float(re.compile(f'{label_var}=(.*)').findall(name)[0]))
+    mcd['dCoverage'] = mcd.groupby(['name', label_var]) \
+        .apply(lambda x: (x.coverage - x.coverage.shift(1)) / (x.time - x.time.shift(1))) \
+        .reset_index(name='dCoverage').set_index('level_2')['dCoverage']
+    mcd.pivot_table(values='coverage', index='time', columns=label_var).plot()
+    plt.ylabel('C(t)')
     plt.show()
-
-
-def plot_coverage_dynamics(x_axis_label, output_folder, max_time=ITERATIONS * 0.25):
-    mcd = pd.read_csv(output_folder + '/mean_coverage_distance.csv')
-    coverage = mcd[list(filter(lambda c: 'coverage' in c, mcd.columns)) + ['time']]
-    coverage_stack = coverage.set_index('time').stack().reset_index()
-    coverage_stack.columns = ['time', 'name', 'coverage']
-    coverage_stack[x_axis_label] = coverage_stack['name'].apply(lambda name: float(re.compile(f'{x_axis_label}=(.*)\.coverage').findall(name)[0]))
-    coverage_stack['speed'] = coverage_stack.groupby(['name', x_axis_label])\
-        .apply(lambda x: (x.coverage - x.coverage.shift(1)) / (x.time - x.time.shift(1)))\
-        .reset_index(name='speed').set_index('level_2')['speed']
-    coverage_stack[coverage_stack.time < max_time].pivot_table(values='speed', index='time', columns=x_axis_label).plot()
-    plt.show()
-
-
-def plot_coverage(x_axis_label, output_folder, max_time=ITERATIONS * 0.25):
-    mcd = pd.read_csv(output_folder + '/mean_coverage_distance.csv')
-    coverage = mcd[list(filter(lambda c: 'coverage' in c, mcd.columns)) + ['time']]
-    coverage_stack = coverage.set_index('time').stack().reset_index()
-    coverage_stack.columns = ['time', 'name', 'coverage']
-    coverage_stack[x_axis_label] = coverage_stack['name'].apply(lambda name: float(re.compile(f'{x_axis_label}=(.*)\.coverage').findall(name)[0]))
-    coverage_stack[coverage_stack.time < max_time].pivot_table(values='coverage', index='time', columns=x_axis_label).plot()
+    mcd[mcd.time < max_time].pivot_table(values='dCoverage', index='time', columns=label_var).ewm(com=6).mean().plot()
+    plt.ylabel('dC(t)/dt')
     plt.show()
 
 if __name__ == '__main__':
     output_folder_eta = 'results/coverage_comparison_2019-12-17 17:28:48'
     plot_eta_chart(output_folder_eta)
 
-    output_folder_phi = 'results/coverage_comparison_2019-12-26 10:44:03'
-    plot_coverage('phi', output_folder_phi)
-    plot_dynamics('phi', output_folder_phi)
-    plot_coverage_dynamics('phi', output_folder_phi)
+    output_folder_phi = 'results/coverage_comparison_2019-12-26 11:06:21'
+    plot_coverage_dynamics(output_folder_phi, 'phi', max_time=20)
 
     output_folder_gamma = 'results/coverage_comparison_2019-12-25 01:12:58'
-    plot_coverage('gamma', output_folder_gamma)
-    plot_dynamics('gamma', output_folder_gamma)
-    plot_coverage_dynamics('gamma', output_folder_gamma)
+    plot_coverage_dynamics(output_folder_gamma, 'gamma', max_time=100)
