@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
 from multiprocessing import Pool
 import signal
 import pandas as pd
@@ -12,7 +11,7 @@ import time
 
 import particlesim
 import datamodel
-import coverageconfig
+from coverageconfig import R_MAX, N, ITERATIONS, CONFIG
 import linalgutil
 
 EULER_GAMMA = 0.577215664901532
@@ -24,10 +23,10 @@ def maxNumberOfCoupons(n):
 	return (n - 0.5) / np.real(scipy.special.lambertw(np.exp(EULER_GAMMA) * (n - 0.5)))
 
 H = np.sqrt(2 * np.pi / (3 * np.sqrt(3)))
-LOWER_BOUND = coverageconfig.R_MAX * H / np.sqrt(coverageconfig.N)
-INDEPENDENT_LB = coverageconfig.R_MAX * H / np.sqrt(maxNumberOfCoupons(coverageconfig.N))
-
-D_OPTIMAL_AGENTS = LOWER_BOUND * np.sqrt(2)
+LOWER_BOUND = R_MAX * H / np.sqrt(N)
+INDEPENDENT_LB = R_MAX * H / np.sqrt(maxNumberOfCoupons(N))
+LOWER_BOUND_BC = np.pi * R_MAX / (3 * N) \
+			  + R_MAX / np.sqrt(N) * np.sqrt(pow(np.pi, 2) / (9 * N) + 2 * np.pi / (3 * np.sqrt(3)))
 
 TIMEOUT = 99999999999999999
 
@@ -63,7 +62,7 @@ def loadDataFromFile(algorithmProperties):
 
 def runSimulations(algorithmProps):
 	params = algorithmProps['params'] if 'params' in algorithmProps else {}
-	data = particlesim.simulate(coverageconfig.ITERATIONS, coverageconfig.N,
+	data = particlesim.simulate(ITERATIONS, N,
 								algorithmProps['moveFn'], algorithmProps['filePath'],
 								algorithmProps['boundary'], params)
 	dataSet = {
@@ -84,7 +83,7 @@ def calculateAverageSpeed(data):
 
 def calculateSummaryStatistics(dataSet):
 	df = pd.DataFrame({
-		'time': np.arange(0, coverageconfig.ITERATIONS * particlesim.TIMESTEP, particlesim.TIMESTEP),
+		'time': np.arange(0, ITERATIONS * particlesim.TIMESTEP, particlesim.TIMESTEP),
 		'coverage': supMinDistanceOverTime(dataSet['data']),
 		'speed': calculateAverageSpeed(dataSet['data']),
 		'distance': meanDistanceTravelled(dataSet['data']),
@@ -99,7 +98,7 @@ def saveResults(folder, config, all_trials_df):
 	df.to_csv(folder + '/mean_coverage_distance.csv')
 	out = open(folder + '/config.txt', 'w')
 	out.write('ITERATIONS={} N={}\n'
-			  .format(coverageconfig.ITERATIONS, coverageconfig.N))
+			  .format(ITERATIONS, N))
 	out.write(pprint.pformat(config))
 	out.close()
 	print(f'Results saved to {folder}')
@@ -135,4 +134,4 @@ if __name__=='__main__':
 		os.mkdir('results')
 	if not os.path.isdir('data'):
 		os.mkdir('data')
-	multipleTrials(coverageconfig.CONFIG[configName], int(numberOfTrials))
+	multipleTrials(CONFIG[configName], int(numberOfTrials))
