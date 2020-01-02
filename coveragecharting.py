@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import re
 
 from coverageconfig import ITERATIONS
-from coverage import LOWER_BOUND, INDEPENDENT_LB
+from coverage import LOWER_BOUND, INDEPENDENT_LB, LOWER_BOUND_BC
 
 
 
@@ -42,15 +42,14 @@ def plot_coverage_dynamics(output_folder, label_var, max_time=ITERATIONS * 0.25)
 
 def plot_coverage_time(output_folder, label_var, lower_bound):
     mcd = pd.read_csv(output_folder + '/mean_coverage_distance.csv')
+    mcd[label_var] = mcd['name'].apply(lambda name: float(re.compile(f'{label_var}=(.*)').findall(name)[0]))
     c_lim = mcd[mcd.time == mcd.time.max()][[label_var, 'coverage']]
     c_lim.set_index(label_var).plot()
+    plt.axhline(lower_bound, color='k')
     plt.savefig(output_folder + '/coverage_lower_bound.eps')
     plt.savefig(output_folder + '/coverage_lower_bound.pdf')
     plt.show()
     mcd = mcd.merge(c_lim.rename(columns={'coverage': 'minCoverage'}), on=label_var)
-    x4 = mcd[mcd['coverage'] < (lower_bound + 4)].groupby(label_var)['time'].min() \
-        .reset_index() \
-        .rename(columns={'time': 'ε=4'})
     x2 = mcd[mcd['coverage'] < (lower_bound + 2)].groupby(label_var)['time'].min() \
         .reset_index() \
         .rename(columns={'time': 'ε=2'})
@@ -60,9 +59,12 @@ def plot_coverage_time(output_folder, label_var, lower_bound):
     x0_5 = mcd[mcd['coverage'] < (lower_bound + 0.5)].groupby(label_var)['time'].min() \
         .reset_index() \
         .rename(columns={'time': 'ε=0.5'})
-    x = x4.merge(x2, on=label_var, how='left')\
-        .merge(x1, on=label_var, how='left')\
-        .merge(x0_5, on=label_var, how='left')
+    x0_25 = mcd[mcd['coverage'] < (lower_bound + 0.25)].groupby(label_var)['time'].min() \
+        .reset_index() \
+        .rename(columns={'time': 'ε=0.25'})
+    x = x2.merge(x1, on=label_var, how='left')\
+        .merge(x0_5, on=label_var, how='left')\
+        .merge(x0_25, on=label_var, how='left')
     x.set_index(label_var).plot()
     plt.ylabel('Coverage time')
     plt.savefig(output_folder + '/coverage_time.eps')
@@ -76,7 +78,7 @@ if __name__ == '__main__':
 
     output_folder_phi = 'results/coverage_comparison_2019-12-26 11:06:21'
     plot_coverage_dynamics(output_folder_phi, 'phi', max_time=30)
-    plot_coverage_time(output_folder_phi, 'phi', LOWER_BOUND)
+    plot_coverage_time(output_folder_phi, 'phi', LOWER_BOUND_BC)
     
     output_folder_gamma = 'results/coverage_comparison_2019-12-25 01:12:58'
     plot_coverage_dynamics(output_folder_gamma, 'gamma', max_time=30)

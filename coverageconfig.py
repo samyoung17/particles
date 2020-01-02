@@ -17,7 +17,7 @@ SQUARE_VERTICES = [(-7.86, -7.86), (-7.86, 7.86), (7.86, 7.86), (7.86, -7.86)]
 R_MAX = 10.0
 H = np.sqrt(2 * np.pi / (3 * np.sqrt(3)))
 
-ITERATIONS = 400
+ITERATIONS = 1000
 N = 200
 
 CONFIG = {
@@ -176,10 +176,10 @@ CONFIG = {
 				'd': pow(.5-phi, 2) * 0.5 * 2 / np.pi,
 				'rNeighbour': H * np.sqrt(3) * R_MAX / np.sqrt(N),
 				'q': np.sqrt(phi * np.sqrt(0.5) / (pow(H,2) * 3)),
-				'qRing': 3.0,
+				'qRing': 1.0,
 				'alpha': 0
 			}
-		} for phi in np.arange(0, 0.55, 0.05)
+		} for phi in np.arange(0, 0.55, 0.1)
 	],
 
 	'LANGEVIN_GAMMA': [
