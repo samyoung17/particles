@@ -6,6 +6,10 @@ from coverageconfig import ITERATIONS
 from coverage import LOWER_BOUND, INDEPENDENT_LB, LOWER_BOUND_BC
 
 
+LABEL_VAR_MAP = {'phi': 'φ', 'gamma': 'γ'}
+
+plt.rcParams['legend.title_fontsize'] = 'xx-large'
+
 
 def plot_eta_chart(output_folder):
     mcd = pd.read_csv(output_folder + '/mean_coverage_distance.csv')
@@ -16,28 +20,34 @@ def plot_eta_chart(output_folder):
     stationary_coverage.set_index('Eta')['CoverageDistance'].plot()
     plt.ylabel('Stationary Coverage Distance (m)')
     plt.xlabel('η')
-    plt.savefig(output_folder + '/eta_chart.pdf')
     plt.savefig(output_folder + '/eta_chart.eps')
     plt.show()
+
+def plot_coverage_distance(output_folder, label_var, max_time=ITERATIONS * 0.25):
+    mcd = pd.read_csv(output_folder + '/mean_coverage_distance.csv')
+    mcd[label_var] = mcd['name'].apply(lambda name: float(re.compile(f'{label_var}=(.*)').findall(name)[0]))
+    label_var_pretty = LABEL_VAR_MAP[label_var]
+    mcd[mcd.time < max_time].rename(columns={label_var: label_var_pretty})\
+        .pivot_table(values='coverage', index='time', columns=label_var_pretty).plot()
+    plt.xlabel('t', fontsize=16)
+    plt.ylabel('C(t)', fontsize=16)
+    plt.savefig(output_folder + f'/coverage_{label_var}.eps')
+    plt.show()
+
 
 def plot_coverage_dynamics(output_folder, label_var, max_time=ITERATIONS * 0.25):
     mcd = pd.read_csv(output_folder + '/mean_coverage_distance.csv')
     mcd[label_var] = mcd['name'].apply(lambda name: float(re.compile(f'{label_var}=(.*)').findall(name)[0]))
-    mcd.pivot_table(values='coverage', index='time', columns=label_var).plot()
-    plt.ylabel('C(t)')
-    plt.savefig(output_folder + '/coverage.eps')
-    plt.savefig(output_folder + '/coverage.pdf')
-    plt.show()
+    label_var_pretty = LABEL_VAR_MAP[label_var]
     mcd['dCoverage'] = mcd.groupby(['name', label_var]) \
         .apply(lambda x: (x.coverage - x.coverage.shift(1)) / (x.time - x.time.shift(1))) \
         .reset_index(name='dCoverage').set_index('level_2')['dCoverage']
-    mcd[mcd.time < max_time].pivot_table(values='dCoverage', index='time', columns=label_var).ewm(com=6).mean().plot()
-    plt.xlabel('t')
-    plt.ylabel('dC(t)/dt')
-    plt.savefig(output_folder + '/dcoverage.eps')
-    plt.savefig(output_folder + '/dcoverage.pdf')
+    mcd[mcd.time < max_time].rename(columns={label_var: label_var_pretty})\
+        .pivot_table(values='dCoverage', index='time', columns=label_var_pretty).ewm(com=6).mean().plot()
+    plt.xlabel('t', fontsize=16)
+    plt.ylabel('dC(t)/dt', fontsize=16)
+    plt.savefig(output_folder + f'/dcoverage_{label_var}.eps')
     plt.show()
-
 
 
 def plot_coverage_time(output_folder, label_var, lower_bound):
@@ -46,8 +56,7 @@ def plot_coverage_time(output_folder, label_var, lower_bound):
     c_lim = mcd[mcd.time == mcd.time.max()][[label_var, 'coverage']]
     c_lim.set_index(label_var).plot()
     plt.axhline(lower_bound, color='k')
-    plt.savefig(output_folder + '/coverage_lower_bound.eps')
-    plt.savefig(output_folder + '/coverage_lower_bound.pdf')
+    plt.savefig(output_folder + f'/coverage_lower_bound_{label_var}.eps')
     plt.show()
     mcd = mcd.merge(c_lim.rename(columns={'coverage': 'minCoverage'}), on=label_var)
     x2 = mcd[mcd['coverage'] < (lower_bound + 2)].groupby(label_var)['time'].min() \
@@ -67,19 +76,21 @@ def plot_coverage_time(output_folder, label_var, lower_bound):
         .merge(x0_25, on=label_var, how='left')
     x.set_index(label_var).plot()
     plt.ylabel('Coverage time')
-    plt.savefig(output_folder + '/coverage_time.eps')
-    plt.savefig(output_folder + '/coverage_time.pdf')
+    plt.savefig(output_folder + f'/coverage_time_{label_var}.eps')
+    plt.savefig(output_folder + f'/coverage_time_{label_var}.pdf')
     plt.show()
 
 
 if __name__ == '__main__':
-    output_folder_eta = 'results/coverage_comparison_2019-12-17 17:28:48'
-    plot_eta_chart(output_folder_eta)
+    # output_folder_eta = 'results/coverage_comparison_2019-12-17 17:28:48'
+    # plot_eta_chart(output_folder_eta)
 
-    output_folder_phi = 'results/coverage_comparison_2019-12-26 11:06:21'
+    output_folder_phi = 'results/coverage_comparison_2020-01-02 08:30:40'
+    plot_coverage_distance(output_folder_phi, 'phi', max_time=100)
     plot_coverage_dynamics(output_folder_phi, 'phi', max_time=30)
-    plot_coverage_time(output_folder_phi, 'phi', LOWER_BOUND_BC)
-    
-    output_folder_gamma = 'results/coverage_comparison_2019-12-25 01:12:58'
+    plot_coverage_time(output_folder_phi, 'phi', LOWER_BOUND)
+
+    output_folder_gamma = 'results/coverage_comparison_2020-01-04 12:40:51'
+    plot_coverage_distance(output_folder_gamma, 'gamma', max_time=100)
     plot_coverage_dynamics(output_folder_gamma, 'gamma', max_time=30)
     plot_coverage_time(output_folder_gamma, 'gamma', INDEPENDENT_LB)
