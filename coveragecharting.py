@@ -1,12 +1,13 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import re
+import os
 
 from coverageconfig import ITERATIONS
 from coverage import LOWER_BOUND, INDEPENDENT_LB, LOWER_BOUND_BC
 
 
-LABEL_VAR_MAP = {'phi': 'φ', 'gamma': 'γ'}
+LABEL_VAR_MAP = {'phi': 'φ', 'gamma': 'γ', 'epsilon': 'ε'}
 
 plt.rcParams['legend.title_fontsize'] = 'xx-large'
 
@@ -51,33 +52,23 @@ def plot_coverage_dynamics(output_folder, label_var, max_time=ITERATIONS * 0.25)
 
 
 def plot_coverage_time(output_folder, label_var, lower_bound):
-    mcd = pd.read_csv(output_folder + '/mean_coverage_distance.csv')
+    trial_files = list(filter(lambda x: x[:5] == 'trial', os.listdir(output_folder))) 
+    mcd = pd.concat(list(map(lambda f: pd.read_csv(output_folder + '/' + f), trial_files)))
     mcd[label_var] = mcd['name'].apply(lambda name: float(re.compile(f'{label_var}=(.*)').findall(name)[0]))
-    c_lim = mcd[mcd.time == mcd.time.max()][[label_var, 'coverage']]
-    c_lim.set_index(label_var).plot()
-    plt.axhline(lower_bound, color='k')
-    plt.savefig(output_folder + f'/coverage_lower_bound_{label_var}.eps')
-    plt.show()
-    mcd = mcd.merge(c_lim.rename(columns={'coverage': 'minCoverage'}), on=label_var)
-    x2 = mcd[mcd['coverage'] < (lower_bound + 2)].groupby(label_var)['time'].min() \
-        .reset_index() \
-        .rename(columns={'time': 'ε=2'})
-    x1 = mcd[mcd['coverage'] < (lower_bound + 1)].groupby(label_var)['time'].min() \
-        .reset_index() \
-        .rename(columns={'time': 'ε=1'})
-    x0_5 = mcd[mcd['coverage'] < (lower_bound + 0.5)].groupby(label_var)['time'].min() \
-        .reset_index() \
-        .rename(columns={'time': 'ε=0.5'})
-    x0_25 = mcd[mcd['coverage'] < (lower_bound + 0.25)].groupby(label_var)['time'].min() \
-        .reset_index() \
-        .rename(columns={'time': 'ε=0.25'})
-    x = x2.merge(x1, on=label_var, how='left')\
-        .merge(x0_5, on=label_var, how='left')\
-        .merge(x0_25, on=label_var, how='left')
-    x.set_index(label_var).plot()
-    plt.ylabel('Coverage time')
+    epsilons = [0.5, 0.25, 0.125, 0.0625, 0.03125]
+    hits = []
+    for epsilon in epsilons:
+        hit = mcd[mcd.coverage < lower_bound + epsilon].groupby([label_var, 'trialNumber'])['time'].min().reset_index()
+        hit['epsilon'] = epsilon
+        hits.append(hit)
+    label_var_pretty = LABEL_VAR_MAP[label_var]
+    epsilon_pretty = LABEL_VAR_MAP['epsilon']
+    pd.concat(hits).rename(columns={label_var: label_var_pretty, 'epsilon': epsilon_pretty})\
+        .pivot_table(values='time', columns=epsilon_pretty, index=label_var_pretty)\
+        .plot()
+    plt.xlabel(label_var_pretty, fontsize=16)
+    plt.ylabel('Coverage time', fontsize=16)
     plt.savefig(output_folder + f'/coverage_time_{label_var}.eps')
-    plt.savefig(output_folder + f'/coverage_time_{label_var}.pdf')
     plt.show()
 
 
@@ -87,10 +78,10 @@ if __name__ == '__main__':
 
     output_folder_phi = 'results/coverage_comparison_2020-01-02 08:30:40'
     plot_coverage_distance(output_folder_phi, 'phi', max_time=100)
-    plot_coverage_dynamics(output_folder_phi, 'phi', max_time=30)
-    plot_coverage_time(output_folder_phi, 'phi', LOWER_BOUND)
+    plot_coverage_dynamics(output_folder_phi, 'phi', max_time=40)
+    plot_coverage_time(output_folder_phi, 'phi', LOWER_BOUND_BC)
 
-    output_folder_gamma = 'results/coverage_comparison_2020-01-04 12:40:51'
+    output_folder_gamma = 'results/coverage_comparison_2020-01-04 18:08:30'
     plot_coverage_distance(output_folder_gamma, 'gamma', max_time=100)
-    plot_coverage_dynamics(output_folder_gamma, 'gamma', max_time=30)
+    plot_coverage_dynamics(output_folder_gamma, 'gamma', max_time=40)
     plot_coverage_time(output_folder_gamma, 'gamma', INDEPENDENT_LB)
