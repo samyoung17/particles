@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
 from multiprocessing import Pool
 import signal
 import pandas as pd
@@ -12,7 +11,7 @@ import time
 
 import particlesim
 import datamodel
-import coverageconfig
+from coverageconfig import R_MAX, N, ITERATIONS, CONFIG
 import linalgutil
 
 EULER_GAMMA = 0.577215664901532
@@ -24,10 +23,10 @@ def maxNumberOfCoupons(n):
 	return (n - 0.5) / np.real(scipy.special.lambertw(np.exp(EULER_GAMMA) * (n - 0.5)))
 
 H = np.sqrt(2 * np.pi / (3 * np.sqrt(3)))
-LOWER_BOUND = coverageconfig.R_MAX * H / np.sqrt(coverageconfig.N)
-INDEPENDENT_LB = coverageconfig.R_MAX * H / np.sqrt(maxNumberOfCoupons(coverageconfig.N))
-
-D_OPTIMAL_AGENTS = LOWER_BOUND * np.sqrt(2)
+LOWER_BOUND = R_MAX * H / np.sqrt(N)
+INDEPENDENT_LB = R_MAX * H / np.sqrt(maxNumberOfCoupons(N))
+LOWER_BOUND_BC = np.pi * R_MAX / (3 * N) \
+			  + R_MAX / np.sqrt(N) * np.sqrt(pow(np.pi, 2) / (9 * N) + 2 * np.pi / (3 * np.sqrt(3)))
 
 TIMEOUT = 99999999999999999
 
@@ -63,7 +62,7 @@ def loadDataFromFile(algorithmProperties):
 
 def runSimulations(algorithmProps):
 	params = algorithmProps['params'] if 'params' in algorithmProps else {}
-	data = particlesim.simulate(coverageconfig.ITERATIONS, coverageconfig.N,
+	data = particlesim.simulate(ITERATIONS, N,
 								algorithmProps['moveFn'], algorithmProps['filePath'],
 								algorithmProps['boundary'], params)
 	dataSet = {
@@ -72,68 +71,44 @@ def runSimulations(algorithmProps):
 	}
 	return dataSet
 
-def calculateCoverage(dataSet):
-	covarageDistance = supMinDistanceOverTime(dataSet['data'])
-	distanceTravelled = meanDistanceTravelled(dataSet['data'])
-	return (dataSet['name'], (distanceTravelled, covarageDistance))
+def calculateRadialDistance(data):
+	r = np.linalg.norm(data.x, axis=2)
+	rbar = r.mean(axis=1)
+	return rbar
 
-def drawGraph(df, names, filename):
-	plots = []
-	for name in names:
-		plot, = plt.plot(df['time'], df[name + '.coverage'], label=name)
-		plots.append(plot)
-	plt.axhline(y=LOWER_BOUND, color='k')
-	plt.axhline(y=INDEPENDENT_LB, color='k')
-	plt.legend()
-	plt.xlabel('Time (s)')
-	plt.ylabel('Coverage distance (m)')
-	plt.gca().set_ylim(bottom=0)
-	plt.title('Maximum distance to the nearest agent')
-	plt.savefig(filename)
-	plt.show()
+def calculateAverageSpeed(data):
+	s = np.linalg.norm(data.v, axis=2)
+	sbar = s.mean(axis=1)
+	return sbar
 
-def drawGraphFromCsv(folder, cfg):
-	df = pd.read_csv(folder + '/mean_coverage_distance.csv')
-	names = map(lambda i: i['name'], cfg)
-	outfilename = folder + '/test.png'
-	drawGraph(df, names, outfilename)
-
-def createDataFrame(t, distanceAndCoverage):
-	df = pd.DataFrame()
-	names = distanceAndCoverage.keys()
-	df['time'] = t
-	for name in names:
-		distance, coverage = distanceAndCoverage[name]
-		distanceColName = name + '.distance'
-		coverageColName = name + '.coverage'
-		df[distanceColName] = distance
-		df[coverageColName] = coverage
+def calculateSummaryStatistics(dataSet):
+	df = pd.DataFrame({
+		'time': np.arange(0, ITERATIONS * particlesim.TIMESTEP, particlesim.TIMESTEP),
+		'coverage': supMinDistanceOverTime(dataSet['data']),
+		'speed': calculateAverageSpeed(dataSet['data']),
+		'distance': meanDistanceTravelled(dataSet['data']),
+		'radialDistance': calculateRadialDistance(dataSet['data'])
+	})
+	df['name'] = dataSet['name']
 	return df
 
-def saveResults(folder, config, meanDistanceAndCoverage):
-	names = list(map(lambda d: d['name'], config))
-	t = np.arange(0, coverageconfig.ITERATIONS * particlesim.TIMESTEP, particlesim.TIMESTEP)
-	df = createDataFrame(t, meanDistanceAndCoverage)
+
+def saveResults(folder, config, all_trials_df):
+	df = all_trials_df.groupby(['name', 'time']).mean().reset_index()
 	df.to_csv(folder + '/mean_coverage_distance.csv')
 	out = open(folder + '/config.txt', 'w')
 	out.write('ITERATIONS={} N={}\n'
-			  .format(coverageconfig.ITERATIONS, coverageconfig.N))
+			  .format(ITERATIONS, N))
 	out.write(pprint.pformat(config))
 	out.close()
-	drawGraph(df, names, folder + '/mean_coverage_distance.png')
+	print(f'Results saved to {folder}')
 
-def saveTrialResults(folder, distanceAndCoverage, trialNumber):
-	t = np.arange(0, coverageconfig.ITERATIONS * particlesim.TIMESTEP, particlesim.TIMESTEP)
-	df = createDataFrame(t, distanceAndCoverage)
-	df.to_csv(folder + '/trial' + str(trialNumber+1) + '.csv')
 
 def multipleTrials(config, numberOfTrials):
-	names = list(map(lambda d: d['name'], config))
 	pool = Pool(len(config))
-	coverageData = np.ndarray((numberOfTrials, len(config), coverageconfig.ITERATIONS))
-	distanceData = np.ndarray((numberOfTrials, len(config), coverageconfig.ITERATIONS))
 	folder = 'results/coverage_comparison_' + str(datetime.datetime.now())[:19]
 	os.mkdir(folder)
+	trial_summary_dfs = []
 	for i in range(numberOfTrials):
 		print('Trial ' + str(i + 1) + '/' + str(numberOfTrials))
 		print('Running simulations...')
@@ -141,18 +116,15 @@ def multipleTrials(config, numberOfTrials):
 		dataSets = pool.map(runSimulations, config)
 		sim_end = time.time()
 		print('\nCalculating coverage distances...')
-		distanceAndCoverage = dict(pool.map(calculateCoverage, dataSets))
+		summaryStatistics = pd.concat(pool.map(calculateSummaryStatistics, dataSets))
 		coverage_end = time.time()
-		print(f'Sim_time: {sim_end - sim_start:.2f}s, coverage_calc_time: {coverage_end - sim_end:.2f}s')
-		saveTrialResults(folder, distanceAndCoverage, i)
-		for j, name in enumerate(names):
-			distanceData[i,j] = distanceAndCoverage[name][0]
-			coverageData[i,j] = distanceAndCoverage[name][1]
+		print(f'\nSim_time: {sim_end - sim_start:.2f}s, coverage_calc_time: {coverage_end - sim_end:.2f}s')
+		summaryStatistics['trialNumber'] = i + 1
+		trial_summary_dfs.append(summaryStatistics)
+		summaryStatistics.to_csv(folder + '/trial' + str(i + 1) + '.csv')
 		print('\n')
-	meanCoverageData = np.mean(coverageData, axis=0)
-	meanDistanceData = np.mean(distanceData, axis=0)
-	meanDistanceAndCoverage = dict([(name, (meanDistanceData[j], meanCoverageData[j])) for j,name in enumerate(names)])
-	saveResults(folder, config, meanDistanceAndCoverage)
+	all_trials_df = pd.concat(trial_summary_dfs)
+	saveResults(folder, config, all_trials_df)
 
 if __name__=='__main__':
 	if not len(sys.argv) == 3:
@@ -162,4 +134,4 @@ if __name__=='__main__':
 		os.mkdir('results')
 	if not os.path.isdir('data'):
 		os.mkdir('data')
-	multipleTrials(coverageconfig.CONFIG[configName], int(numberOfTrials))
+	multipleTrials(CONFIG[configName], int(numberOfTrials))
