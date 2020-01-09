@@ -24,6 +24,62 @@ def plot_eta_chart(output_folder):
     plt.savefig(output_folder + '/eta_chart.eps')
     plt.show()
 
+
+def plot_radial_distance(output_folder, label_var, max_time=ITERATIONS * 0.25):
+    mcd = pd.read_csv(output_folder + '/mean_coverage_distance.csv')
+    mcd[label_var] = mcd['name'].apply(lambda name: float(re.compile(f'{label_var}=(.*)').findall(name)[0]))
+    label_var_pretty = LABEL_VAR_MAP[label_var]
+    mcd[mcd.time < max_time].rename(columns={label_var: label_var_pretty})\
+        .pivot_table(values='radialDistance', index='time', columns=label_var_pretty).plot()
+    plt.axhline(10 * 2/3, color='k', label='lol')
+    plt.xlabel('t', fontsize=16)
+    plt.ylabel('r(t)', fontsize=16)
+    plt.savefig(output_folder + f'/radialDistance_{label_var}.eps')
+    plt.show()
+
+
+def plot_radial_distance_dynamics(output_folder, label_var, max_time=ITERATIONS * 0.25):
+    mcd = pd.read_csv(output_folder + '/mean_coverage_distance.csv')
+    mcd[label_var] = mcd['name'].apply(lambda name: float(re.compile(f'{label_var}=(.*)').findall(name)[0]))
+    label_var_pretty = LABEL_VAR_MAP[label_var]
+    mcd['dRadialDistance'] = mcd.groupby(['name', label_var]) \
+        .apply(lambda x: (x.radialDistance - x.radialDistance.shift(1)) / (x.time - x.time.shift(1))) \
+        .reset_index(name='dRadialDistance').set_index('level_2')['dRadialDistance']
+    mcd[mcd.time < max_time].rename(columns={label_var: label_var_pretty})\
+        .pivot_table(values='dRadialDistance', index='time', columns=label_var_pretty).ewm(com=6).mean().plot()
+    plt.xlabel('t', fontsize=16)
+    plt.ylabel('dr(t)/dt', fontsize=16)
+    plt.savefig(output_folder + f'/dRadialDistance_{label_var}.eps')
+    plt.show()
+
+
+def plot_speed(output_folder, label_var, max_time=ITERATIONS * 0.25):
+    mcd = pd.read_csv(output_folder + '/mean_coverage_distance.csv')
+    mcd[label_var] = mcd['name'].apply(lambda name: float(re.compile(f'{label_var}=(.*)').findall(name)[0]))
+    label_var_pretty = LABEL_VAR_MAP[label_var]
+    mcd[mcd.time < max_time].rename(columns={label_var: label_var_pretty})\
+        .pivot_table(values='speed', index='time', columns=label_var_pretty).plot()
+    plt.xlabel('t', fontsize=16)
+    plt.ylabel('s(t)', fontsize=16)
+    plt.savefig(output_folder + f'/speed_{label_var}.eps')
+    plt.show()
+
+
+def plot_speed_dynamics(output_folder, label_var, max_time=ITERATIONS * 0.25):
+    mcd = pd.read_csv(output_folder + '/mean_coverage_distance.csv')
+    mcd[label_var] = mcd['name'].apply(lambda name: float(re.compile(f'{label_var}=(.*)').findall(name)[0]))
+    label_var_pretty = LABEL_VAR_MAP[label_var]
+    mcd['dSpeed'] = mcd.groupby(['name', label_var]) \
+        .apply(lambda x: (x.speed - x.speed.shift(1)) / (x.time - x.time.shift(1))) \
+        .reset_index(name='dSpeed').set_index('level_2')['dSpeed']
+    mcd[mcd.time < max_time].rename(columns={label_var: label_var_pretty})\
+        .pivot_table(values='dSpeed', index='time', columns=label_var_pretty).ewm(com=6).mean().plot()
+    plt.xlabel('t', fontsize=16)
+    plt.ylabel('ds(t)/dt', fontsize=16)
+    plt.savefig(output_folder + f'/dspeed_{label_var}.eps')
+    plt.show()
+
+
 def plot_coverage_distance(output_folder, label_var, max_time=ITERATIONS * 0.25):
     mcd = pd.read_csv(output_folder + '/mean_coverage_distance.csv')
     mcd[label_var] = mcd['name'].apply(lambda name: float(re.compile(f'{label_var}=(.*)').findall(name)[0]))
@@ -66,6 +122,7 @@ def plot_coverage_time(output_folder, label_var, lower_bound):
     pd.concat(hits).rename(columns={label_var: label_var_pretty, 'epsilon': epsilon_pretty})\
         .pivot_table(values='time', columns=epsilon_pretty, index=label_var_pretty)\
         .plot()
+    # plt.plot(hit.gamma, 100 * hit.gamma + 8, color='k', linestyle='dashed')
     plt.xlabel(label_var_pretty, fontsize=16)
     plt.ylabel('Coverage time', fontsize=16)
     plt.savefig(output_folder + f'/coverage_time_{label_var}.eps')
@@ -78,10 +135,14 @@ if __name__ == '__main__':
 
     output_folder_phi = 'results/coverage_comparison_2020-01-02 08:30:40'
     plot_coverage_distance(output_folder_phi, 'phi', max_time=100)
-    plot_coverage_dynamics(output_folder_phi, 'phi', max_time=40)
+    plot_coverage_dynamics(output_folder_phi, 'phi', max_time=20)
+    plot_radial_distance(output_folder_phi, 'phi', max_time = 100)
+    plot_speed(output_folder_phi, 'phi', max_time = 20)
     plot_coverage_time(output_folder_phi, 'phi', LOWER_BOUND_BC)
 
     output_folder_gamma = 'results/coverage_comparison_2020-01-04 18:08:30'
     plot_coverage_distance(output_folder_gamma, 'gamma', max_time=100)
     plot_coverage_dynamics(output_folder_gamma, 'gamma', max_time=40)
+    plot_radial_distance(output_folder_gamma, 'gamma', max_time = 100)
+    plot_speed(output_folder_gamma, 'gamma', max_time = 40)
     plot_coverage_time(output_folder_gamma, 'gamma', INDEPENDENT_LB)
