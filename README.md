@@ -1,5 +1,9 @@
 # Particles
 
+## Thesis
+
+This particle simulator was created to assist with my masters thesis project on decentralised algorithms for area coverage. To follow the code, it may be easiest to read parts of the thesis first, which I have also uploaded to git (see `Masters_Thesis.pdf` at the top level).
+
 ## Building the project on linux or OSX
 The project is written in Python 3
 To ensure that the correct dependencies are installed, start by creating a new virtual environment.
